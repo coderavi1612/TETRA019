@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "schema_version": "1.0.0",
+    "pipeline_version": "1.0.0",
+    "created_by": "Duelens Golden Test Helper",
+    "generated_at": "2026-08-01T18:13:43.155692Z"
+  },
+  "company_id": "sample_company",
+  "overall_status": "NEEDS_MAJOR_REVIEW",
+  "readiness_score": 69,
+  "documents_reviewed": [
+    "pitch_deck",
+    "historical_financial_statements",
+    "mis",
+    "financial_projections",
+    "cap_table"
+  ],
+  "verified_matches": 3,
+  "verified_mismatches": 0,
+  "missing_information": 8,
+  "unresolved_inconsistencies": 0,
+  "strengths": [],
+  "risks": [],
+  "next_steps": [],
+  "executive_summary": ""
+}

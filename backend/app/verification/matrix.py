@@ -11,7 +11,7 @@ class ComparisonMatrixBuilder:
         matrix_dict: Dict[str, Dict[str, NormalizedValue]] = {}
         for val in mapped_values:
             strategy = ComparisonRegistry.get_comparison_strategy(val.canonical_path) or "string"
-            norm_val, norm_unit = FieldNormalizer.normalize_value(val.value, strategy)
+            norm_val, norm_unit = FieldNormalizer.normalize_value(val.value, strategy, val.unit)
             norm_currency = FieldNormalizer.normalize_currency(val.currency)
             
             norm_obj = NormalizedValue(

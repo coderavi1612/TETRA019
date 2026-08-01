@@ -125,21 +125,14 @@ export const DuelensDataProvider: React.FC<{ children: ReactNode }> = ({ childre
 
       // 6. Fetch Verification Issues list
       try {
-        const issuesList = await getRawArtifactFile<Array<{
-          id: string;
-          classification: string;
-          severity: string;
-          field: string;
-          description: string;
-          evidence?: Array<{ document: string; value: unknown }>;
-          resolved?: boolean;
-        }>>(
+        const rawIssuesRes = await getRawArtifactFile<any>(
           targetCompanyId,
           'verification',
           'issues.json'
         );
+        const issuesList = Array.isArray(rawIssuesRes) ? rawIssuesRes : (rawIssuesRes?.issues || []);
 
-        const mappedIssues: Issue[] = (issuesList || []).map((issue) => {
+        const mappedIssues: Issue[] = (issuesList || []).map((issue: any) => {
           const sourceValues: Record<string, unknown> = {};
           if (issue.evidence) {
             issue.evidence.forEach((ev) => {

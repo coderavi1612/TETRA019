@@ -147,3 +147,11 @@ class TestReadinessEngine(unittest.TestCase):
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "readiness_summary.pdf")))
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "executive_summary.pdf")))
             self.assertTrue(os.path.exists(os.path.join(temp_dir, "follow_up_questions.pdf")))
+
+    def test_gemini_reasoning_client(self):
+        from app.reasoning.gemini import GeminiReasoningClient
+        client = GeminiReasoningClient()
+        self.assertEqual(client.model, "gemini-2.5-flash-lite")
+        res = client.generate_reasoning({"test": "data"})
+        self.assertEqual(res["status"], "FAILED")
+        self.assertFalse(res["reasoning_available"])

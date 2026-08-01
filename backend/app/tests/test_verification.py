@@ -37,6 +37,13 @@ class TestVerificationEngine(unittest.TestCase):
         self.assertEqual(v_pct, 0.25)
         self.assertEqual(unit_pct, "%")
 
+        # 4. Unit-based scaling conversions
+        v_cr_unit, _ = FieldNormalizer.normalize_value("1.8", "numeric", "Cr")
+        self.assertEqual(v_cr_unit, 18000000.0)
+
+        v_lakh_unit, _ = FieldNormalizer.normalize_value("10", "numeric", "Lakhs")
+        self.assertEqual(v_lakh_unit, 1000000.0)
+
     def test_tolerance_engine(self):
         self.assertTrue(ToleranceEngine.is_within_tolerance(100.0, 102.0, "2%"))
         self.assertTrue(ToleranceEngine.is_within_tolerance(100.0, 98.0, "2%"))

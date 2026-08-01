@@ -32,23 +32,34 @@ class ReadinessOrchestrator:
             verification_dir = os.path.join(outputs_dir, company_id, "verification")
             issues_path = os.path.join(verification_dir, "issues.json")
             summary_path = os.path.join(verification_dir, "comparison_summary.json")
+            readiness_path = os.path.join(verification_dir, "readiness_summary.json")
             
-            if not os.path.exists(issues_path) or not os.path.exists(summary_path):
+            if not os.path.exists(issues_path) or not os.path.exists(summary_path) or not os.path.exists(readiness_path):
                 raise FileNotFoundError(f"Verification outputs not found for company '{company_id}'. Please run verification first.")
                 
             with open(issues_path, "r", encoding="utf-8") as f:
-                verification_issues = json.load(f)
+                issues_data = json.load(f)
+                verification_issues = issues_data.get("issues", []) if isinstance(issues_data, dict) else issues_data
                 
             with open(summary_path, "r", encoding="utf-8") as f:
                 verification_summary = json.load(f)
 
+            with open(readiness_path, "r", encoding="utf-8") as f:
+                readiness_data = json.load(f)
+                score = readiness_data.get("readiness_score", 0)
+                status = readiness_data.get("overall_status", "NOT_READY")
+
             # 1. Build and save Report Context
             report_context = ReportContextBuilder.build_and_save_context(company_id, outputs_dir)
 
-            # 2. Deterministic Scoring
-            scoring = ReadinessScoringEngine.calculate_score_and_status(verification_issues, verification_summary)
-            score = scoring["readiness_score"]
-            status = scoring["overall_status"]
+            # 2. Deterministic Scoring (Stage 4 outputs)
+            scoring = {
+                "readiness_score": score,
+                "overall_status": status,
+                "critical_issues_count": readiness_data.get("verified_mismatches", 0),
+                "warning_issues_count": readiness_data.get("unresolved_inconsistencies", 0),
+                "company_name": report_context.get("company_name")
+            }
 
             # 3. Call AI Pipeline
             ai_results, prompt_hashes, cache_hits, cache_misses, retry_counts = ReadinessAiOrchestrator.run_ai_pipeline(
@@ -78,7 +89,18 @@ class ReadinessOrchestrator:
             
             report_hashes = {}
             from app.core import sha256_string
+            import datetime
+            now_str = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "") + "Z"
+            metadata = {
+                "schema_version": "1.0.0",
+                "pipeline_version": "1.0.0",
+                "created_by": "Duelens Reporting Engine",
+                "generated_at": now_str
+            }
+            
             for name, data in reports.items():
+                if isinstance(data, dict):
+                    data["metadata"] = metadata
                 filepath = os.path.join(readiness_dir, f"{name}.json")
                 with open(filepath, "w", encoding="utf-8") as f:
                     content = json.dumps(data, indent=2)

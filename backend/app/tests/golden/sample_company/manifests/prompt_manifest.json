@@ -1,6 +1,6 @@
 {
   "prompts": {},
-  "model": "gemini-2.5-flash",
+  "model": "gemini-3.5-flash-lite",
   "temperature": 0.1,
-  "generated_at": "2026-08-01T11:22:31.366444Z"
+  "generated_at": "2026-08-01T19:41:04.519219Z"
 }

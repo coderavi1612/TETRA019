@@ -45,7 +45,7 @@ const DOC_SLOTS: DocSlot[] = [
     id: "financial-statements",
     name: "Historical Financial Statements",
     description: "Audited P&L statements, balance sheets & cash flow",
-    formats: ["PDF", "XLSX"],
+    formats: ["PDF", "XLSX", "CSV"],
     sampleFile: "FinancialStatements.pdf",
     icon: BarChart3,
   },

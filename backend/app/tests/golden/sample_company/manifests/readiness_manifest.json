@@ -5,7 +5,7 @@
   "registry_version": "b9983152a950dd63",
   "prompt_version": "v1",
   "prompt_hashes": {},
-  "model": "gemini-2.5-flash",
+  "model": "gemini-3.5-flash-lite",
   "temperature": 0.1,
   "cache_hits": 8,
   "cache_misses": 0,
@@ -15,8 +15,8 @@
   "report_hashes": {
     "inconsistency_report.json": "3ba4fb190a72b7df5863c3a950373e7f4d82c0ccb2d6b952ff1feb3f2fe1dbe1",
     "follow_up_questions.json": "96faaebf6949bbf99da7ce5de1e42d08d730e45ac6d8b72de967f529355ed65d",
-    "executive_summary.json": "1add473f68b8acb314b9e62a86c2ac4a1e5f6c82dc5fce95d63dfa46cd174d64",
-    "readiness_summary.json": "8deafbeb82b958b67ce65608fe87f62f52fc25d93bb42352f989cedcb91ef192"
+    "executive_summary.json": "00de1a5c2ba8950e30c54247baa30c90640607e9b739780140e5b3aed51b1e3b",
+    "readiness_summary.json": "b2a8a8061d1fb145458a20956e733c8732284f50dec103da4be23f6bb7551555"
   },
   "generated_files": [
     "readiness_summary.json",

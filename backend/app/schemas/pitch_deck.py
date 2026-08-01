@@ -13,6 +13,8 @@ class MetricValue(BaseModel):
     slide: Optional[int] = None
     sheet: Optional[str] = None
     extracted_text_snippet: Optional[str] = None
+    confidence: Optional[float] = 1.0
+    evidence: Optional[Dict[str, Any]] = None
 
 
 class PitchDeckDocumentMetadata(BaseModel):

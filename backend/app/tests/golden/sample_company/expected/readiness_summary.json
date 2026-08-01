@@ -1,22 +1,38 @@
 {
   "company_id": "sample_company",
+  "company_name": "Duelens Inc",
   "overall_status": "NEEDS_MAJOR_REVIEW",
   "readiness_score": 69,
+  "overall_readiness_score": 69,
+  "scoring_breakdown": {
+    "completeness": 36,
+    "consistency": 100,
+    "recency": 95,
+    "factuality": 100
+  },
   "documents_reviewed": [],
   "verified_matches": 3,
   "verified_mismatches": 0,
   "missing_information": 8,
   "unresolved_inconsistencies": 0,
   "strengths": [
-    "Clean company name verification matching across all structures",
-    "Complete cap table information"
+    "Consistent funding ask amount of $20,000,000 verified across both the financial projections and pitch deck.",
+    "Clear cap table ownership structure documented with John Doe holding 60.0% and Jane Smith holding 40.0%."
   ],
   "risks": [
-    "Required fields in Revenue.FY24 are missing entirely"
+    "Critical missing information regarding the official CompanyLegalName, which is only present in the pitch deck.",
+    "High severity risk due to the complete absence of Revenue.FY24 data.",
+    "Revenue.FY25 is only found in historical financial statements and missing from other review documents."
   ],
   "next_steps": [
-    "Upload MIS historical reports for FY24",
-    "Reconcile the funding round ask amount"
+    "Obtain official legal documentation to verify and confirm the CompanyLegalName.",
+    "Request complete historical financial statements to provide missing figures for Revenue.FY24 and reconcile Revenue.FY25 discrepancies across all package documents."
   ],
-  "executive_summary": "The evaluations yield a readiness score of 84 with minor changes recommended before investor review."
+  "executive_summary": "Duelens Inc presents a calculated readiness score of 69, resulting in a status of NEEDS_MAJOR_REVIEW. While core data points such as the funding ask amount ($20,000,000) and ownership structure (John Doe at 60.0% and Jane Smith at 40.0%) show alignment across the compared documents, the overall package suffers from significant informational gaps. Specifically, critical and high-severity issues including missing legal names and absent revenue data for FY24 and FY25 require immediate remediation before proceeding further in the investment evaluation process.",
+  "metadata": {
+    "schema_version": "1.0.0",
+    "pipeline_version": "1.0.0",
+    "created_by": "Duelens Reporting Engine",
+    "generated_at": "2026-08-01T19:03:51.002570Z"
+  }
 }

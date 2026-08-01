@@ -24,6 +24,7 @@ class PipelineStatusManager:
                 "stages": [
                     {"name": "parse", "status": "idle", "duration_ms": 0},
                     {"name": "extract", "status": "idle", "duration_ms": 0},
+                    {"name": "reason", "status": "idle", "duration_ms": 0},
                     {"name": "verify", "status": "idle", "duration_ms": 0},
                     {"name": "readiness", "status": "idle", "duration_ms": 0}
                 ],

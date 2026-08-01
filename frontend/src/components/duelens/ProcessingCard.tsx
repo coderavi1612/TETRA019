@@ -17,6 +17,7 @@ export function ProcessingCard({ onDone }: { onDone: () => void }) {
   const [stages, setStages] = useState<Array<{ name: string; status: string; duration_ms: number }>>([
     { name: "parse", status: "pending", duration_ms: 0 },
     { name: "extract", status: "pending", duration_ms: 0 },
+    { name: "reason", status: "pending", duration_ms: 0 },
     { name: "verify", status: "pending", duration_ms: 0 },
     { name: "readiness", status: "pending", duration_ms: 0 },
   ]);
@@ -82,6 +83,7 @@ export function ProcessingCard({ onDone }: { onDone: () => void }) {
   const stageLabels: Record<string, string> = {
     parse: "Document Ingestion & Parsing",
     extract: "AI Fact Extraction & Specifications",
+    reason: "Local AI Semantic Reasoning Audit",
     verify: "Cross-document Deterministic Verification",
     readiness: "AI Readiness & Scoring Evaluation",
   };

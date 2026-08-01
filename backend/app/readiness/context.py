@@ -23,7 +23,8 @@ class ReportContextBuilder:
         issues_path = os.path.join(verification_dir, "issues.json")
         if os.path.exists(issues_path):
             with open(issues_path, "r", encoding="utf-8") as f:
-                issues = json.load(f)
+                issues_data = json.load(f)
+                issues = issues_data.get("issues", []) if isinstance(issues_data, dict) else issues_data
                 
         matrix_path = os.path.join(verification_dir, "comparison_matrix.json")
         if os.path.exists(matrix_path):
@@ -58,8 +59,18 @@ class ReportContextBuilder:
                 "documents": issue.get("documents", [])
             })
 
+        # Try to find the company name from matrix
+        company_name = None
+        company_legal_name_data = matrix.get("matrix", {}).get("CompanyLegalName", {})
+        if company_legal_name_data:
+            for doc_name, val_obj in company_legal_name_data.items():
+                if val_obj and val_obj.get("value"):
+                    company_name = val_obj.get("value")
+                    break
+
         context_obj = {
             "company_id": company_id,
+            "company_name": company_name,
             "statistics": {
                 "documents_compared": summary.get("documents_compared", 0),
                 "canonical_fields": summary.get("canonical_fields", 0),

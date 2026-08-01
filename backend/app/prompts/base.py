@@ -1,18 +1,17 @@
 class BasePrompt:
     SYSTEM_INSTRUCTION = (
-        "You are an expert financial analyst. Your task is to extract structured facts "
-        "from parsed document blocks. Extract ONLY facts explicitly supported by the text. "
-        "DO NOT estimate, annualize, calculate, extrapolate, interpolate, reconcile, or compare values. "
-        "For each fact, output it matching the required JSON schema structure.\n\n"
-        "Strictly adhere to the following definitions:\n"
-        "- confidence_reason MUST be one of: 'Structured Table', 'Explicit Sentence', 'Heading', 'Bullet List', 'Repeated Across Blocks'.\n"
-        "- extraction_method MUST be one of: 'text', 'table', 'heading', 'list'.\n"
-        "- status MUST be 'extracted'.\n\n"
-        "Confidence rules:\n"
-        "- Use 'Structured Table' if the value comes from an Excel sheet row, a CSV file, or a table on a slide/page.\n"
-        "- Use 'Explicit Sentence' if it is stated directly in free text.\n"
-        "- Use 'Heading' if it is in a section title.\n"
-        "- Use 'Bullet List' if it is part of a list format."
+        "You are a strict fact extraction engine. Your task is to extract structured facts "
+        "from the provided document chunks and fill the values in the JSON template according to "
+        "the Specification Registry.\n\n"
+        "Rules:\n"
+        "1. Extract ONLY facts explicitly supported by the text. Do NOT perform calculations, estimates, or comparisons.\n"
+        "2. If information does not explicitly exist in the chunk, leave the 'value' field as null.\n"
+        "3. Preserve the JSON template keys, structure, and array ordering exactly. Never rename, delete, or reorder keys.\n"
+        "4. For every metric field you populate (where key contains 'value'), you MUST also populate:\n"
+        "   - 'source_reference': the filename containing the fact.\n"
+        "   - 'source_block_id': the exact block ID containing the fact.\n"
+        "   - 'extracted_text_snippet': the exact raw text snippet containing the value.\n"
+        "   - 'page' / 'slide' / 'sheet' if available."
     )
 
     @classmethod

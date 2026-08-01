@@ -1,0 +1,16 @@
+{
+  "strengths": [
+    "Consistent funding ask amount of $20,000,000 verified across both the financial projections and pitch deck.",
+    "Clear cap table ownership structure documented with John Doe holding 60.0% and Jane Smith holding 40.0%."
+  ],
+  "risks": [
+    "Critical missing information regarding the official CompanyLegalName, which is only present in the pitch deck.",
+    "High severity risk due to the complete absence of Revenue.FY24 data.",
+    "Revenue.FY25 is only found in historical financial statements and missing from other review documents."
+  ],
+  "next_steps": [
+    "Obtain official legal documentation to verify and confirm the CompanyLegalName.",
+    "Request complete historical financial statements to provide missing figures for Revenue.FY24 and reconcile Revenue.FY25 discrepancies across all package documents."
+  ],
+  "executive_summary": "Duelens Inc presents a calculated readiness score of 69, resulting in a status of NEEDS_MAJOR_REVIEW. While core data points such as the funding ask amount ($20,000,000) and ownership structure (John Doe at 60.0% and Jane Smith at 40.0%) show alignment across the compared documents, the overall package suffers from significant informational gaps. Specifically, critical and high-severity issues including missing legal names and absent revenue data for FY24 and FY25 require immediate remediation before proceeding further in the investment evaluation process."
+}

@@ -13,10 +13,27 @@ export function FollowUpQuestionsView() {
   const [draftAnswers, setDraftAnswers] = useState<Record<string, string>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const questions = readinessResults?.questions || [];
+  const rawQuestions = readinessResults?.questions || [];
+  const questions = rawQuestions.map((q: any) => ({
+    id: q.id || q.question_id || "",
+    question: q.question || "",
+    rationale: q.rationale || q.why_it_matters || "",
+    target_document: q.target_document || q.required_document || "",
+    priority: q.priority || "MEDIUM",
+    target_metric: q.target_metric || q.related_issue || ""
+  }));
 
-  // Map category filter to target documents dynamically
-  const categories = ["All", ...Array.from(new Set(questions.map((q) => q.target_document)))];
+  // Map category filter to target documents dynamically, filtering out null/empty values
+  const categories = [
+    "All",
+    ...Array.from(
+      new Set(
+        questions
+          .map((q) => q.target_document)
+          .filter((doc): doc is string => typeof doc === "string" && doc.trim().length > 0)
+      )
+    )
+  ];
 
   const filtered = questions.filter(
     (q) => categoryFilter === "All" || q.target_document === categoryFilter
@@ -64,9 +81,9 @@ export function FollowUpQuestionsView() {
       {/* Category Filter Tabs */}
       {categories.length > 1 && (
         <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-muted/40 p-1.5 w-fit">
-          {categories.map((cat) => (
+          {categories.map((cat, idx) => (
             <button
-              key={cat}
+              key={`${cat}-${idx}`}
               onClick={() => setCategoryFilter(cat)}
               className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold capitalize transition-all ${
                 categoryFilter === cat

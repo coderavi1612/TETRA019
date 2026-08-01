@@ -17,11 +17,5 @@
     "Supply the missing Revenue.FY24 data to complete historical financial records.",
     "Reconcile Revenue.FY25 data across all relevant documents to ensure complete visibility."
   ],
-  "investor_readiness": "The deal package is not fully investor-ready at this stage. Despite alignment on the funding ask and ownership structure, the high volume of missing information\u2014particularly regarding critical revenue figures and legal naming consistency\u2014requires major review before proceeding further.",
-  "metadata": {
-    "schema_version": "1.0.0",
-    "pipeline_version": "1.0.0",
-    "created_by": "Duelens Reporting Engine",
-    "generated_at": "2026-08-01T19:03:51.002570Z"
-  }
+  "investor_readiness": "The deal package is not fully investor-ready at this stage. Despite alignment on the funding ask and ownership structure, the high volume of missing information\u2014particularly regarding critical revenue figures and legal naming consistency\u2014requires major review before proceeding further."
 }

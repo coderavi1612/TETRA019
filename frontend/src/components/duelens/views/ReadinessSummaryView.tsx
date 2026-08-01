@@ -83,7 +83,7 @@ export function ReadinessSummaryView() {
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Company
             </p>
-            <h3 className="text-xl font-bold text-foreground capitalize">{companyId}</h3>
+            <h3 className="text-xl font-bold text-foreground capitalize">{summary?.company_name || companyId}</h3>
             <p className="text-xs text-muted-foreground">Series A Due Diligence</p>
           </div>
         </div>

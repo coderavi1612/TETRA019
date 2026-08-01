@@ -1,6 +1,10 @@
+"use client";
+
 import { motion } from "motion/react";
 import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
-import { COMPARISON, type RowStatus } from "@/data/mock";
+import { useDuelensData } from "@/context/DuelensDataContext";
+
+type RowStatus = "Verified" | "Warning" | "Mismatch";
 
 const statusStyles: Record<RowStatus, string> = {
   Verified: "bg-verified-soft text-verified",
@@ -17,6 +21,31 @@ const statusIcon = {
 const columns = ["Metric", "Pitch Deck", "Financials", "MIS", "Projection", "Cap Table", "Status"];
 
 export function ComparisonTable() {
+  const { matrixData } = useDuelensData();
+
+  const formattedRows = (matrixData?.fields || []).map(f => {
+    const docs = [
+      "pitch_deck",
+      "historical_financial_statements",
+      "mis",
+      "financial_projections",
+      "cap_table"
+    ];
+
+    const values = docs.map(doc => {
+      const vObj = f.values?.[doc];
+      return vObj?.value !== undefined && vObj?.value !== null ? String(vObj.value) : "—";
+    });
+
+    const status: RowStatus = f.is_consistent ? "Verified" : "Mismatch";
+
+    return {
+      metric: f.field_path.split('.').pop()?.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || f.field_path,
+      values,
+      status
+    };
+  });
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -43,7 +72,7 @@ export function ComparisonTable() {
             </tr>
           </thead>
           <tbody>
-            {COMPARISON.map((row, i) => {
+            {formattedRows.map((row, i) => {
               const Icon = statusIcon[row.status];
               return (
                 <motion.tr

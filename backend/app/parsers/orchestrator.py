@@ -1,5 +1,6 @@
 import os
 import datetime
+import json
 from typing import List, Dict, Any
 
 from app.config import settings
@@ -79,7 +80,10 @@ class DocumentParserOrchestrator:
                     parser_name = parser.__class__.__name__
                     parsed_doc = parser.parse(file_path, clean_company_id, doc_type)
                 except Exception as e:
-                    errors.append(str(e))
+                    err_str = str(e)
+                    if "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower() or "429" in err_str:
+                        raise ValueError(f"Gemini API Quota/Rate Limit Exhausted during parsing of '{filename}': {err_str}")
+                    errors.append(err_str)
                     try:
                         f_size = os.path.getsize(file_path)
                     except Exception:
@@ -111,6 +115,21 @@ class DocumentParserOrchestrator:
                     doc_json_content = parsed_doc.model_dump_json(indent=2)
                     with open(output_file_path, "w", encoding="utf-8") as out_f:
                         out_f.write(doc_json_content)
+                    
+                    # Generate and write canonical document/workbook
+                    if parsed_doc.status == "parsed":
+                        canonical_dir = os.path.join(company_output_dir, "canonical")
+                        os.makedirs(canonical_dir, exist_ok=True)
+                        canonical_output_path = os.path.join(canonical_dir, out_filename.replace(".json", ".canonical.json"))
+                        
+                        from app.parsers.canonical import CanonicalBuilder
+                        if doc_type == "cap_table" or filename.lower().endswith((".xlsx", ".xls", ".csv")):
+                            canonical_obj = CanonicalBuilder.build_workbook(parsed_doc, file_path)
+                        else:
+                            canonical_obj = CanonicalBuilder.build_document(parsed_doc)
+                            
+                        with open(canonical_output_path, "w", encoding="utf-8") as can_f:
+                            json.dump(canonical_obj.model_dump(), can_f, indent=2)
                 except Exception as e:
                     parsed_doc.status = "failed"
                     parsed_doc.errors.append(f"Failed to write output to file system: {str(e)}")

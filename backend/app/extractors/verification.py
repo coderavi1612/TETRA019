@@ -33,7 +33,8 @@ class VerificationEngine:
                 # Check unexpected keys
                 allowed_metric_keys = {
                     "value", "unit", "period", "actual_vs_budget", "source_reference", 
-                    "source_block_id", "page", "slide", "sheet", "extracted_text_snippet"
+                    "source_block_id", "page", "slide", "sheet", "extracted_text_snippet",
+                    "confidence", "evidence"
                 }
                 is_metric = "value" in t_dict or "value" in d_dict
                 for k in d_dict:

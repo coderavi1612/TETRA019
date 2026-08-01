@@ -164,7 +164,8 @@ class FactValidator:
             is_metric_dict = "value" in template or "value" in output
             allowed_metric_keys = {
                 "value", "unit", "period", "actual_vs_budget", "source_reference", 
-                "source_block_id", "page", "slide", "sheet", "extracted_text_snippet"
+                "source_block_id", "page", "slide", "sheet", "extracted_text_snippet",
+                "confidence", "evidence"
             }
             for key in output.keys():
                 if is_metric_dict and key in allowed_metric_keys:

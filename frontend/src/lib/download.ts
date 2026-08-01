@@ -1,6 +1,15 @@
 import { COMPARISON, DISCREPANCIES, QUESTIONS, SUMMARY } from "@/data/mock";
 
-export async function downloadPDF() {
+export async function downloadPDF(data?: {
+  companyName?: string;
+  readinessScore?: number;
+  overallStatus?: string;
+  summaryStats?: Array<{ label: string; value: number; tone: "verified" | "warning" | "critical" | "muted" }>;
+  comparisonRows?: Array<{ metric: string; values: string[]; status: any }>;
+  discrepancies?: Array<{ id: string; title: string; kind: string; severity: "High" | "Medium" | "Low"; pairs: Array<{ label: string; value: string }>; note: string }>;
+  questions?: Array<any>;
+  recommendation?: string;
+}) {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "mm", format: "a4" });
 
@@ -9,6 +18,15 @@ export async function downloadPDF() {
   const marginR = 18;
   const contentW = W - marginL - marginR;
   const date = new Date().toLocaleDateString("en-IN", { dateStyle: "long" });
+
+  const activeCompanyName = data?.companyName || "TechNova Pvt Ltd";
+  const activeScore = data?.readinessScore !== undefined ? `${data.readinessScore}%` : "88%";
+  const activeStatus = data?.overallStatus ? data.overallStatus.replace(/_/g, ' ') : "Investor Ready";
+  const activeSummary = data?.summaryStats || SUMMARY;
+  const activeComparison = data?.comparisonRows || COMPARISON;
+  const activeDiscrepancies = data?.discrepancies || DISCREPANCIES;
+  const activeQuestions = data?.questions || QUESTIONS;
+  const activeRecommendation = data?.recommendation || "Clarify customer count and ownership discrepancies before proceeding with investment due diligence.";
 
   let y = 0;
 
@@ -73,16 +91,16 @@ export async function downloadPDF() {
   doc.setFillColor(245, 247, 255);
   doc.roundedRect(marginL, y - 5, contentW, 22, 3, 3, "F");
 
-  text("TechNova Pvt Ltd", marginL + 5, 13, "bold", [14, 30, 70]);
+  text(activeCompanyName, marginL + 5, 13, "bold", [14, 30, 70]);
   y += 4;
   text("Company under review", marginL + 5, 8, "normal", [100, 110, 140]);
   y += 8;
 
   // Score + Status inline
   text("Consistency Score:", marginL + 5, 9, "normal", [80, 90, 120]);
-  text("88%", marginL + 47, 11, "bold", [14, 97, 221]);
+  text(activeScore, marginL + 47, 11, "bold", [14, 97, 221]);
   text("Status:", marginL + 110, 9, "normal", [80, 90, 120]);
-  pill("Investor Ready", marginL + 124, y - 1, [220, 243, 230], [22, 130, 70]);
+  pill(activeStatus, marginL + 124, y - 1, [220, 243, 230], [22, 130, 70]);
   y += 14;
 
   divider();
@@ -99,7 +117,7 @@ export async function downloadPDF() {
     muted:    { bg: [240, 242, 248], fg: [80, 90, 120] },
   };
 
-  SUMMARY.forEach((s, i) => {
+  activeSummary.forEach((s, i) => {
     const cx = marginL + i * (cardW + 3);
     const t = tones[s.tone];
     doc.setFillColor(...t.bg);
@@ -144,7 +162,7 @@ export async function downloadPDF() {
     Mismatch: { bg: [255, 230, 228], fg: [190, 40, 30] },
   };
 
-  COMPARISON.forEach((row, ri) => {
+  activeComparison.forEach((row, ri) => {
     checkPage(rowH + 2);
     if (ri % 2 === 0) {
       doc.setFillColor(250, 251, 255);
@@ -183,7 +201,7 @@ export async function downloadPDF() {
     Low:    { bg: [240, 242, 248], fg: [80, 90, 120] },
   };
 
-  DISCREPANCIES.forEach((d) => {
+  activeDiscrepancies.forEach((d) => {
     checkPage(24);
     doc.setFillColor(248, 249, 252);
     doc.roundedRect(marginL, y - 5, contentW, 20, 2, 2, "F");
@@ -221,7 +239,7 @@ export async function downloadPDF() {
   text("AI FOLLOW-UP QUESTIONS", marginL, 9, "bold", [100, 110, 140]);
   gap(6);
 
-  QUESTIONS.forEach((q, i) => {
+  activeQuestions.forEach((q, i) => {
     checkPage(12);
     doc.setFillColor(235, 242, 255);
     doc.roundedRect(marginL, y - 5, contentW, 10, 2, 2, "F");
@@ -231,7 +249,7 @@ export async function downloadPDF() {
     doc.text(`Q${i + 1}`, marginL + 3, y);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(30, 40, 80);
-    doc.text(typeof q === "string" ? q : q.question, marginL + 12, y);
+    doc.text(typeof q === "string" ? q : (q.question || ""), marginL + 12, y);
     y += 13;
   });
 
@@ -246,8 +264,7 @@ export async function downloadPDF() {
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(30, 40, 80);
-  const rec =
-    "Clarify customer count and ownership discrepancies before proceeding with investment due diligence.";
+  const rec = activeRecommendation;
   const recLines = doc.splitTextToSize(rec, contentW - 8) as string[];
   doc.text(recLines, marginL + 4, y);
   y += 14;

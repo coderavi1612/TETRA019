@@ -11,172 +11,73 @@ class PDFParser(BaseParser):
         from app.core import get_utc_now_iso
         created_at = get_utc_now_iso()
         
-        doc = fitz.open(file_path)
-        pages_count = doc.page_count
-        
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY environment variable is not set.")
+            
+        from google import genai
+        from google.genai import types
+        from pydantic import BaseModel
+        import json
+
+        class PageText(BaseModel):
+            page_number: int
+            text: str
+
+        class DocumentText(BaseModel):
+            pages: list[PageText]
+
+        model_name = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
+        client = genai.Client(api_key=api_key)
+
+        with open(file_path, "rb") as f:
+            pdf_bytes = f.read()
+
+        prompt = (
+            "You are an expert document text extractor. Extract all text and tables from this document page by page. "
+            "For tables, format them as markdown tables inside the text. Keep all numbers, names, and metrics exact. "
+            "Return the content structured by page number."
+        )
+
+        res = client.models.generate_content(
+            model=model_name,
+            contents=[
+                types.Part.from_bytes(data=pdf_bytes, mime_type="application/pdf"),
+                prompt
+            ],
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=DocumentText,
+            )
+        )
+
+        doc_text_data = json.loads(res.text)
+        doc_text = DocumentText(**doc_text_data)
+
         content_blocks = []
         sequence = 0
-        tables_count = 0
         words_count = 0
-        
-        # Check if the PDF has any selectable text
-        has_text = False
-        for page_idx in range(pages_count):
-            if doc[page_idx].get_text("text").strip():
-                has_text = True
-                break
-                
-        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        is_mock = (
-            not api_key or 
-            api_key == "AIzaSyBTR-BXbSPun3rOHl1q59hSBVqSlKChBCE" or
-            any(kw in api_key.lower() for kw in ["dummy", "mock", "test", "fake", "temp"])
-        )
-        
-        # Determine if we should parse using Gemini multimodal visual OCR
-        use_multimodal = not is_mock and (document_type == "pitch_deck" or not has_text)
-        
-        parsed_via_gemini = False
-        
-        if use_multimodal:
-            try:
-                from google import genai
-                from google.genai import types
-                
-                model_name = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
-                client = genai.Client(api_key=api_key)
-                
-                for page_idx in range(pages_count):
-                    page_num = page_idx + 1
-                    page = doc[page_idx]
-                    
-                    # Render slide page to high-quality image
-                    pix = page.get_pixmap(dpi=150)
-                    img_bytes = pix.tobytes("png")
-                    
-                    prompt = (
-                        "Extract all text, metrics, values, and tables from this slide/page. "
-                        "Format tables as markdown tables. Do not include conversational remarks."
-                    )
-                    
-                    res = client.models.generate_content(
-                        model=model_name,
-                        contents=[
-                            types.Part.from_bytes(data=img_bytes, mime_type="image/png"),
-                            prompt
-                        ]
-                    )
-                    
-                    page_text = res.text or ""
-                    words_count += len(page_text.split())
-                    
-                    block_id = f"{document_type}_page_{page_num:02d}_visual_block"
-                    block = ContentBlock(
-                        id=block_id,
-                        sequence=sequence,
-                        content_type="text",
-                        page=page_num,
-                        raw_text=page_text,
-                        section=SectionInfo(),
-                        source=BlockSource(file=doc_name, page=page_num)
-                    )
-                    content_blocks.append(block)
-                    sequence += 1
-                
-                parsed_via_gemini = True
-            except Exception as e:
-                # Fallback to standard PyMuPDF parser in case of rate limits, network errors or credential issues
-                from app.core.logging import DuelensLogger
-                DuelensLogger.log("Parser", "ERROR", f"Multimodal PDF parsing failed: {str(e)}. Falling back to standard parser.", error=e)
-                
-        if not parsed_via_gemini:
-            for page_idx in range(pages_count):
-                page_num = page_idx + 1
-                page = doc[page_idx]
-                
-                # 1. Detect and extract tables to avoid duplicate text extraction
-                table_bboxes = []
-                try:
-                    tables = page.find_tables()
-                    for table in tables:
-                        table_bbox = table.bbox  # (x0, y0, x1, y1)
-                        table_bboxes.append(table_bbox)
-                        
-                        rows = table.extract()
-                        # Calculate words in table cells
-                        table_words = sum(len(str(cell).split()) for row in rows for cell in row if cell)
-                        words_count += table_words
-                        
-                        block_id = f"{document_type}_page_{page_num:02d}_table_{tables_count:03d}"
-                        
-                        block = ContentBlock(
-                            id=block_id,
-                            sequence=sequence,
-                            content_type="table",
-                            page=page_num,
-                            raw_text="",
-                            rows=rows,
-                            section=SectionInfo(),
-                            source=BlockSource(file=doc_name, page=page_num)
-                        )
-                        content_blocks.append(block)
-                        sequence += 1
-                        tables_count += 1
-                except Exception:
-                    # If table parsing fails or is unsupported, fallback and extract all as raw text
-                    pass
-                    
-                # 2. Extract layout-preserving text blocks
-                text_blocks = page.get_text("blocks")
-                for block_idx, tb in enumerate(text_blocks):
-                    x0, y0, x1, y1, text, block_no, block_type = tb
-                    
-                    # Skip image blocks
-                    if block_type != 0:
-                        continue
-                        
-                    # Skip if text is empty/whitespace
-                    raw_text = text.strip()
-                    if not raw_text:
-                        continue
-                        
-                    # Skip if text centroid lies inside table bounding boxes
-                    cx = (x0 + x1) / 2
-                    cy = (y0 + y1) / 2
-                    in_table = False
-                    for bbox in table_bboxes:
-                        tx0, ty0, tx1, ty1 = bbox
-                        if tx0 <= cx <= tx1 and ty0 <= cy <= ty1:
-                            in_table = True
-                            break
-                    if in_table:
-                        continue
-                        
-                    # Count words
-                    words_count += len(raw_text.split())
-                    
-                    block_id = f"{document_type}_page_{page_num:02d}_block_{block_idx:03d}"
-                    
-                    block = ContentBlock(
-                        id=block_id,
-                        sequence=sequence,
-                        content_type="text",
-                        page=page_num,
-                        raw_text=text,
-                        section=SectionInfo(),
-                        source=BlockSource(file=doc_name, page=page_num)
-                    )
-                    content_blocks.append(block)
-                    sequence += 1
-                    
-        doc.close()
-        
+        pages_count = len(doc_text.pages)
+
+        for p in doc_text.pages:
+            content_blocks.append(ContentBlock(
+                id=f"{document_type}_page_{p.page_number:02d}_visual_block",
+                sequence=sequence,
+                content_type="text",
+                page=p.page_number,
+                raw_text=p.text,
+                section=SectionInfo(),
+                source=BlockSource(file=doc_name, page=p.page_number)
+            ))
+            sequence += 1
+            words_count += len(p.text.split())
+
         statistics = DocumentStatistics(
             pages=pages_count,
             slides=0,
             sheets=0,
             blocks=len(content_blocks),
-            tables=tables_count,
+            tables=0,
             words=words_count
         )
         
@@ -186,7 +87,7 @@ class PDFParser(BaseParser):
             extension=".pdf",
             mime_type="application/pdf",
             created_at=created_at,
-            parser=ParserInfo(name="PyMuPDF", version=fitz.__version__),
+            parser=ParserInfo(name="Gemini-PDF-Extractor", version="1.0"),
             statistics=statistics
         )
         

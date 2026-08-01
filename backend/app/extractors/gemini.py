@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class GeminiCaller:
     @staticmethod
-    def call_gemini(prompt: str, system_instruction: str = BasePrompt.SYSTEM_INSTRUCTION, document_type: str = None) -> str:
+    def call_gemini(prompt: str, system_instruction: str = BasePrompt.SYSTEM_INSTRUCTION, document_type: str = None, company_id: str = None) -> str:
         """
         Calls the Gemini API using the official google-genai library.
         If the API key is not set, or is a placeholder/mock key, or the call fails,
@@ -43,7 +43,7 @@ class GeminiCaller:
         
         if is_mock:
             DuelensLogger.log("Gemini", "CACHE_HIT", f"Using mock extraction template response for document type: {doc_type}")
-            return GeminiCaller.get_mock_document_json(doc_type)
+            return GeminiCaller.get_mock_document_json(doc_type, company_id=company_id)
 
         model_name = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
         try:
@@ -66,16 +66,20 @@ class GeminiCaller:
             DuelensLogger.log("Gemini", "RESPONSE", f"Model {model_name} responded successfully")
             return response.text.strip()
         except Exception as e:
-            DuelensLogger.log("Gemini", "ERROR", f"Gemini API call failed: {str(e)}. Falling back to mock data.", error=e)
-            return GeminiCaller.get_mock_document_json(doc_type)
+            err_str = str(e)
+            if "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower() or "429" in err_str:
+                raise e
+            DuelensLogger.log("Gemini", "ERROR", f"Gemini API call failed: {err_str}. Falling back to mock data.", error=e)
+            return GeminiCaller.get_mock_document_json(doc_type, company_id=company_id)
 
     @staticmethod
-    def get_mock_document_json(doc_type: str) -> str:
+    def get_mock_document_json(doc_type: str, company_id: str = None) -> str:
         """
         Generates a valid, Pydantic-compliant populated mock JSON matching the template structure.
         """
         from app.extractors.template_loader import TemplateLoader
         import copy
+        import re
         
         try:
             template = copy.deepcopy(TemplateLoader.get_template(doc_type))
@@ -87,13 +91,37 @@ class GeminiCaller:
         if doc_type in ["mis", "mis_report", "monthly_mis_report"]:
             doc_type = "mis_report"
             
+        # Try to infer company name from uploads
+        inferred_company_name = "Zestful"
+        if company_id:
+            try:
+                from app.config import settings
+                uploads_dir = os.path.join(settings.UPLOAD_DIR, company_id)
+                if not os.path.exists(uploads_dir):
+                    uploads_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "uploads", company_id)
+                if os.path.exists(uploads_dir):
+                    files = os.listdir(uploads_dir)
+                    # Filter out hidden files
+                    files = [f for f in files if not f.startswith(".")]
+                    if files:
+                        first_file = files[0]
+                        # Extract the first word before any separator
+                        match = re.match(r"^([a-zA-Z0-9]+)", first_file)
+                        if match:
+                            inferred_company_name = match.group(1).title()
+            except Exception:
+                pass
+
+        company_name_val = inferred_company_name
+        company_legal_val = inferred_company_name + " Inc"
+
         # Populate template-specific mock values
         if doc_type == "pitch_deck":
             if "company_identity" in template:
                 template["company_identity"]["company_name"] = {
-                    "value": "Duelens Inc", "unit": None, "source_reference": "investor_deck.pptx",
+                    "value": company_name_val, "unit": None, "source_reference": "investor_deck.pptx",
                     "source_block_id": "pitch_deck_slide_01_block_01", "page": None, "slide": 1, "sheet": None,
-                    "extracted_text_snippet": "Duelens Inc - Pitch Presentation"
+                    "extracted_text_snippet": f"{company_name_val} - Pitch Presentation"
                 }
             if "traction" in template:
                 template["traction"]["revenue"] = {
@@ -169,4 +197,13 @@ class GeminiCaller:
                     "source_block_id": "projections_sheet_model_row_12", "page": None, "slide": None, "sheet": "Model",
                     "extracted_text_snippet": "Funding requirement: 2 Cr"
                 }
+
+        # Set simple metadata fields for all templates
+        if "document_metadata" in template and isinstance(template["document_metadata"], dict):
+            meta = template["document_metadata"]
+            if "company_legal_name" in meta:
+                meta["company_legal_name"] = company_legal_val
+            if "company_name" in meta:
+                meta["company_name"] = company_name_val
+
         return json.dumps(template)

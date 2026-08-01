@@ -104,10 +104,32 @@ class ReportAssembler:
 
         # 4. Readiness Summary
         narrative_sum = ai_narratives.get("narrative_summary", {})
+        
+        # Calculate sub-scores dynamically based on stats
+        missing_count = stats.get("missing_information", 0)
+        mismatch_count = stats.get("verified_mismatches", 0)
+        inconsistency_count = stats.get("unresolved_inconsistencies", 0)
+        
+        completeness = int(max(10, 100 - missing_count * 8))
+        consistency = int(max(10, 100 - (mismatch_count * 15 + inconsistency_count * 8)))
+        recency = 95
+        factuality = int(max(10, 100 - mismatch_count * 20))
+        
+        from app.readiness.schemas.readiness import ScoringBreakdown
+        breakdown = ScoringBreakdown(
+            completeness=completeness,
+            consistency=consistency,
+            recency=recency,
+            factuality=factuality
+        )
+        
         summary_model = ReadinessSummary(
             company_id=company_id,
+            company_name=scoring_results.get("company_name"),
             overall_status=scoring_results.get("overall_status"),
             readiness_score=scoring_results.get("readiness_score"),
+            overall_readiness_score=scoring_results.get("readiness_score"),
+            scoring_breakdown=breakdown,
             documents_reviewed=documents_reviewed,
             verified_matches=stats.get("matched", 0),
             verified_mismatches=stats.get("verified_mismatches", 0),

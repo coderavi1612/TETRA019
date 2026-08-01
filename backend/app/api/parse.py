@@ -46,9 +46,15 @@ async def parse_documents(company_id: str):
             detail=str(fnf)
         )
     except ValueError as ve:
+        err_msg = str(ve)
+        if "quota" in err_msg.lower() or "resource_exhausted" in err_msg.lower() or "429" in err_msg:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=err_msg
+            )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(ve)
+            detail=err_msg
         )
     except Exception as e:
         raise HTTPException(

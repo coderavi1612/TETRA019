@@ -7,6 +7,8 @@ from app.api.parse import router as parse_router
 from app.api.extract import router as extract_router
 from app.verification import ComparisonRegistry, verify_router
 from app.readiness.api.readiness import router as readiness_router
+from app.api.reason import router as reason_router
+from app.api.report import router as report_router
 from app.config import settings
 from app.extractors.specification_registry import SpecificationRegistry
 from app.extractors.template_loader import TemplateLoader
@@ -58,8 +60,10 @@ async def startup_event():
 app.include_router(upload_router, prefix="/api/v1/upload", tags=["Upload"])
 app.include_router(parse_router, prefix="/api/v1/parse", tags=["Parse"])
 app.include_router(extract_router, prefix="/api/v1/extract", tags=["Extract"])
+app.include_router(reason_router, prefix="/api/v1/reason", tags=["Reason"])
 app.include_router(verify_router, prefix="/api/v1/verify", tags=["Verify"])
 app.include_router(readiness_router, prefix="/api/v1/readiness", tags=["Readiness"])
+app.include_router(report_router, prefix="/api/v1/report", tags=["Report"])
 
 from app.api.pipeline import router as pipeline_router
 from app.api.companies import router as companies_router

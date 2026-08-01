@@ -33,10 +33,19 @@ class FollowUpQuestion(BaseModel):
     required_document: str
     expected_answer: str
 
+class ScoringBreakdown(BaseModel):
+    completeness: int
+    consistency: int
+    recency: int
+    factuality: int
+
 class ReadinessSummary(BaseModel):
     company_id: str
+    company_name: Optional[str] = None
     overall_status: str
     readiness_score: int
+    overall_readiness_score: Optional[int] = None
+    scoring_breakdown: Optional[ScoringBreakdown] = None
     documents_reviewed: List[str]
     verified_matches: int
     verified_mismatches: int

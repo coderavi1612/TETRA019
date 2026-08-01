@@ -180,7 +180,25 @@ class VerificationOrchestrator:
             missing_information=missing_information,
             unresolved_inconsistencies=unresolved_inconsistencies
         )
-        ReportBuilder.save_reports(verification_output_dir, summary, issues, evidence_map, graph_data)
+
+        from app.readiness.scoring import ReadinessScoringEngine
+        issues_dict_list = [issue.model_dump() for issue in issues]
+        stats_dict = summary.model_dump()
+        scoring = ReadinessScoringEngine.calculate_score_and_status(issues_dict_list, stats_dict)
+        docs_reviewed = [d.get("document_type") for d in documents_list if d.get("status") == "parsed"]
+
+        ReportBuilder.save_reports(
+            verification_output_dir,
+            company_id,
+            summary,
+            issues,
+            evidence_map,
+            graph_data,
+            matrix,
+            sorted_fields,
+            scoring,
+            docs_reviewed
+        )
 
         # 6. Save Manifest
         end_time = time.perf_counter()

@@ -75,7 +75,7 @@ class TestMilestone6Backend(unittest.TestCase):
 
         PipelineStatusManager.update_stage(job_id, "parse", "completed", duration_ms=250)
         status = PipelineStatusManager.get_status(job_id)
-        self.assertEqual(status["progress"], 25)  # 1/4 completed
+        self.assertEqual(status["progress"], 20)  # 1/5 completed
         
         # Verify stages list contains updated parse stage
         stages_map = {s["name"]: s for s in status["stages"]}
