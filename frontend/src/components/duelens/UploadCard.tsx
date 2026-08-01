@@ -13,11 +13,15 @@ import {
   ArrowRight,
   Sparkles,
   FileCode,
+  Loader2,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { MOCK_FILES } from "@/data/mock";
+import { MOCK_FILES, type Classified, type DocType } from "@/data/mock";
+import { useDuelensData } from "@/context/DuelensDataContext";
+import { apiFetch, getBaseApiUrl } from "@/lib/api";
+import { toast } from "sonner";
 
 type DocSlot = {
   id: string;
@@ -75,11 +79,17 @@ export function UploadCard({
   files,
   setFiles,
   onContinue,
+  onRowsClassified,
 }: {
   files: string[];
   setFiles: (f: string[]) => void;
   onContinue: () => void;
+  onRowsClassified: (rows: Classified[]) => void;
 }) {
+  const { companyId, setCompanyId, resetState } = useDuelensData();
+  const [uploading, setUploading] = useState(false);
+  const [uploadedFileObjects, setUploadedFileObjects] = useState<Record<string, File>>({});
+
   const [uploadedMap, setUploadedMap] = useState<Record<string, string>>(() => {
     const map: Record<string, string> = {};
     if (files.length > 0) {
@@ -90,8 +100,9 @@ export function UploadCard({
     return map;
   });
 
-  const handleUploadSlot = (slotId: string, fileName: string) => {
-    const updated = { ...uploadedMap, [slotId]: fileName };
+  const handleUploadSlot = (slotId: string, file: File) => {
+    setUploadedFileObjects(prev => ({ ...prev, [slotId]: file }));
+    const updated = { ...uploadedMap, [slotId]: file.name };
     setUploadedMap(updated);
     setFiles(Object.values(updated));
   };
@@ -101,15 +112,86 @@ export function UploadCard({
     delete updated[slotId];
     setUploadedMap(updated);
     setFiles(Object.values(updated));
+    setUploadedFileObjects(prev => {
+      const updatedObjs = { ...prev };
+      delete updatedObjs[slotId];
+      return updatedObjs;
+    });
   };
 
   const loadAllSamples = () => {
+    resetState();
+    setCompanyId("zestful");
     const map: Record<string, string> = {};
     DOC_SLOTS.forEach((slot) => {
       map[slot.id] = slot.sampleFile;
     });
     setUploadedMap(map);
     setFiles(MOCK_FILES);
+    setUploadedFileObjects({});
+  };
+
+  const handleContinue = async () => {
+    setUploading(true);
+    try {
+      let activeCompanyId = companyId;
+      const fileCount = Object.keys(uploadedFileObjects).length;
+
+      // Handle custom files upload
+      if (fileCount > 0) {
+        if (activeCompanyId === "zestful") {
+          const generatedId = `company_${Date.now()}`;
+          activeCompanyId = generatedId;
+          setCompanyId(generatedId);
+        }
+
+        const formData = new FormData();
+        formData.append("company_id", activeCompanyId);
+        Object.values(uploadedFileObjects).forEach((file) => {
+          formData.append("files", file);
+        });
+
+        const API_BASE_URL = getBaseApiUrl();
+        const uploadRes = await fetch(`${API_BASE_URL}/api/v1/parse/upload`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Failed to upload fundraising documents to backend.");
+        }
+      }
+
+      // Re-trigger parse flow
+      const parseRes = await apiFetch<{ files: Array<{ file_name: string; document_type: string; errors: string[] }> }>(`/api/v1/parse/${activeCompanyId}`, {
+        method: "POST",
+      });
+
+      const docTypeMapping: Record<string, string> = {
+        pitch_deck: "Pitch Deck",
+        historical_financial_statements: "Historical Financial Statements",
+        monthly_mis_report: "Monthly MIS",
+        mis_report: "Monthly MIS",
+        financial_projections: "Financial Projections",
+        cap_table: "Cap Table",
+      };
+
+      const mappedRows: Classified[] = parseRes.files.map((fileObj) => ({
+        file: fileObj.file_name,
+        type: (docTypeMapping[fileObj.document_type] || "Unknown") as DocType,
+        confidence: fileObj.errors.length === 0 ? 100 : 80,
+        status: fileObj.errors.length === 0 ? "Verified" : "Error",
+      }));
+
+      onRowsClassified(mappedRows);
+      onContinue();
+    } catch (err: unknown) {
+      console.error(err);
+      const errMsg = err instanceof Error ? err.message : "Failed to parse/classify uploaded documents.";
+      toast.error(errMsg);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const uploadedCount = Object.keys(uploadedMap).length;
@@ -139,6 +221,7 @@ export function UploadCard({
             variant="outline"
             size="sm"
             onClick={loadAllSamples}
+            disabled={uploading}
             className="rounded-full text-xs border-primary/30 text-primary hover:bg-primary-soft"
           >
             <Sparkles className="mr-1.5 size-3.5" />
@@ -223,6 +306,7 @@ export function UploadCard({
 
                     <button
                       onClick={() => handleRemoveSlot(slot.id)}
+                      disabled={uploading}
                       className="rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                       title="Remove file"
                     >
@@ -241,7 +325,7 @@ export function UploadCard({
                       accept={slot.formats.map((f) => `.${f.toLowerCase()}`).join(",")}
                       onChange={(e) => {
                         const f = e.target.files?.[0];
-                        if (f) handleUploadSlot(slot.id, f.name);
+                        if (f) handleUploadSlot(slot.id, f);
                       }}
                     />
                   </label>
@@ -276,12 +360,21 @@ export function UploadCard({
 
           <div className="mt-6 pt-4 border-t border-border">
             <Button
-              onClick={onContinue}
-              disabled={uploadedCount === 0}
+              onClick={handleContinue}
+              disabled={uploadedCount === 0 || uploading}
               className="w-full h-11 rounded-xl shadow-[var(--shadow-glow)] text-xs font-bold"
             >
-              Continue to Classification
-              <ArrowRight className="ml-1.5 size-4" />
+              {uploading ? (
+                <>
+                  <Loader2 className="mr-1.5 size-4 animate-spin" />
+                  Parsing Documents...
+                </>
+              ) : (
+                <>
+                  Continue to Classification
+                  <ArrowRight className="ml-1.5 size-4" />
+                </>
+              )}
             </Button>
           </div>
         </motion.div>

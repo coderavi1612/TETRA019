@@ -100,7 +100,7 @@ class ReadinessOrchestrator:
             from app.core.manifest import get_utc_now_iso
             prompt_manifest = {
                 "prompts": {name: {"hash": p_hash, "version": PROMPT_VERSION} for name, p_hash in prompt_hashes.items()},
-                "model": os.getenv("GEMINI_MODEL", "gemini-1.5-flash"),
+                "model": os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
                 "temperature": 0.1,
                 "generated_at": get_utc_now_iso()
             }
@@ -120,7 +120,7 @@ class ReadinessOrchestrator:
                 "registry_version": registry_version,
                 "prompt_version": PROMPT_VERSION,
                 "prompt_hashes": prompt_hashes,
-                "model": os.getenv("GEMINI_MODEL", "gemini-1.5-flash"),
+                "model": os.getenv("GEMINI_MODEL", "gemini-flash-latest"),
                 "temperature": 0.1,
                 "cache_hits": cache_hits,
                 "cache_misses": cache_misses,

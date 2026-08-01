@@ -9,7 +9,8 @@ import { ClassificationModal } from "@/components/duelens/ClassificationModal";
 import { ProcessingCard } from "@/components/duelens/ProcessingCard";
 import { Footer } from "@/components/duelens/Footer";
 import { Toaster } from "@/components/ui/sonner";
-import { CLASSIFICATION, type Classified } from "@/data/mock";
+import { Classified } from "@/data/mock";
+import { DuelensDataProvider, useDuelensData } from "@/context/DuelensDataContext";
 
 // Views
 import { ExtractionReviewView } from "@/components/duelens/views/ExtractionReviewView";
@@ -22,16 +23,28 @@ import { ReadinessSummaryView } from "@/components/duelens/views/ReadinessSummar
 type IntakeStage = "upload" | "classify" | "processing";
 
 export function AppPage() {
+  return (
+    <DuelensDataProvider>
+      <AppPageContent />
+    </DuelensDataProvider>
+  );
+}
+
+function AppPageContent() {
   const [currentTab, setCurrentTab] = useState<ViewTab>("intake");
   const [intakeStage, setIntakeStage] = useState<IntakeStage>("upload");
   const [files, setFiles] = useState<string[]>([]);
-  const [rows, setRows] = useState<Classified[]>(CLASSIFICATION);
+  const [rows, setRows] = useState<Classified[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedIssueId, setSelectedIssueId] = useState<string>("INV-204");
+  const [selectedIssueId, setSelectedIssueId] = useState<string>("");
 
-  const onDoneProcessing = useCallback(() => {
+  const { loadAllData, companyId } = useDuelensData();
+
+  const onDoneProcessing = useCallback(async () => {
+    // Re-fetch all backend generated files once pipeline processing finishes
+    await loadAllData(companyId);
     setCurrentTab("extraction");
-  }, []);
+  }, [companyId, loadAllData]);
 
   const handleSelectIssue = (issueId: string) => {
     setSelectedIssueId(issueId);
@@ -85,6 +98,7 @@ export function AppPage() {
                     if (f.length === 0) setIntakeStage("upload");
                   }}
                   onContinue={() => setIntakeStage("classify")}
+                  onRowsClassified={setRows}
                 />
               )}
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { AlertTriangle, AlertOctagon, HelpCircle, ArrowRight, CheckCircle, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DISCREPANCIES } from "@/data/mock";
+import { useDuelensData } from "@/context/DuelensDataContext";
 import { toast } from "sonner";
 
 export function ExceptionsDashboardView({
@@ -12,12 +12,21 @@ export function ExceptionsDashboardView({
 }: {
   onSelectIssue?: (issueId: string) => void;
 }) {
+  const { issues } = useDuelensData();
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const [resolvedIds, setResolvedIds] = useState<string[]>([]);
 
-  const filtered = DISCREPANCIES.filter((item) => {
+  // Map backend severities (CRITICAL/WARNING/NOTICE) to UI severities (High/Medium/Low)
+  const mapSeverity = (sev: string): "High" | "Medium" | "Low" => {
+    if (sev === "CRITICAL") return "High";
+    if (sev === "WARNING") return "Medium";
+    return "Low";
+  };
+
+  const filtered = issues.filter((issue) => {
+    const uiSev = mapSeverity(issue.severity);
     if (activeFilter === "All") return true;
-    return item.severity === activeFilter;
+    return uiSev === activeFilter;
   });
 
   const markResolved = (id: string) => {
@@ -38,7 +47,7 @@ export function ExceptionsDashboardView({
             Exceptions Dashboard
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            All flagged inconsistencies, financial deltas, and missing parameters across submitted pitch deck & MIS files.
+            All flagged inconsistencies, financial discrepancies, and structural anomalies verified across submitted documents.
           </p>
         </div>
 
@@ -56,7 +65,7 @@ export function ExceptionsDashboardView({
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {filter === "All" ? "All Exceptions (5)" : `${filter} Severity`}
+                {filter === "All" ? `All (${issues.length})` : `${filter} Severity`}
               </button>
             );
           })}
@@ -64,107 +73,135 @@ export function ExceptionsDashboardView({
       </div>
 
       {/* Discrepancy Cards Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((item, idx) => {
-          const isResolved = resolvedIds.includes(item.id);
-          return (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.08 }}
-              className={`surface flex flex-col justify-between p-6 transition-all ${
-                isResolved ? "opacity-60 border-emerald-500/30 bg-emerald-500/5" : ""
-              }`}
-            >
-              <div>
-                {/* Header */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
+      {filtered.length > 0 ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((item, idx) => {
+            const isResolved = resolvedIds.includes(item.id) || item.resolved;
+            const uiSeverity = mapSeverity(item.severity);
+
+            // Build comparison pairs from source values
+            const pairs = Object.entries(item.source_values || {}).map(([doc, val]) => ({
+              label: (doc || "").replace(".json", "").replace(/_/g, " "),
+              value: String(val),
+            }));
+
+            return (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.08 }}
+                className={`surface flex flex-col justify-between p-6 transition-all ${
+                  isResolved ? "opacity-60 border-emerald-500/30 bg-emerald-500/5" : ""
+                }`}
+              >
+                <div>
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-2.5">
+                      <span
+                        className={`flex size-9 items-center justify-center rounded-xl shrink-0 ${
+                          uiSeverity === "High"
+                            ? "bg-critical-soft text-critical"
+                            : uiSeverity === "Medium"
+                              ? "bg-warning-soft text-warning"
+                              : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {uiSeverity === "High" ? (
+                          <AlertOctagon className="size-4" />
+                        ) : uiSeverity === "Medium" ? (
+                          <AlertTriangle className="size-4" />
+                        ) : (
+                          <HelpCircle className="size-4" />
+                        )}
+                      </span>
+                      <div>
+                        <p className="text-xs font-bold text-muted-foreground">{item.id}</p>
+                        <h3 className="font-semibold text-foreground text-sm leading-snug capitalize">
+                          {(item.field_path || "").split(".").pop()?.replace(/_/g, " ")}
+                        </h3>
+                      </div>
+                    </div>
+
                     <span
-                      className={`flex size-9 items-center justify-center rounded-xl ${
-                        item.severity === "High"
+                      className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                        uiSeverity === "High"
                           ? "bg-critical-soft text-critical"
-                          : item.severity === "Medium"
+                          : uiSeverity === "Medium"
                             ? "bg-warning-soft text-warning"
                             : "bg-muted text-muted-foreground"
                       }`}
                     >
-                      {item.severity === "High" ? (
-                        <AlertOctagon className="size-4" />
-                      ) : item.severity === "Medium" ? (
-                        <AlertTriangle className="size-4" />
-                      ) : (
-                        <HelpCircle className="size-4" />
-                      )}
+                      {uiSeverity}
                     </span>
-                    <div>
-                      <p className="text-xs font-bold text-muted-foreground">{item.id}</p>
-                      <h3 className="font-semibold text-foreground">{item.title}</h3>
-                    </div>
                   </div>
 
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${
-                      item.severity === "High"
-                        ? "bg-critical-soft text-critical"
-                        : item.severity === "Medium"
-                          ? "bg-warning-soft text-warning"
-                          : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {item.severity}
-                  </span>
+                  <p className="mt-2 text-xs font-medium text-muted-foreground font-mono truncate">
+                    {item.field_path}
+                  </p>
+
+                  {/* Values comparison */}
+                  {pairs.length > 0 && (
+                    <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1">
+                      {pairs.map((p, i) => (
+                        <div key={p.label} className="flex items-center gap-1.5 shrink-0">
+                          <div className="rounded-xl border border-border bg-muted/40 p-2.5">
+                            <p className="text-[9px] font-semibold text-muted-foreground uppercase leading-none mb-1">
+                              {p.label}
+                            </p>
+                            <p className="text-xs font-bold text-foreground tabular-nums">
+                              {p.value}
+                            </p>
+                          </div>
+                          {i < pairs.length - 1 && (
+                            <ArrowRight className="size-3 text-muted-foreground" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Note */}
+                  <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
+                    {item.description}
+                  </p>
                 </div>
 
-                <p className="mt-2 text-xs font-medium text-muted-foreground">{item.kind}</p>
+                {/* Actions */}
+                <div className="mt-6 pt-4 border-t border-border flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => onSelectIssue?.(item.id)}
+                    className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                  >
+                    View Details
+                    <ArrowRight className="size-3" />
+                  </button>
 
-                {/* Values comparison */}
-                {item.pairs.length > 0 && (
-                  <div className="mt-4 flex items-center gap-2">
-                    {item.pairs.map((p, i) => (
-                      <div key={p.label} className="flex flex-1 items-center gap-2">
-                        <div className="flex-1 rounded-xl border border-border bg-muted/40 p-2.5">
-                          <p className="text-[10px] text-muted-foreground">{p.label}</p>
-                          <p className="text-sm font-bold text-foreground tabular-nums">{p.value}</p>
-                        </div>
-                        {i < item.pairs.length - 1 && (
-                          <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Note */}
-                <p className="mt-4 text-xs text-muted-foreground leading-relaxed">{item.note}</p>
-              </div>
-
-              {/* Actions */}
-              <div className="mt-6 pt-4 border-t border-border flex items-center justify-between gap-2">
-                <button
-                  onClick={() => onSelectIssue?.(item.id)}
-                  className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
-                >
-                  View Details
-                  <ArrowRight className="size-3" />
-                </button>
-
-                <Button
-                  size="sm"
-                  variant={isResolved ? "outline" : "secondary"}
-                  onClick={() => markResolved(item.id)}
-                  disabled={isResolved}
-                  className="rounded-lg text-xs"
-                >
-                  <CheckCircle className="mr-1 size-3.5" />
-                  {isResolved ? "Resolved" : "Mark Resolved"}
-                </Button>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+                  <Button
+                    size="sm"
+                    variant={isResolved ? "outline" : "secondary"}
+                    onClick={() => markResolved(item.id)}
+                    disabled={isResolved}
+                    className="rounded-lg text-xs"
+                  >
+                    <CheckCircle className="mr-1 size-3.5" />
+                    {isResolved ? "Resolved" : "Mark Resolved"}
+                  </Button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="surface flex flex-col items-center justify-center py-24 text-center text-muted-foreground">
+          <ShieldAlert className="size-10 text-muted-foreground/35 mb-2.5 animate-pulse" />
+          <p className="text-sm font-semibold">No active mismatches found.</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Your data-room documents are completely reconciled.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

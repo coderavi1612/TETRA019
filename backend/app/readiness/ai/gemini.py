@@ -16,12 +16,16 @@ class GeminiReadinessCaller:
         """
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         
-        is_mock = not api_key or api_key.startswith("AQ.") or "dummy" in api_key.lower()
+        is_mock = (
+            not api_key or 
+            api_key == "AIzaSyBTR-BXbSPun3rOHl1q59hSBVqSlKChBCE" or
+            any(kw in api_key.lower() for kw in ["dummy", "mock", "test", "fake", "temp"])
+        )
         if is_mock:
             DuelensLogger.log("Gemini", "CACHE_HIT", f"Using mock response for prompt: {prompt_name}")
             return GeminiReadinessCaller.get_mock_response(prompt_name)
             
-        model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+        model_name = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
         try:
             client = genai.Client(api_key=api_key)
             

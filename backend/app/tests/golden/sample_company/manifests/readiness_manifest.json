@@ -5,7 +5,7 @@
   "registry_version": "b9983152a950dd63",
   "prompt_version": "v1",
   "prompt_hashes": {},
-  "model": "gemini-1.5-flash",
+  "model": "gemini-2.5-flash",
   "temperature": 0.1,
   "cache_hits": 8,
   "cache_misses": 0,

@@ -2,23 +2,82 @@
 
 import { useState } from "react";
 import { motion } from "motion/react";
-import { AlertTriangle, FileSearch, ArrowRight, Lightbulb, Check, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { EXTRACTION_ROWS } from "@/data/mock";
-import { toast } from "sonner";
+import { FileSearch, Sparkles, Search, ChevronDown, ChevronRight } from "lucide-react";
+import { useDuelensData } from "@/context/DuelensDataContext";
+
+// Custom Collapsible JSON Tree Node
+function JSONNode({ name, value, searchTerm }: { name: string; value: unknown; searchTerm: string }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const isObject = typeof value === "object" && value !== null;
+
+  if (isObject) {
+    const objVal = value as Record<string, unknown>;
+    const keys = Object.keys(objVal);
+    const isArray = Array.isArray(value);
+    const summary = isArray ? `Array(${keys.length})` : `Object { ${keys.length} keys }`;
+
+    return (
+      <div className="pl-4 font-mono text-xs my-1 select-none">
+        <span
+          onClick={() => setCollapsed(!collapsed)}
+          className="inline-flex items-center gap-1 cursor-pointer font-bold text-primary hover:text-primary/80 transition-colors"
+        >
+          {collapsed ? <ChevronRight className="size-3" /> : <ChevronDown className="size-3" />}
+          <span className="text-foreground">{name}</span>:{" "}
+          <span className="text-muted-foreground text-[10px] font-semibold bg-muted px-1.5 py-0.5 rounded">
+            {summary}
+          </span>
+        </span>
+        {!collapsed && (
+          <div className="border-l border-border pl-3 mt-1 ml-1.5 space-y-1">
+            {keys.map((k) => (
+              <JSONNode key={k} name={k} value={objVal[k]} searchTerm={searchTerm} />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  } else {
+    const strVal = String(value);
+    const matches =
+      searchTerm &&
+      (name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        strVal.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    return (
+      <div
+        className={`pl-6 font-mono text-xs my-0.5 transition-colors rounded px-2 py-0.5 ${
+          matches ? "bg-primary-soft border-l-2 border-primary font-semibold" : ""
+        }`}
+      >
+        <span className="text-muted-foreground font-semibold">{name}</span>:{" "}
+        <span className={typeof value === "number" || typeof value === "boolean" ? "text-indigo-500 font-bold" : "text-verified font-medium"}>
+          {typeof value === "string" ? `"${value}"` : strVal}
+        </span>
+      </div>
+    );
+  }
+}
 
 export function ExtractionReviewView() {
-  const [rows] = useState(EXTRACTION_ROWS);
-  const [insightApplied, setInsightApplied] = useState(false);
+  const { extractedDocs, metadata } = useDuelensData();
+  const [selectedDoc, setSelectedDoc] = useState<string>("pitch_deck");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const applyMIS = () => {
-    setInsightApplied(true);
-    toast.success("Applied MIS value (112.5%) globally for Growth Rate across documents.");
+  const docMapping = {
+    pitch_deck: "Pitch Deck",
+    cap_table: "Cap Table",
+    mis: "Monthly MIS",
+    financial_projections: "Financial Projections",
+    historical_financial_statements: "Historical Financial Statements",
   };
+
+  const documentKeys = Object.keys(docMapping);
+  const currentJSON = (extractedDocs?.[selectedDoc] || {}) as Record<string, unknown>;
 
   return (
     <div className="space-y-8">
-      {/* Header & Stats */}
+      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
@@ -29,218 +88,93 @@ export function ExtractionReviewView() {
             Extraction Review
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Cross-referencing auto-extracted values across primary source documents.
+            Cross-referencing auto-extracted metrics and parameters parsed from core documents.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="surface flex flex-col px-4 py-2.5">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Avg. Confidence
+              Analyzed Documents
             </span>
-            <span className="text-xl font-extrabold text-primary tabular-nums">94.2%</span>
+            <span className="text-xl font-extrabold text-primary tabular-nums">
+              {metadata?.documents || 0} Total
+            </span>
           </div>
           <div className="surface flex flex-col px-4 py-2.5">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Unresolved Flags
+              Total Artifacts
             </span>
-            <span className="text-xl font-extrabold text-warning tabular-nums">3</span>
+            <span className="text-xl font-extrabold text-verified tabular-nums">
+              {metadata?.artifacts || 0} Saved
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Main Extraction Table */}
+      {/* Selector Tabs & Search */}
+      <div className="surface p-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-1.5 bg-muted/40 p-1.5 rounded-2xl border border-border">
+          {documentKeys.map((key) => {
+            const active = selectedDoc === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setSelectedDoc(key)}
+                className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
+                  active
+                    ? "bg-primary text-primary-foreground shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {docMapping[key as keyof typeof docMapping]}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="relative shrink-0">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search metric keys or values..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="h-10 w-full sm:w-64 rounded-xl border border-border bg-background pl-9 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+      </div>
+
+      {/* JSON Viewer Console */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="surface overflow-hidden"
+        className="surface p-6 font-mono border-t-4 border-t-primary min-h-[320px] bg-linear-to-b from-card to-muted/20"
       >
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left text-sm">
-            <thead className="bg-muted/70 text-xs uppercase text-muted-foreground">
-              <tr>
-                <th className="px-6 py-4 font-semibold">KPI / Financial Metric</th>
-                <th className="px-5 py-4 font-semibold">Pitch Deck</th>
-                <th className="px-5 py-4 font-semibold">Financial Statements</th>
-                <th className="px-5 py-4 font-semibold">Monthly MIS</th>
-                <th className="px-5 py-4 font-semibold">Projections</th>
-                <th className="px-5 py-4 font-semibold">Cap Table</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {rows.map((row) => (
-                <tr key={row.kpi} className="transition-colors hover:bg-muted/30">
-                  <td className="px-6 py-4 font-semibold text-foreground">{row.kpi}</td>
-
-                  {/* Pitch Deck */}
-                  <td className="px-5 py-4">
-                    {row.pitchDeck.val !== "—" ? (
-                      <div className="flex flex-col gap-1">
-                        <span className="font-mono text-sm font-medium">{row.pitchDeck.val}</span>
-                        <span className="inline-flex w-fit items-center gap-1 rounded bg-verified-soft px-1.5 py-0.5 text-[10px] font-bold text-verified">
-                          {row.pitchDeck.conf}%
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground/50">—</span>
-                    )}
-                  </td>
-
-                  {/* Financial Statements */}
-                  <td className="px-5 py-4">
-                    {row.financials.val !== "—" ? (
-                      <div className="flex flex-col gap-1">
-                        <span className="font-mono text-sm font-medium">{row.financials.val}</span>
-                        <div className="flex items-center gap-1">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold ${
-                              row.financials.warning
-                                ? "bg-warning-soft text-warning"
-                                : "bg-verified-soft text-verified"
-                            }`}
-                          >
-                            {row.financials.conf}%
-                            {row.financials.warning && <AlertTriangle className="size-3" />}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground/50">—</span>
-                    )}
-                  </td>
-
-                  {/* Monthly MIS */}
-                  <td className="px-5 py-4">
-                    {row.mis.val !== "—" ? (
-                      <div className="flex flex-col gap-1">
-                        <span className="font-mono text-sm font-medium">
-                          {row.kpi === "Growth Rate (YoY)" && insightApplied ? "112.5% (Applied)" : row.mis.val}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold ${
-                              row.mis.warning
-                                ? "bg-warning-soft text-warning"
-                                : "bg-verified-soft text-verified"
-                            }`}
-                          >
-                            {row.mis.conf}%
-                            {row.mis.warning && <AlertTriangle className="size-3" />}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground/50">—</span>
-                    )}
-                  </td>
-
-                  {/* Projections */}
-                  <td className="px-5 py-4">
-                    {row.projections.val !== "—" ? (
-                      <div className="flex flex-col gap-1">
-                        <span className="font-mono text-sm font-medium">{row.projections.val}</span>
-                        <span className="inline-flex w-fit items-center gap-1 rounded bg-verified-soft px-1.5 py-0.5 text-[10px] font-bold text-verified">
-                          {row.projections.conf}%
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground/50">—</span>
-                    )}
-                  </td>
-
-                  {/* Cap Table */}
-                  <td className="px-5 py-4">
-                    {row.capTable.val !== "—" ? (
-                      <div className="flex flex-col gap-1">
-                        <span className="font-mono text-sm font-medium">{row.capTable.val}</span>
-                        <div className="flex items-center gap-1">
-                          <span
-                            className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold ${
-                              row.capTable.warning
-                                ? "bg-warning-soft text-warning"
-                                : "bg-verified-soft text-verified"
-                            }`}
-                          >
-                            {row.capTable.conf}%
-                            {row.capTable.warning && <AlertTriangle className="size-3" />}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground/50">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
+          <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1.5">
+            <Sparkles className="size-3.5 text-primary" />
+            Dynamic Extraction Data Console
+          </span>
+          <span className="text-[10px] font-bold text-primary bg-primary-soft px-2 py-0.5 rounded">
+            JSON format
+          </span>
         </div>
+
+        {Object.keys(currentJSON).length > 0 ? (
+          <div className="space-y-1 overflow-x-auto max-h-[600px] pr-2">
+            {Object.keys(currentJSON).map((k) => (
+              <JSONNode key={k} name={k} value={currentJSON[k]} searchTerm={searchTerm} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
+            <FileSearch className="size-10 text-muted-foreground/35 mb-2.5 animate-pulse" />
+            <p className="text-sm font-semibold">No extracted data found for this document slot.</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Please ensure the pipeline completed parsing successfully.</p>
+          </div>
+        )}
       </motion.div>
-
-      {/* Analyst Insight & Progress Grid */}
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* AI Insight Card */}
-        <div className="surface md:col-span-2 flex flex-col justify-between border-l-4 border-l-primary p-6">
-          <div className="flex items-start gap-4">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
-              <Lightbulb className="size-5" />
-            </span>
-            <div>
-              <h3 className="font-bold text-foreground">AI Analyst Insight</h3>
-              <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-                The extraction engine identified a variance in <span className="font-semibold text-foreground">Growth Rate (YoY)</span> between the{" "}
-                <span className="font-semibold text-foreground">Pitch Deck (115%)</span> and <span className="font-semibold text-foreground">Monthly MIS (112.5%)</span>.
-                The MIS value is derived from raw transactional ledger entries, whereas the Pitch Deck appears to be an annualized Q4 estimate.
-              </p>
-            </div>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center gap-3 pl-15">
-            <Button
-              size="sm"
-              onClick={applyMIS}
-              disabled={insightApplied}
-              className="rounded-lg shadow-[var(--shadow-glow)]"
-            >
-              <Check className="mr-1.5 size-4" />
-              {insightApplied ? "MIS Value Applied Globally" : "Apply MIS Value Globally"}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => toast.info("Discrepancy flagged for manual controller review.")}
-              className="rounded-lg"
-            >
-              <X className="mr-1.5 size-4" />
-              Ignore Discrepancy
-            </Button>
-          </div>
-        </div>
-
-        {/* Status Card */}
-        <div className="surface flex flex-col justify-between p-6 bg-linear-to-br from-card to-primary-soft/30">
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-primary">
-              Extraction Progress
-            </span>
-            <h3 className="mt-2 text-3xl font-extrabold text-foreground">78% Reviewed</h3>
-            <p className="mt-1 text-xs text-muted-foreground">4 financial metrics remaining for manual audit.</p>
-          </div>
-
-          <div className="mt-6 space-y-3">
-            <div className="h-2.5 w-full overflow-hidden rounded-full bg-border">
-              <div className="h-full rounded-full bg-primary" style={{ width: "78%" }} />
-            </div>
-
-            <div className="flex items-center justify-between text-xs font-medium">
-              <span className="text-muted-foreground">Status: In Audit</span>
-              <span className="flex items-center gap-1 font-semibold text-primary">
-                View next metric
-                <ArrowRight className="size-3.5" />
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

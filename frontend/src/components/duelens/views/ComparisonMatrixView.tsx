@@ -10,11 +10,10 @@ import {
   Clock,
   EyeOff,
   Search,
-  ArrowRight,
   Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MATRIX_FULL_DATA } from "@/data/mock";
+import { useDuelensData } from "@/context/DuelensDataContext";
 import { toast } from "sonner";
 
 export function ComparisonMatrixView({
@@ -22,13 +21,31 @@ export function ComparisonMatrixView({
 }: {
   onSelectIssue?: (issueId: string) => void;
 }) {
+  const { matrixData, issues } = useDuelensData();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("High Severity");
-  const [dismissAlert, setDismissAlert] = useState(false);
 
-  const filteredData = MATRIX_FULL_DATA.filter((row) =>
-    row.metric.toLowerCase().includes(searchTerm.toLowerCase())
+  // Extract dynamically headers from values keys in matrixData rows
+  const documentKeys = Array.from(
+    new Set(
+      matrixData?.fields?.flatMap((row) => Object.keys(row.values || {})) || []
+    )
   );
+
+  const filteredData = (matrixData?.fields || []).filter((row) =>
+    row.field_path.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Sort logic
+  if (sortBy === "High Severity") {
+    filteredData.sort((a, b) => (a.is_consistent === b.is_consistent ? 0 : a.is_consistent ? 1 : -1));
+  } else if (sortBy === "Alpha (A-Z)") {
+    filteredData.sort((a, b) => a.field_path.localeCompare(b.field_path));
+  }
+
+  const mismatchCount = (matrixData?.fields || []).filter((f) => !f.is_consistent).length;
+  const totalCompared = (matrixData?.fields || []).length;
 
   return (
     <div className="space-y-8 relative pb-20">
@@ -43,12 +60,12 @@ export function ComparisonMatrixView({
             Cross-Document Comparison Matrix
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Side-by-side reconciliation across Trial Balance, Bank Statements, GL Extracts, Tax Docs, and Audit Checklists.
+            Side-by-side reconciliation and verification of metric values extracted across Trial Balance, Projections, and MIS reports.
           </p>
         </div>
 
         <Button
-          onClick={() => toast.success("Exporting Integrity Matrix CSV Report...")}
+          onClick={() => toast.success("Exporting Integrity Matrix Report...")}
           className="rounded-xl shadow-[var(--shadow-glow)]"
         >
           <Download className="mr-2 size-4" />
@@ -66,7 +83,7 @@ export function ComparisonMatrixView({
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Total Metrics
             </p>
-            <p className="text-lg font-bold text-foreground">12 Compared</p>
+            <p className="text-lg font-bold text-foreground">{totalCompared} Compared</p>
           </div>
         </div>
 
@@ -78,7 +95,7 @@ export function ComparisonMatrixView({
             <p className="text-xs font-semibold uppercase tracking-wider text-critical">
               Mismatches
             </p>
-            <p className="text-lg font-bold text-foreground">3 Verified</p>
+            <p className="text-lg font-bold text-foreground">{mismatchCount} Verified</p>
           </div>
         </div>
 
@@ -88,9 +105,9 @@ export function ComparisonMatrixView({
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-warning">
-              Unresolved
+              Unresolved Flags
             </p>
-            <p className="text-lg font-bold text-foreground">2 Flagged</p>
+            <p className="text-lg font-bold text-foreground">{issues.length} Active</p>
           </div>
         </div>
 
@@ -100,9 +117,11 @@ export function ComparisonMatrixView({
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Missing Data
+              Coverage
             </p>
-            <p className="text-lg font-bold text-foreground">1 Data Point</p>
+            <p className="text-lg font-bold text-foreground">
+              {documentKeys.length} Doc Types
+            </p>
           </div>
         </div>
       </div>
@@ -112,9 +131,6 @@ export function ComparisonMatrixView({
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
             <span className="size-2.5 rounded-full bg-verified" /> Consistent
-          </div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-            <span className="size-2.5 rounded-full bg-warning" /> Unresolved
           </div>
           <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
             <span className="size-2.5 rounded-full bg-critical" /> Mismatch
@@ -146,7 +162,6 @@ export function ComparisonMatrixView({
             >
               <option>High Severity</option>
               <option>Alpha (A-Z)</option>
-              <option>Confidence Score</option>
             </select>
           </div>
         </div>
@@ -163,120 +178,70 @@ export function ComparisonMatrixView({
             <thead className="bg-muted/70 text-xs uppercase text-muted-foreground">
               <tr>
                 <th className="px-6 py-4 font-semibold">Metric / Data Point</th>
-                <th className="px-4 py-4 text-center font-semibold">Trial Balance (v2.1)</th>
-                <th className="px-4 py-4 text-center font-semibold">Bank Statement (Mar)</th>
-                <th className="px-4 py-4 text-center font-semibold">GL Extract (Sales)</th>
-                <th className="px-4 py-4 text-center font-semibold">Tax Provision Doc</th>
-                <th className="px-4 py-4 text-center font-semibold">Audit Checklist</th>
+                {documentKeys.map((docKey) => (
+                  <th key={docKey} className="px-4 py-4 text-center font-semibold capitalize">
+                    {(docKey || "").replace(".json", "").replace(/_/g, " ")}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filteredData.map((row) => (
-                <tr key={row.metric} className="transition-colors hover:bg-muted/30">
-                  <td className="px-6 py-4 font-semibold text-foreground">{row.metric}</td>
-
-                  {/* Trial Balance */}
-                  <td className="px-4 py-4 text-center">
-                    <span className="inline-block rounded-lg bg-verified-soft px-3 py-1.5 font-mono text-xs font-semibold text-verified border border-verified/20">
-                      {row.trialBalance}
-                    </span>
+                <tr key={row.field_path} className="transition-colors hover:bg-muted/30">
+                  <td className="px-6 py-4">
+                    <p className="font-semibold text-foreground capitalize">
+                      {(row.field_path || "").split(".").pop()?.replace(/_/g, " ")}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground font-mono">{row.field_path}</p>
                   </td>
 
-                  {/* Bank Statement */}
-                  <td className="px-4 py-4 text-center">
-                    {row.highlight ? (
-                      <button
-                        onClick={() => onSelectIssue?.("INV-204")}
-                        className="group inline-flex cursor-pointer items-center justify-center rounded-lg bg-critical-soft px-3 py-1.5 font-mono text-xs font-bold text-critical border-2 border-critical shadow-xs animate-pulse hover:scale-105 transition-transform"
-                      >
-                        {row.bankStatement}
-                      </button>
-                    ) : (
-                      <span className="inline-block rounded-lg bg-verified-soft px-3 py-1.5 font-mono text-xs font-semibold text-verified border border-verified/20">
-                        {row.bankStatement}
-                      </span>
-                    )}
-                  </td>
+                  {documentKeys.map((docKey) => {
+                    const cell = row.values[docKey];
+                    if (!cell) {
+                      return (
+                        <td key={docKey} className="px-4 py-4 text-center">
+                          <span className="inline-block rounded-lg bg-muted px-3 py-1.5 font-mono text-xs font-medium text-muted-foreground italic border border-border">
+                            —
+                          </span>
+                        </td>
+                      );
+                    }
 
-                  {/* GL Extract */}
-                  <td className="px-4 py-4 text-center">
-                    {row.glExtract === "Missing" ? (
-                      <span className="inline-block rounded-lg bg-muted px-3 py-1.5 font-mono text-xs font-medium text-muted-foreground italic border border-border">
-                        Missing
-                      </span>
-                    ) : row.glExtract === "418" ? (
-                      <span className="inline-block rounded-lg bg-critical-soft px-3 py-1.5 font-mono text-xs font-bold text-critical border border-critical/30">
-                        {row.glExtract}
-                      </span>
-                    ) : (
-                      <span className="inline-block rounded-lg bg-verified-soft px-3 py-1.5 font-mono text-xs font-semibold text-verified border border-verified/20">
-                        {row.glExtract}
-                      </span>
-                    )}
-                  </td>
-
-                  {/* Tax Provision Doc */}
-                  <td className="px-4 py-4 text-center">
-                    {row.taxDoc === "$1,190,000.00" ? (
-                      <span className="inline-block rounded-lg bg-critical-soft px-3 py-1.5 font-mono text-xs font-bold text-critical border border-critical/30">
-                        {row.taxDoc}
-                      </span>
-                    ) : (
-                      <span className="inline-block rounded-lg bg-verified-soft px-3 py-1.5 font-mono text-xs font-semibold text-verified border border-verified/20">
-                        {row.taxDoc}
-                      </span>
-                    )}
-                  </td>
-
-                  {/* Audit Checklist */}
-                  <td className="px-4 py-4 text-center">
-                    <span className="inline-block rounded-lg bg-verified-soft px-3 py-1.5 font-mono text-xs font-semibold text-verified border border-verified/20">
-                      {row.auditChecklist}
-                    </span>
-                  </td>
+                    const isMismatch = !row.is_consistent;
+                    
+                    return (
+                      <td key={docKey} className="px-4 py-4 text-center">
+                        {isMismatch ? (
+                          <button
+                            onClick={() => {
+                              // Match this field path to a flagged issue
+                              const matchingIssue = issues.find(
+                                (issue) => issue.field_path === row.field_path
+                              );
+                              if (matchingIssue && onSelectIssue) {
+                                onSelectIssue(matchingIssue.id);
+                              } else {
+                                toast.info("Check Exceptions Dashboard for details on this mismatch.");
+                              }
+                            }}
+                            className="group inline-flex cursor-pointer items-center justify-center rounded-lg bg-critical-soft px-3 py-1.5 font-mono text-xs font-bold text-critical border-2 border-critical shadow-xs animate-pulse hover:scale-105 transition-transform"
+                          >
+                            {String(cell.value)}
+                          </button>
+                        ) : (
+                          <span className="inline-block rounded-lg bg-verified-soft px-3 py-1.5 font-mono text-xs font-semibold text-verified border border-verified/20">
+                            {String(cell.value)}
+                          </span>
+                        )}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </motion.div>
-
-      {/* Floating Context Panel for Critical Mismatch */}
-      {!dismissAlert && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="fixed bottom-6 right-6 z-50 max-w-sm rounded-2xl border border-critical/30 bg-card p-5 shadow-2xl backdrop-blur-xl"
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <AlertOctagon className="size-5 text-critical" />
-              <h4 className="text-xs font-extrabold uppercase tracking-wider text-critical">
-                Critical Mismatch Detected
-              </h4>
-            </div>
-            <button
-              onClick={() => setDismissAlert(true)}
-              className="text-muted-foreground hover:text-foreground text-xs"
-            >
-              ✕
-            </button>
-          </div>
-          <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed">
-            Revenue delta detected between Bank Statement ($4,248,500.00) and Trial Balance ($4,250,000.00). Transaction log indicates 3 missing entries from the GL.
-          </p>
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <Button
-              size="sm"
-              onClick={() => onSelectIssue?.("INV-204")}
-              className="w-full rounded-xl bg-critical text-destructive-foreground hover:bg-critical/90 shadow-sm text-xs"
-            >
-              Inspect Issue #INV-204
-              <ArrowRight className="ml-1.5 size-3.5" />
-            </Button>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 }

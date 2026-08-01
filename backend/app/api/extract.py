@@ -66,6 +66,7 @@ async def get_all_extracted_documents(company_id: str):
         "historical_financial_statements.json": "historical_financial_statements",
         "monthly_mis_report.json": "mis",
         "mis_report.json": "mis",
+        "mis.json": "mis",
         "financial_projections.json": "financial_projections",
         "cap_table.json": "cap_table"
     }

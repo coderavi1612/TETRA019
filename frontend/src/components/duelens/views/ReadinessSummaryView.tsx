@@ -3,49 +3,48 @@
 import { motion } from "motion/react";
 import { Award, CheckCircle2, AlertTriangle, ShieldCheck, Download, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDuelensData } from "@/context/DuelensDataContext";
+import { getBaseApiUrl } from "@/lib/api/client";
 import { toast } from "sonner";
-import jsPDF from "jspdf";
 
 export function ReadinessSummaryView() {
-  const downloadPDF = () => {
-    try {
-      const doc = new jsPDF();
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(18);
-      doc.text("Duelens - Investor Readiness Memo", 20, 25);
+  const { readinessResults, companyId, metadata } = useDuelensData();
 
-      doc.setFontSize(11);
-      doc.setFont("helvetica", "normal");
-      doc.text("Company: TechNova Pvt Ltd", 20, 35);
-      doc.text("Readiness Score: 88% (Investor Ready)", 20, 42);
-      doc.text("Audit Status: Verified with 3 Conditional Notes", 20, 49);
+  const summary = readinessResults?.summary;
+  const executive = readinessResults?.executive;
 
-      doc.line(20, 55, 190, 55);
+  const score = summary?.overall_readiness_score || 0;
+  
+  const completeness = summary?.scoring_breakdown?.completeness || 0;
+  const consistency = summary?.scoring_breakdown?.consistency || 0;
+  const recency = summary?.scoring_breakdown?.recency || 0;
+  const factuality = summary?.scoring_breakdown?.factuality || 0;
 
-      doc.setFont("helvetica", "bold");
-      doc.text("Executive Summary:", 20, 65);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        "Financial data across historical statements and MIS shows strong 92% integrity.\n" +
-          "Minor variances in customer count (+8 in MIS) and growth rate rounding in pitch deck\n" +
-          "have been reconciled. Projections assume 140% growth which requires monitoring.",
-        20,
-        73
-      );
+  // Find dynamic PDF IC Memo file download URL
+  const pdfDownload = readinessResults?.downloads?.find(
+    (d) => d.name.toLowerCase().includes("readiness") && d.type === "pdf"
+  ) || readinessResults?.downloads?.[0];
 
-      doc.setFont("helvetica", "bold");
-      doc.text("Metric Breakdown:", 20, 95);
-      doc.setFont("helvetica", "normal");
-      doc.text("1. Financial Statement Integrity: 92/100", 25, 105);
-      doc.text("2. Cap Table & Ownership Health: 85/100", 25, 112);
-      doc.text("3. Projections Realism & Burn: 80/100", 25, 119);
-
-      doc.save("TechNova_Investor_Readiness_Memo.pdf");
-      toast.success("Downloaded Investor Readiness Memo (PDF).");
-    } catch {
-      toast.error("Failed to generate PDF report.");
+  const handleDownloadPDF = () => {
+    if (pdfDownload) {
+      const fullUrl = `${getBaseApiUrl()}${pdfDownload.url}`;
+      window.open(fullUrl, "_blank");
+      toast.success("Streaming Investor Readiness Memo PDF from backend...");
+    } else {
+      toast.error("Readiness PDF report download not found.");
     }
   };
+
+  const keyPositives = summary?.key_positives || [
+    "High extraction confidence across financials",
+    "Completed cap table post-ESOP pool reservations",
+    "Consistent naming conventions across data-room files"
+  ];
+
+  const criticalGaps = summary?.critical_gaps || [
+    "Slight variance in customer count due to date snapshots",
+    "YoY growth rate roundings in pitch deck"
+  ];
 
   return (
     <div className="space-y-8">
@@ -64,7 +63,7 @@ export function ReadinessSummaryView() {
           </p>
         </div>
 
-        <Button onClick={downloadPDF} className="rounded-xl shadow-[var(--shadow-glow)]">
+        <Button onClick={handleDownloadPDF} className="rounded-xl shadow-[var(--shadow-glow)]">
           <Download className="mr-2 size-4" />
           Download IC Memo (PDF)
         </Button>
@@ -84,7 +83,7 @@ export function ReadinessSummaryView() {
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Company
             </p>
-            <h3 className="text-xl font-bold text-foreground">TechNova Pvt Ltd</h3>
+            <h3 className="text-xl font-bold text-foreground capitalize">{companyId}</h3>
             <p className="text-xs text-muted-foreground">Series A Due Diligence</p>
           </div>
         </div>
@@ -97,8 +96,10 @@ export function ReadinessSummaryView() {
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Readiness Score
             </p>
-            <h3 className="text-3xl font-extrabold text-primary tabular-nums">88%</h3>
-            <p className="text-xs font-semibold text-verified">Investor Ready (Conditional)</p>
+            <h3 className="text-3xl font-extrabold text-primary tabular-nums">{score}%</h3>
+            <p className="text-xs font-semibold text-verified">
+              {score >= 85 ? "Investor Ready" : "Conditional Audit Required"}
+            </p>
           </div>
         </div>
 
@@ -107,19 +108,34 @@ export function ReadinessSummaryView() {
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Audited Documents
             </p>
-            <p className="text-lg font-bold text-foreground">5 of 5 Verified</p>
-            <span className="text-xs text-muted-foreground">2 Mismatches Resolved</span>
+            <p className="text-lg font-bold text-foreground">
+              {metadata?.documents || 0} of {metadata?.documents || 0} Verified
+            </p>
+            <span className="text-xs text-muted-foreground">Reconciled side-by-side</span>
           </div>
         </div>
       </motion.div>
 
+      {/* Narrative Card */}
+      {executive && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="surface p-6 bg-muted/20 border-l-4 border-l-primary"
+        >
+          <h3 className="font-bold text-foreground text-sm mb-2">Executive Summary Verdict</h3>
+          <p className="text-xs text-muted-foreground leading-relaxed">{executive.overall_readiness}</p>
+          <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{executive.company_overview}</p>
+        </motion.div>
+      )}
+
       {/* 4 Dimension Gauge Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: "Financial Integrity", score: 92, tone: "verified", desc: "High reconciliation across MIS & Bank statements." },
-          { label: "Cap Table Health", score: 85, tone: "verified", desc: "ESOP pool variance verified." },
-          { label: "Projections Realism", score: 80, tone: "warning", desc: "Requires ARR growth monitoring." },
-          { label: "Compliance & Tax", score: 95, tone: "verified", desc: "No legal contingencies found." },
+          { label: "Financial Integrity", score: completeness, tone: completeness >= 85 ? "verified" : "warning", desc: "Reconciliation completeness across statements." },
+          { label: "Cap Table Health", score: recency, tone: recency >= 85 ? "verified" : "warning", desc: "Ownership validation timelines check." },
+          { label: "Projections Realism", score: factuality, tone: factuality >= 85 ? "verified" : "warning", desc: "Validation against historical run rates." },
+          { label: "Compliance & Consistency", score: consistency, tone: consistency >= 85 ? "verified" : "warning", desc: "Cross-document naming consistency." },
         ].map((item, idx) => (
           <motion.div
             key={item.label}
@@ -162,24 +178,12 @@ export function ReadinessSummaryView() {
             <h3 className="font-bold text-foreground text-base">Key Positive Highlights</h3>
           </div>
           <ul className="space-y-3 text-xs text-muted-foreground">
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 size-1.5 rounded-full bg-verified shrink-0" />
-              <span>
-                <strong className="text-foreground">Revenue Accuracy:</strong> Audited financial statements match Trial Balance ($12.38M) with 99% extraction confidence.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 size-1.5 rounded-full bg-verified shrink-0" />
-              <span>
-                <strong className="text-foreground">Cash Runway:</strong> Verified cash balance of $4.21M provides 18+ months runway at current burn rate.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 size-1.5 rounded-full bg-verified shrink-0" />
-              <span>
-                <strong className="text-foreground">Clean Cap Table:</strong> Founder equity is 44.82% post-ESOP option pool reservation.
-              </span>
-            </li>
+            {keyPositives.map((pos, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="mt-0.5 size-1.5 rounded-full bg-verified shrink-0" />
+                <span className="text-foreground font-medium">{pos}</span>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -190,18 +194,12 @@ export function ReadinessSummaryView() {
             <h3 className="font-bold text-foreground text-base">Conditional Audit Notes</h3>
           </div>
           <ul className="space-y-3 text-xs text-muted-foreground">
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 size-1.5 rounded-full bg-warning shrink-0" />
-              <span>
-                <strong className="text-foreground">Pitch Deck Rounding:</strong> Growth rate presented as 115% vs 112.5% actual monthly MIS compound rate.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="mt-0.5 size-1.5 rounded-full bg-warning shrink-0" />
-              <span>
-                <strong className="text-foreground">Customer Count Delta:</strong> Pitch deck snapshot (420) precedes late-month onboarded accounts (428).
-              </span>
-            </li>
+            {criticalGaps.map((gap, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="mt-0.5 size-1.5 rounded-full bg-warning shrink-0" />
+                <span className="text-foreground font-medium">{gap}</span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

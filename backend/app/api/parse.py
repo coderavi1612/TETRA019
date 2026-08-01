@@ -1,8 +1,17 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Form, File, UploadFile
+from typing import List
 from app.schemas.parse import ParseResponse, ParseResultFile
 from app.parsers.orchestrator import DocumentParserOrchestrator
+from app.api.upload import upload_documents, UploadSuccessResponse
 
 router = APIRouter()
+
+@router.post("/upload", response_model=UploadSuccessResponse)
+async def parse_upload_alias(
+    company_id: str = Form(..., description="Unique identifier for the company"),
+    files: List[UploadFile] = File(..., description="Fundraising documents to upload")
+):
+    return await upload_documents(company_id=company_id, files=files)
 
 @router.post("/{company_id}", response_model=ParseResponse)
 async def parse_documents(company_id: str):

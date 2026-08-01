@@ -4,16 +4,22 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { HelpCircle, Sparkles, Copy, Download, Check, MessageSquareText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { QUESTIONS } from "@/data/mock";
+import { useDuelensData } from "@/context/DuelensDataContext";
 import { toast } from "sonner";
 
 export function FollowUpQuestionsView() {
+  const { readinessResults } = useDuelensData();
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [draftAnswers, setDraftAnswers] = useState<Record<string, string>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const filtered = QUESTIONS.filter(
-    (q) => categoryFilter === "All" || q.category === categoryFilter
+  const questions = readinessResults?.questions || [];
+
+  // Map category filter to target documents dynamically
+  const categories = ["All", ...Array.from(new Set(questions.map((q) => q.target_document)))];
+
+  const filtered = questions.filter(
+    (q) => categoryFilter === "All" || q.target_document === categoryFilter
   );
 
   const handleCopy = (id: string, text: string) => {
@@ -23,8 +29,9 @@ export function FollowUpQuestionsView() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const generateAIAnswer = (id: string, defaultAnswer: string) => {
-    setDraftAnswers((prev) => ({ ...prev, [id]: defaultAnswer }));
+  const generateAIAnswer = (id: string, metric: string, doc: string) => {
+    const draftText = `Reconciling the metric value for '${metric}' in '${doc}' against other fundraising materials. The delta is due to a timeline difference in billing calculations, and the updated figures will be reflected in the next data-room patch.`;
+    setDraftAnswers((prev) => ({ ...prev, [id]: draftText }));
     toast.success("AI generated a recommended founder response draft.");
   };
 
@@ -46,7 +53,7 @@ export function FollowUpQuestionsView() {
         </div>
 
         <Button
-          onClick={() => toast.success("Exported Due Diligence Question Sheet (PDF).")}
+          onClick={() => toast.success("Exported Due Diligence Question Sheet.")}
           className="rounded-xl shadow-[var(--shadow-glow)]"
         >
           <Download className="mr-2 size-4" />
@@ -55,108 +62,125 @@ export function FollowUpQuestionsView() {
       </div>
 
       {/* Category Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-muted/40 p-1.5">
-        {["All", "Financial Performance", "Cap Table & Equity", "Operational Metrics"].map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setCategoryFilter(cat)}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all ${
-              categoryFilter === cat
-                ? "bg-primary text-primary-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      {categories.length > 1 && (
+        <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-muted/40 p-1.5 w-fit">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold capitalize transition-all ${
+                categoryFilter === cat
+                  ? "bg-primary text-primary-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {cat === "All" ? "All" : (cat || "").replace(/_/g, " ").replace(".json", "")}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Questions List */}
-      <div className="space-y-6">
-        {filtered.map((item, idx) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.08 }}
-            className="surface p-6 space-y-4"
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex items-start gap-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
-                  <HelpCircle className="size-5" />
-                </span>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-muted-foreground">{item.id}</span>
-                    <span className="rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                      {item.category}
-                    </span>
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                        item.priority === "Urgent"
-                          ? "bg-critical-soft text-critical"
-                          : item.priority === "High"
-                            ? "bg-warning-soft text-warning"
-                            : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {item.priority} Priority
-                    </span>
-                  </div>
-                  <h3 className="mt-1.5 text-base font-bold text-foreground leading-snug">
-                    {item.question}
-                  </h3>
-                </div>
-              </div>
+      {filtered.length > 0 ? (
+        <div className="space-y-6">
+          {filtered.map((item, idx) => {
+            const formattedCategory = (item.target_document || "").replace(/_/g, " ").replace(".json", "");
+            const uiPriority = item.priority === "HIGH" ? "Urgent" : item.priority === "MEDIUM" ? "High" : "Low";
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleCopy(item.id, item.question)}
-                className="shrink-0 rounded-xl text-xs"
+            return (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.08 }}
+                className="surface p-6 space-y-4"
               >
-                {copiedId === item.id ? <Check className="mr-1.5 size-3.5 text-verified" /> : <Copy className="mr-1.5 size-3.5" />}
-                {copiedId === item.id ? "Copied" : "Copy"}
-              </Button>
-            </div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex items-start gap-3">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                      <HelpCircle className="size-5" />
+                    </span>
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-bold text-muted-foreground">{item.id}</span>
+                        <span className="rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-semibold text-muted-foreground capitalize">
+                          {formattedCategory}
+                        </span>
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
+                            item.priority === "HIGH"
+                              ? "bg-critical-soft text-critical"
+                              : item.priority === "MEDIUM"
+                                ? "bg-warning-soft text-warning"
+                                : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {uiPriority} Priority
+                        </span>
+                      </div>
+                      <h3 className="mt-1.5 text-base font-bold text-foreground leading-snug">
+                        {item.question}
+                      </h3>
+                    </div>
+                  </div>
 
-            {/* Context snippet */}
-            <div className="rounded-xl border border-border bg-muted/40 p-3.5 text-xs text-muted-foreground leading-relaxed">
-              <span className="font-semibold text-foreground">Flagged Context: </span>
-              {item.context}
-            </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleCopy(item.id, item.question)}
+                    className="shrink-0 rounded-xl text-xs"
+                  >
+                    {copiedId === item.id ? <Check className="mr-1.5 size-3.5 text-verified" /> : <Copy className="mr-1.5 size-3.5" />}
+                    {copiedId === item.id ? "Copied" : "Copy"}
+                  </Button>
+                </div>
 
-            {/* Draft Response Box */}
-            <div className="space-y-2 pt-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-foreground flex items-center gap-1.5">
-                  <Sparkles className="size-3.5 text-primary" />
-                  Management / Founder Answer Draft:
-                </span>
-                <button
-                  onClick={() => generateAIAnswer(item.id, item.suggestedAnswer)}
-                  className="font-bold text-primary hover:underline text-xs"
-                >
-                  Generate Draft Answer
-                </button>
-              </div>
+                {/* Context snippet */}
+                <div className="rounded-xl border border-border bg-muted/40 p-3.5 text-xs text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Flagged Context / Rationale: </span>
+                  {item.rationale}
+                </div>
 
-              <div className="relative">
-                <textarea
-                  rows={2}
-                  value={draftAnswers[item.id] ?? item.suggestedAnswer}
-                  onChange={(e) =>
-                    setDraftAnswers({ ...draftAnswers, [item.id]: e.target.value })
-                  }
-                  placeholder="Draft response..."
-                  className="w-full rounded-xl border border-border bg-background p-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
-                />
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+                {/* Draft Response Box */}
+                <div className="space-y-2 pt-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-foreground flex items-center gap-1.5">
+                      <Sparkles className="size-3.5 text-primary" />
+                      Management / Founder Answer Draft:
+                    </span>
+                    <button
+                      onClick={() => generateAIAnswer(item.id, item.target_metric, item.target_document)}
+                      className="font-bold text-primary hover:underline text-xs"
+                    >
+                      Generate Draft Answer
+                    </button>
+                  </div>
+
+                  <div className="relative">
+                    <textarea
+                      rows={2}
+                      value={draftAnswers[item.id] ?? ""}
+                      onChange={(e) =>
+                        setDraftAnswers({ ...draftAnswers, [item.id]: e.target.value })
+                      }
+                      placeholder="Click 'Generate Draft Answer' to auto-populate recommended response..."
+                      className="w-full rounded-xl border border-border bg-background p-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="surface flex flex-col items-center justify-center py-24 text-center text-muted-foreground">
+          <MessageSquareText className="size-10 text-muted-foreground/35 mb-2.5 animate-pulse" />
+          <p className="text-sm font-semibold">No follow-up questions generated.</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Your data-room documents did not generate any critical due diligence follow-up questions.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
