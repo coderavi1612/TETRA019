@@ -65,36 +65,16 @@ class PromptBuilder:
         registry_json = json.dumps(registry_info, indent=2)
         doc_prompt = cls.get_document_prompt(document_type)
         
-        system_instruction = (
-            "You are a strict fact extraction engine. Your task is to extract facts from the provided document chunks "
-            "and fill the values in the JSON template according to the Specification Registry. Do NOT perform any calculations, "
-            "comparisons, or reconciliations. Populate only values that explicitly exist in the text."
-        )
+        system_instruction = BasePrompt.SYSTEM_INSTRUCTION
         
         output_rules = (
-            "CRITICAL EXTRACTION RULES:\n"
-            "1. You are extracting facts.\n"
-            "2. You are NOT analysing.\n"
-            "3. You are NOT comparing.\n"
-            "4. You are NOT calculating.\n"
-            "5. You are NOT estimating.\n"
-            "6. You are NOT reconciling.\n"
-            "7. You are NOT deriving.\n"
-            "8. You are NOT annualizing.\n"
-            "9. You are NOT inferring.\n"
-            "10. If information does not explicitly exist in the chunk, leave the field or the 'value' field as null.\n"
-            "11. Never invent data.\n"
-            "12. Never remove, rename, or delete any keys or sections from the template.\n"
-            "13. Fill the simple metadata fields (with raw text strings) and metric object keys inside the template. The template's keys and hierarchy must be preserved exactly.\n"
-            "14. Preserve unknown placeholder fields exactly as they appear in the template. Never remove optional sections.\n"
-            "15. You must preserve the exact ordering of arrays defined in the JSON template.\n"
-            "16. Never reorder sections or fields. Never omit placeholders.\n"
-            "17. For every metric field you extract (where key contains 'value'), you MUST populate:\n"
-            "    - 'source_reference': the filename containing the fact.\n"
-            "    - 'source_block_id': the exact block ID containing the fact.\n"
-            "    - 'page' / 'slide' / 'sheet' / 'extracted_text_snippet' if available.\n"
-            "18. Standardize metric values to their full numeric representation (e.g., convert '1.8 Cr' or '1.8 Crore' to '18000000', '10 Lakhs' to '1000000', '5 Mn' or '5 Million' to '5000000'). Do not write textual abbreviations directly in numeric value fields. Keep the original textual expression in 'extracted_text_snippet' for reference.\n"
-            "19. Output ONLY valid JSON. No markdown code fences (like ```json), no extra text. Just raw JSON."
+            "CRITICAL OUTPUT RULES:\n"
+            "1. Output ONLY valid JSON. No markdown code fences (like ```json), no extra text. Just raw JSON.\n"
+            "2. Fill the simple metadata fields (with raw text strings) and metric object keys inside the template.\n"
+            "3. The template's keys, hierarchy, and array ordering must be preserved exactly.\n"
+            "4. Standardize metric values to their full numeric representation "
+            "(e.g., convert '1.8 Cr' to '18000000', '10 Lakhs' to '1000000'). "
+            "Keep the original textual expression in 'extracted_text_snippet' for reference."
         )
         
         prompt = (

@@ -1,0 +1,24 @@
+{
+  "strengths": [
+    "The funding ask of INR 2 Cr is internally consistent across both the pitch deck and financial projections (RECON-006).",
+    "Founder ownership data is clearly defined and consistent within the cap table (RECON-007)."
+  ],
+  "risks": [
+    "Critical revenue discrepancy identified: Pitch deck claims INR 1.2 Cr for FY2025, while audited financial statements report only INR 90 L (RECON-001).",
+    "Absence of cash balance, burn rate, and runway data across all documents prevents assessment of financial viability (RECON-002, RECON-003, RECON-009).",
+    "Lack of growth metrics and customer count data limits the ability to verify traction claims (RECON-004, RECON-005).",
+    "Missing ESOP pool details and convertible instrument data creates uncertainty regarding fully diluted ownership (RECON-008, RECON-010).",
+    "Inconsistent reporting periods across documents complicate point-in-time performance analysis (RECON-012)."
+  ],
+  "next_steps": [
+    "Request formal reconciliation of FY2025 revenue figures between the pitch deck and audited financial statements (RECON-001).",
+    "Request a comprehensive MIS report including cash balance, monthly burn rate, runway, and EBITDA margins (RECON-002, RECON-003, RECON-009).",
+    "Request updated cap table including ESOP pool size and details on all outstanding convertible instruments (RECON-008, RECON-010).",
+    "Clarify MoM growth rates and current customer count to validate traction (RECON-004, RECON-005).",
+    "Request a standardized reporting template to align all future documents to a consistent fiscal period (RECON-012)."
+  ],
+  "executive_summary": "The documentation provided exhibits significant internal inconsistencies and critical data gaps. While the funding ask and founder ownership are aligned, the fundamental financial performance metrics\u2014specifically revenue, cash position, and burn rate\u2014lack the necessary verification and cross-document alignment required for a standard due diligence process. The current state of documentation is insufficient for a reliable audit.",
+  "document_completeness_notes": [
+    "MIS report completeness is at 60%, which is at the threshold of concern for mandatory field coverage."
+  ]
+}

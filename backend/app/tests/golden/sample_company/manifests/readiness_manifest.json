@@ -4,19 +4,22 @@
   "comparison_version": "1.0",
   "registry_version": "1.0",
   "prompt_version": "v1",
-  "prompt_hashes": {},
+  "prompt_hashes": {
+    "executive": "14943fa10b3745469242f16b779f1e88a33fe46b06c1bec029de08557ed5b795",
+    "narrative": "b450e351103d10d6b525a9cbb6013a4fa5877a7970edd4c655f770e81f1d5906"
+  },
   "model": "gemini-3.1-flash-lite",
   "temperature": 0.1,
-  "cache_hits": 8,
-  "cache_misses": 0,
+  "cache_hits": 6,
+  "cache_misses": 2,
   "processing_times": {
     "total_time_ms": 0
   },
   "report_hashes": {
     "inconsistency_report.json": "3ba4fb190a72b7df5863c3a950373e7f4d82c0ccb2d6b952ff1feb3f2fe1dbe1",
     "follow_up_questions.json": "96faaebf6949bbf99da7ce5de1e42d08d730e45ac6d8b72de967f529355ed65d",
-    "executive_summary.json": "f1c2df44948289348a0e0cd2b4da59f4a04111180ba10aafd3b39349e051995e",
-    "readiness_summary.json": "ce01e8e0a482c29a21651e0afe158fc0d6d208f9ff043c42d79a9edb46587c0f"
+    "executive_summary.json": "7f6d8a9446acfc630c6511fed03a0b3aced6a0f569a20b267c9bb0fdcad72979",
+    "readiness_summary.json": "2d3f784fbbef557565149e74bda94347cd225c6e9c477f95449c2c7d16532e1a"
   },
   "generated_files": [
     "readiness_summary.json",

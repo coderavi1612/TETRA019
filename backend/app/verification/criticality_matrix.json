@@ -1,0 +1,222 @@
+{
+  "pitch_deck": {
+    "mandatory": [
+      "company_identity.company_name",
+      "fundraising_ask.amount_raising",
+      "fundraising_ask.instrument_type",
+      "fundraising_ask.valuation",
+      "fundraising_ask.use_of_funds",
+      "fundraising_ask.expected_runway_after_raise",
+      "traction.revenue",
+      "traction.monthly_revenue",
+      "traction.monthly_growth_rate",
+      "traction.customer_count",
+      "financial_highlights.revenue",
+      "financial_highlights.cash_balance",
+      "financial_highlights.burn_rate",
+      "financial_highlights.runway",
+      "market_opportunity.market_size_tam",
+      "market_opportunity.market_size_sam",
+      "market_opportunity.market_size_som",
+      "team.founders",
+      "financial_projection_summary.forecast_revenue",
+      "financial_projection_summary.forecast_growth_rate"
+    ],
+    "optional": [
+      "problem_and_solution.*",
+      "business_model.*",
+      "go_to_market.*",
+      "competition.*",
+      "historical_performance.period_summaries",
+      "traction.retention_rate",
+      "traction.churn_rate",
+      "traction.sales_pipeline_or_order_volume",
+      "traction.partnerships_or_notable_wins",
+      "team.key_leadership",
+      "team.advisors",
+      "fundraising_ask.current_round_stage",
+      "fundraising_ask.existing_investors",
+      "financial_projection_summary.major_assumptions",
+      "financial_projection_summary.expansion_milestones"
+    ],
+    "negligible": [
+      "company_identity.tagline",
+      "company_identity.website",
+      "closing_contact.*",
+      "document_metadata.presenter_designation",
+      "document_metadata.total_slides"
+    ]
+  },
+  "historical_financial_statements": {
+    "mandatory": [
+      "income_statement.revenue_total",
+      "income_statement.cogs_total",
+      "income_statement.gross_profit",
+      "income_statement.gross_margin_percent",
+      "income_statement.opex_total",
+      "income_statement.ebitda",
+      "income_statement.net_profit_after_tax",
+      "balance_sheet.total_assets",
+      "balance_sheet.total_liabilities",
+      "balance_sheet.equity.total_shareholders_equity",
+      "balance_sheet.equity.share_capital",
+      "balance_sheet.current_assets.cash_and_bank_balance",
+      "balance_sheet.total_current_assets",
+      "balance_sheet.total_current_liabilities",
+      "balance_sheet.non_current_liabilities.long_term_loans",
+      "balance_sheet.non_current_liabilities.convertible_notes",
+      "cash_flow_statement.cash_movement_summary.*",
+      "cash_flow_statement.net_cash_from_operations",
+      "cash_flow_statement.net_cash_from_investing",
+      "cash_flow_statement.net_cash_from_financing",
+      "document_metadata.is_audited",
+      "document_metadata.period_label",
+      "document_metadata.period_start_date",
+      "document_metadata.period_end_date"
+    ],
+    "optional": [
+      "income_statement.revenue_by_product_line",
+      "income_statement.revenue_by_geography",
+      "income_statement.revenue_by_customer_segment",
+      "income_statement.cogs_raw_material",
+      "income_statement.cogs_manufacturing_production",
+      "income_statement.interest_income",
+      "income_statement.interest_expense",
+      "income_statement.forex_gain_loss",
+      "income_statement.exceptional_items",
+      "income_statement.tax_expense",
+      "income_statement.deferred_tax",
+      "cash_flow_statement.working_capital_changes",
+      "cash_flow_statement.investing_activities",
+      "period_notes.related_party_transactions",
+      "period_notes.auditor_remarks",
+      "period_notes.restatements_or_corrections"
+    ],
+    "negligible": [
+      "balance_sheet.capital_work_in_progress",
+      "balance_sheet.deferred_tax_assets",
+      "balance_sheet.deferred_tax_liabilities",
+      "balance_sheet.treasury_shares",
+      "balance_sheet.customer_advances",
+      "balance_sheet.prepaid_expenses",
+      "income_statement.cogs_packaging",
+      "income_statement.cogs_shipping_logistics",
+      "income_statement.cogs_hosting_infra",
+      "income_statement.cogs_fulfillment",
+      "income_statement.cogs_merchant_fees"
+    ]
+  },
+  "mis": {
+    "mandatory": [
+      "profit_and_loss_summary.revenue_total",
+      "profit_and_loss_summary.ebitda",
+      "profit_and_loss_summary.net_profit_or_loss",
+      "profit_and_loss_summary.gross_margin_percent",
+      "cash_and_liquidity.closing_cash_balance",
+      "cash_and_liquidity.net_monthly_burn",
+      "cash_and_liquidity.runway_months",
+      "revenue_and_growth_metrics.mrr_or_arr",
+      "revenue_and_growth_metrics.mom_growth_percent",
+      "revenue_and_growth_metrics.active_customer_count",
+      "headcount.total_headcount_month_end",
+      "document_metadata.mis_period"
+    ],
+    "optional": [
+      "profit_and_loss_summary.revenue_recurring",
+      "profit_and_loss_summary.revenue_non_recurring",
+      "revenue_and_growth_metrics.yoy_growth_percent",
+      "revenue_and_growth_metrics.revenue_mix_by_*",
+      "revenue_and_growth_metrics.new_customers_added",
+      "revenue_and_growth_metrics.customers_churned",
+      "unit_economics.*",
+      "balance_sheet_snapshot.accounts_receivable",
+      "balance_sheet_snapshot.accounts_payable",
+      "budget_vs_actual_variance.*"
+    ],
+    "negligible": [
+      "optional_value_add.*",
+      "bank_balances_by_account",
+      "restricted_or_escrow_cash",
+      "debt_covenant_status",
+      "headcount_by_department",
+      "prepared_by",
+      "approved_by"
+    ]
+  },
+  "financial_projections": {
+    "mandatory": [
+      "projection_periods[].revenue_build.revenue_forecast_total",
+      "projection_periods[].cost_and_margin_build.ebitda",
+      "projection_periods[].cost_and_margin_build.net_profit_or_loss",
+      "projection_periods[].cost_and_margin_build.is_breakeven_period",
+      "projection_periods[].cash_flow_and_funding.projected_burn",
+      "projection_periods[].cash_flow_and_funding.projected_cash_balance",
+      "projection_periods[].cash_flow_and_funding.projected_runway",
+      "funding_ask.funding_ask_amount",
+      "breakeven.breakeven_period",
+      "scenario.scenario_name",
+      "scenario.scenario_type",
+      "period_label"
+    ],
+    "optional": [
+      "projection_periods[].revenue_build.revenue_by_product_line_segment",
+      "projection_periods[].revenue_build.arpu",
+      "projection_periods[].revenue_build.churn_assumption",
+      "projection_periods[].revenue_build.customer_count_projected",
+      "projection_periods[].cost_and_margin_build.cogs",
+      "projection_periods[].cost_and_margin_build.gross_margin_percent",
+      "headcount_plan.*",
+      "scenario_framing.*",
+      "assumptions_register[]"
+    ],
+    "negligible": [
+      "optional_value_add.*",
+      "expansion_revenue"
+    ]
+  },
+  "cap_table": {
+    "mandatory": [
+      "cap_table_summary.*",
+      "shareholders[].holder_name",
+      "shareholders[].number_of_shares_or_equivalent",
+      "shareholders[].ownership_percentage",
+      "founders[].founder_name",
+      "founders[].equity_split_percentage",
+      "investors[].investor_name",
+      "investors[].amount_invested",
+      "investors[].ownership_percentage",
+      "esop.total_pool_size",
+      "esop.pool_percentage",
+      "funding_history[].round_name",
+      "funding_history[].amount_raised",
+      "funding_history[].pre_money_valuation",
+      "funding_history[].post_money_valuation",
+      "funding_history[].date_of_closing",
+      "convertible_instruments.safes[]",
+      "convertible_instruments.convertible_notes[]",
+      "document_metadata.company_legal_name",
+      "document_metadata.reporting_date"
+    ],
+    "optional": [
+      "voting_rights_structure",
+      "preference_structure",
+      "share_classes_and_instruments[]",
+      "founders[].vesting_terms",
+      "dilution_and_change_history[]",
+      "warrants[]",
+      "ownership_calculations.fully_diluted_ownership.*",
+      "investors[].investor_type",
+      "investors[].round_invested_in"
+    ],
+    "negligible": [
+      "jurisdiction_of_incorporation",
+      "prepared_by",
+      "reviewed_by",
+      "table_basis",
+      "founders[].pledged_or_restricted_shares",
+      "founders[].transfers_between_founders",
+      "cap_table_notes.pool_refresh_assumptions",
+      "cap_table_notes.transfer_restrictions"
+    ]
+  }
+}

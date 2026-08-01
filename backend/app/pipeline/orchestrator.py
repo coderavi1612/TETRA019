@@ -13,12 +13,13 @@ from app.config import settings
 from app.parsers.orchestrator import DocumentParserOrchestrator
 from app.extractors.extractor import FactExtractor
 from app.verification.orchestrator import VerificationOrchestrator
+from app.verification.reconciliation import ReconciliationEngine
 from app.readiness.orchestrator import ReadinessOrchestrator
 
 class PipelineStage(str, Enum):
     PARSE = "PARSE"
     EXTRACT = "EXTRACT"
-    REASON = "REASON"
+    RECONCILE = "RECONCILE"
     VERIFY = "VERIFY"
     READINESS = "READINESS"
     FULL = "FULL"
@@ -124,12 +125,12 @@ class DuelensPipeline:
             stages_to_run = [PipelineStage.PARSE]
         elif stage == PipelineStage.EXTRACT:
             stages_to_run = [PipelineStage.PARSE, PipelineStage.EXTRACT]
-        elif stage == PipelineStage.REASON:
-            stages_to_run = [PipelineStage.PARSE, PipelineStage.EXTRACT, PipelineStage.REASON]
+        elif stage == PipelineStage.RECONCILE:
+            stages_to_run = [PipelineStage.PARSE, PipelineStage.EXTRACT, PipelineStage.RECONCILE]
         elif stage == PipelineStage.VERIFY:
-            stages_to_run = [PipelineStage.PARSE, PipelineStage.EXTRACT, PipelineStage.REASON, PipelineStage.VERIFY]
+            stages_to_run = [PipelineStage.PARSE, PipelineStage.EXTRACT, PipelineStage.RECONCILE, PipelineStage.VERIFY]
         else: # READINESS or FULL
-            stages_to_run = [PipelineStage.PARSE, PipelineStage.EXTRACT, PipelineStage.REASON, PipelineStage.VERIFY, PipelineStage.READINESS]
+            stages_to_run = [PipelineStage.PARSE, PipelineStage.EXTRACT, PipelineStage.RECONCILE, PipelineStage.VERIFY, PipelineStage.READINESS]
 
         results = {}
         errors = []
@@ -151,10 +152,13 @@ class DuelensPipeline:
                         elif s == PipelineStage.EXTRACT:
                             _, stats = FactExtractor.extract_company_facts(clean_company_id)
                             results["extract"] = stats
-                        elif s == PipelineStage.REASON:
-                            from app.reasoning.orchestrator import ReasoningOrchestrator
-                            res = ReasoningOrchestrator.run_reasoning(clean_company_id)
-                            results["reason"] = res
+                        elif s == PipelineStage.RECONCILE:
+                            checkpoints = ReconciliationEngine.run(clean_company_id)
+                            results["reconcile"] = {
+                                "company_id": clean_company_id,
+                                "checkpoints_count": len(checkpoints),
+                                "status": "completed"
+                            }
                         elif s == PipelineStage.VERIFY:
                             res = VerificationOrchestrator.run_verification(clean_company_id)
                             results["verify"] = res

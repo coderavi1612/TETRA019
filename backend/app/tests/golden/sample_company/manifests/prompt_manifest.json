@@ -1,6 +1,15 @@
 {
-  "prompts": {},
+  "prompts": {
+    "executive": {
+      "hash": "14943fa10b3745469242f16b779f1e88a33fe46b06c1bec029de08557ed5b795",
+      "version": "v1"
+    },
+    "narrative": {
+      "hash": "b450e351103d10d6b525a9cbb6013a4fa5877a7970edd4c655f770e81f1d5906",
+      "version": "v1"
+    }
+  },
   "model": "gemini-3.1-flash-lite",
   "temperature": 0.1,
-  "generated_at": "2026-08-01T22:48:49.146055Z"
+  "generated_at": "2026-08-01T23:17:17.882353Z"
 }

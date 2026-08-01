@@ -54,7 +54,9 @@ class GeminiReadinessCaller:
         if prompt_name == "impact":
             return json.dumps({
                 "business_impact": "Discrepancy in metrics indicates potential accounting variances or revision errors, impacting VC validation.",
-                "recommended_action": "Reconcile the financial statements values with MIS inputs."
+                "diligence_blocking": True,
+                "recommended_action": "Reconcile the financial statements values with MIS inputs.",
+                "estimated_resolution_effort": "medium"
             })
         elif prompt_name == "questions":
             return json.dumps({
@@ -65,38 +67,44 @@ class GeminiReadinessCaller:
             })
         elif prompt_name == "executive":
             return json.dumps({
-                "company_overview": "The startup is an emerging enterprise raising its primary fundraising round.",
-                "overall_readiness": "Overall package is in a good initial state with minor metric inconsistencies.",
-                "top_risks": [
-                    "Mismatch in revenue totals for FY24 across documents",
-                    "Missing historical MIS filings"
-                ],
-                "top_strengths": [
+                "readiness_score": 84,
+                "readiness_status": "NEEDS_CLARIFICATION",
+                "headline": "The startup documentation package is in good initial shape with key revenue reconciliation gaps.",
+                "key_strengths": [
                     "Consistent legal entity name matching across all documents",
                     "Completed cap table allocations"
                 ],
-                "critical_issues": [
-                    "Mismatch in Funding Ask Amount between Pitch Deck and projections"
+                "key_risks": [
+                    "Mismatch in revenue totals for FY24 across documents",
+                    "Missing historical MIS filings"
                 ],
                 "immediate_actions": [
                     "Align Funding Ask Amount values to be consistent",
                     "Confirm the authoritative cap table share count"
                 ],
+                "company_overview": "The startup is an emerging enterprise raising its primary fundraising round.",
+                "overall_readiness": "Overall package is in a good initial state with minor metric inconsistencies.",
+                "top_risks": ["Mismatch in revenue totals for FY24 across documents"],
+                "top_strengths": ["Consistent legal entity name matching across all documents"],
+                "critical_issues": ["Mismatch in Funding Ask Amount between Pitch Deck and projections"],
                 "investor_readiness": "The documentation is ready with minor changes. All immediate actions should be resolved."
             })
         elif prompt_name == "narrative":
             return json.dumps({
                 "strengths": [
-                    "Clean company name verification matching across all structures",
-                    "Complete cap table information"
+                    "Clean company name verification matching across all structures (RECON-006)",
+                    "Complete cap table information (RECON-007)"
                 ],
                 "risks": [
-                    "Required fields in Revenue.FY24 are missing entirely"
+                    "Required fields in Revenue are mismatched between pitch deck and financials (RECON-001)"
                 ],
                 "next_steps": [
                     "Upload MIS historical reports for FY24",
                     "Reconcile the funding round ask amount"
                 ],
-                "executive_summary": "The evaluations yield a readiness score of 84 with minor changes recommended before investor review."
+                "executive_summary": "The evaluations yield a readiness score of 84 with minor changes recommended before investor review.",
+                "document_completeness_notes": [
+                    "MIS report mandatory field coverage is below threshold."
+                ]
             })
         return "{}"

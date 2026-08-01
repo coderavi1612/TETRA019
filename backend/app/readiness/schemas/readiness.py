@@ -57,13 +57,20 @@ class ReadinessSummary(BaseModel):
     executive_summary: str
 
 class ExecutiveSummary(BaseModel):
-    company_overview: str
-    overall_readiness: str
-    top_risks: List[str]
-    top_strengths: List[str]
-    critical_issues: List[str]
-    immediate_actions: List[str]
-    investor_readiness: str
+    readiness_score: Optional[int] = None
+    readiness_status: Optional[str] = None
+    headline: Optional[str] = None
+    key_strengths: Optional[List[str]] = Field(default_factory=list)
+    key_risks: Optional[List[str]] = Field(default_factory=list)
+    immediate_actions: Optional[List[str]] = Field(default_factory=list)
+
+    # Legacy compatibility fields
+    company_overview: Optional[str] = None
+    overall_readiness: Optional[str] = None
+    top_risks: Optional[List[str]] = Field(default_factory=list)
+    top_strengths: Optional[List[str]] = Field(default_factory=list)
+    critical_issues: Optional[List[str]] = Field(default_factory=list)
+    investor_readiness: Optional[str] = None
 
 class ReadinessManifest(BaseModel):
     schema_version: str = "1.0"

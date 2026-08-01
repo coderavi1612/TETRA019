@@ -1,0 +1,29 @@
+{
+  "readiness_score": 69,
+  "readiness_status": "NEEDS_MAJOR_REVIEW",
+  "headline": "The fundraising documentation exhibits critical revenue discrepancies and significant gaps in mandatory financial and operational metrics.",
+  "key_strengths": [
+    "Funding ask amount is consistent across pitch deck and financial projections.",
+    "Founder ownership data is consistent between the cap table and pitch deck."
+  ],
+  "key_risks": [
+    "Revenue figures conflict with no explanation between the pitch deck and audited financial statements (RECON-001).",
+    "Cash balance data is missing across all primary documents, preventing assessment of liquidity (RECON-002).",
+    "Burn rate and runway metrics are entirely absent from the provided documentation (RECON-003).",
+    "EBITDA and margin metrics are missing, preventing profitability analysis (RECON-009).",
+    "Reporting periods are inconsistent across documents, complicating point-in-time comparisons (RECON-012)."
+  ],
+  "immediate_actions": [
+    "Clarify the 33% revenue variance between the pitch deck and audited financial statements (RECON-001).",
+    "Provide current cash balance documentation to enable runway and burn rate assessment (RECON-002).",
+    "Submit missing burn rate and runway calculations (RECON-003).",
+    "Submit missing EBITDA and margin metrics for all reporting periods (RECON-009).",
+    "Reconcile reporting period differences across all financial and operational documents (RECON-012)."
+  ],
+  "company_overview": null,
+  "overall_readiness": null,
+  "top_risks": [],
+  "top_strengths": [],
+  "critical_issues": [],
+  "investor_readiness": null
+}

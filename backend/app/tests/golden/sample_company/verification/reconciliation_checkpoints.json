@@ -1,0 +1,313 @@
+[
+  {
+    "checkpoint_id": "RECON-001",
+    "canonical_field": "Revenue",
+    "documents_involved": [
+      "pitch_deck",
+      "historical_financial_statements",
+      "mis"
+    ],
+    "values_compared": [
+      {
+        "document": "pitch_deck",
+        "value": 12000000,
+        "unit": "INR",
+        "period": "FY2025",
+        "source_reference": "investor_deck.pptx",
+        "source_block_id": "pitch_deck_slide_08_block_02",
+        "extracted_text_snippet": "Revenue: 1.2 Cr in FY25"
+      },
+      {
+        "document": "historical_financial_statements",
+        "value": 9000000,
+        "unit": "INR",
+        "period": "FY2025",
+        "source_reference": "test_financials.xlsx",
+        "source_block_id": "financials_sheet_pnl_row_4",
+        "extracted_text_snippet": "Total Revenue FY25: 9,000,000"
+      },
+      {
+        "document": "mis",
+        "value": 850000,
+        "unit": "INR",
+        "period": "Feb 2025",
+        "source_reference": "mis_report.csv",
+        "source_block_id": "mis_report_csv_row_2",
+        "extracted_text_snippet": "Feb 25 Revenue: 850000"
+      }
+    ],
+    "classification": "verified_mismatch",
+    "severity": "critical",
+    "authoritative_document": "historical_financial_statements",
+    "authoritative_value": 9000000,
+    "variance_amount": 3000000,
+    "variance_percent": 33.3,
+    "description": "Revenue in the pitch deck (\u20b91.2 Cr) exceeds the audited financial statements (\u20b990 L) by 33%. The MIS shows monthly revenue of \u20b98.5 L for Feb 2025 which annualizes below both figures.",
+    "recommended_action_type": "clarify_with_founder"
+  },
+  {
+    "checkpoint_id": "RECON-002",
+    "canonical_field": "Cash Balance",
+    "documents_involved": [
+      "pitch_deck",
+      "historical_financial_statements",
+      "mis"
+    ],
+    "values_compared": [
+      {
+        "document": "pitch_deck",
+        "value": null,
+        "unit": "INR",
+        "period": null,
+        "source_reference": null,
+        "source_block_id": null,
+        "extracted_text_snippet": null
+      },
+      {
+        "document": "historical_financial_statements",
+        "value": null,
+        "unit": "INR",
+        "period": null,
+        "source_reference": null,
+        "source_block_id": null,
+        "extracted_text_snippet": null
+      },
+      {
+        "document": "mis",
+        "value": null,
+        "unit": "INR",
+        "period": null,
+        "source_reference": null,
+        "source_block_id": null,
+        "extracted_text_snippet": null
+      }
+    ],
+    "classification": "missing_information",
+    "severity": "high",
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "Cash balance is not populated in any of the three documents. This blocks assessment of runway and burn rate accuracy.",
+    "recommended_action_type": "request_missing_document"
+  },
+  {
+    "checkpoint_id": "RECON-003",
+    "canonical_field": "Burn Rate & Runway",
+    "documents_involved": [
+      "mis",
+      "financial_projections",
+      "pitch_deck"
+    ],
+    "values_compared": [
+      {
+        "document": "mis",
+        "value": null,
+        "unit": "INR/month",
+        "period": null,
+        "source_reference": null,
+        "source_block_id": null,
+        "extracted_text_snippet": null
+      }
+    ],
+    "classification": "missing_information",
+    "severity": "high",
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "Burn rate and runway metrics are not available in any document. Cannot validate runway claims.",
+    "recommended_action_type": "request_missing_document"
+  },
+  {
+    "checkpoint_id": "RECON-004",
+    "canonical_field": "Growth Rate",
+    "documents_involved": [
+      "mis",
+      "pitch_deck",
+      "financial_projections"
+    ],
+    "values_compared": [],
+    "classification": "missing_information",
+    "severity": "medium",
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "MoM growth rate is not populated in MIS or pitch deck. Cannot cross-verify growth claims.",
+    "recommended_action_type": "clarify_with_founder"
+  },
+  {
+    "checkpoint_id": "RECON-005",
+    "canonical_field": "Customer Count",
+    "documents_involved": [
+      "pitch_deck",
+      "mis"
+    ],
+    "values_compared": [],
+    "classification": "missing_information",
+    "severity": "medium",
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "Customer count is not available for cross-verification between documents.",
+    "recommended_action_type": "clarify_with_founder"
+  },
+  {
+    "checkpoint_id": "RECON-006",
+    "canonical_field": "Funding Ask & Valuation",
+    "documents_involved": [
+      "pitch_deck",
+      "cap_table",
+      "financial_projections"
+    ],
+    "values_compared": [
+      {
+        "document": "pitch_deck",
+        "value": 20000000,
+        "unit": "INR",
+        "period": null,
+        "source_reference": "investor_deck.pptx",
+        "source_block_id": "pitch_deck_slide_12_block_01",
+        "extracted_text_snippet": "Raising INR 2 Crores Seed Round"
+      },
+      {
+        "document": "financial_projections",
+        "value": 20000000,
+        "unit": "INR",
+        "period": null,
+        "source_reference": "financial_projections.xlsx",
+        "source_block_id": "projections_sheet_model_row_12",
+        "extracted_text_snippet": "Funding requirement: 2 Cr"
+      }
+    ],
+    "classification": "consistent",
+    "severity": "low",
+    "authoritative_document": null,
+    "authoritative_value": 20000000,
+    "variance_amount": 0,
+    "variance_percent": 0.0,
+    "description": "Funding ask amount is consistent at \u20b92 Cr across pitch deck and financial projections.",
+    "recommended_action_type": "no_action_needed"
+  },
+  {
+    "checkpoint_id": "RECON-007",
+    "canonical_field": "Founder Ownership",
+    "documents_involved": [
+      "cap_table",
+      "pitch_deck"
+    ],
+    "values_compared": [
+      {
+        "document": "cap_table",
+        "value": 60.0,
+        "unit": "%",
+        "period": null,
+        "source_reference": "cap_table.xlsx",
+        "source_block_id": "cap_table_sheet_shareholders_row_2",
+        "extracted_text_snippet": "60.0% Ownership"
+      }
+    ],
+    "classification": "consistent",
+    "severity": "low",
+    "authoritative_document": "cap_table",
+    "authoritative_value": 60.0,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "Founder ownership from cap table shows 60%. Pitch deck does not make a conflicting claim.",
+    "recommended_action_type": "no_action_needed"
+  },
+  {
+    "checkpoint_id": "RECON-008",
+    "canonical_field": "ESOP Pool",
+    "documents_involved": [
+      "cap_table",
+      "pitch_deck",
+      "financial_projections"
+    ],
+    "values_compared": [],
+    "classification": "missing_information",
+    "severity": "medium",
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "ESOP pool size and percentage are not populated in any document.",
+    "recommended_action_type": "request_missing_document"
+  },
+  {
+    "checkpoint_id": "RECON-009",
+    "canonical_field": "EBITDA / Margins",
+    "documents_involved": [
+      "historical_financial_statements",
+      "mis",
+      "financial_projections"
+    ],
+    "values_compared": [],
+    "classification": "missing_information",
+    "severity": "high",
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "EBITDA and margin metrics are not populated for cross-document comparison.",
+    "recommended_action_type": "request_missing_document"
+  },
+  {
+    "checkpoint_id": "RECON-010",
+    "canonical_field": "Debt & Convertible Instruments",
+    "documents_involved": [
+      "cap_table",
+      "historical_financial_statements",
+      "mis"
+    ],
+    "values_compared": [],
+    "classification": "missing_information",
+    "severity": "medium",
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "Convertible instrument details are not populated across any of the documents.",
+    "recommended_action_type": "clarify_with_founder"
+  },
+  {
+    "checkpoint_id": "RECON-011",
+    "canonical_field": "Breakeven Timeline",
+    "documents_involved": [
+      "financial_projections",
+      "pitch_deck",
+      "mis"
+    ],
+    "values_compared": [],
+    "classification": "missing_information",
+    "severity": "medium",
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "Breakeven period is not explicitly stated in any document.",
+    "recommended_action_type": "clarify_with_founder"
+  },
+  {
+    "checkpoint_id": "RECON-012",
+    "canonical_field": "Period Alignment",
+    "documents_involved": [
+      "pitch_deck",
+      "historical_financial_statements",
+      "mis",
+      "financial_projections",
+      "cap_table"
+    ],
+    "values_compared": [],
+    "classification": "unresolved_inconsistency",
+    "severity": "medium",
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "variance_amount": null,
+    "variance_percent": null,
+    "description": "Documents reference different reporting periods (FY2025 annual vs. Feb 2025 monthly). The gap is within one fiscal year but may affect point-in-time comparisons.",
+    "recommended_action_type": "reconcile_internally"
+  }
+]

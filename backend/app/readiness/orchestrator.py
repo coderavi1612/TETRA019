@@ -52,6 +52,12 @@ class ReadinessOrchestrator:
             # 1. Build and save Report Context
             report_context = ReportContextBuilder.build_and_save_context(company_id, outputs_dir)
 
+            # Ensure reconciliation checkpoints exist
+            recon_checkpoints_path = os.path.join(verification_dir, "reconciliation_checkpoints.json")
+            if not os.path.exists(recon_checkpoints_path):
+                from app.verification.reconciliation import ReconciliationEngine
+                ReconciliationEngine.run(company_id, outputs_dir)
+
             # 2. Deterministic Scoring (Stage 4 outputs)
             scoring = {
                 "readiness_score": score,

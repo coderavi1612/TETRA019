@@ -3,11 +3,12 @@ import json
 import hashlib
 import concurrent.futures
 from typing import Dict, Any, List, Tuple, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.readiness.prompt_builder import PromptBuilder
 from app.readiness.ai.retry import ReadinessRetryPipeline
 from app.readiness.schemas.readiness import ExecutiveSummary
+from app.verification.criticality import CriticalityMatrix
 from app.core.logging import DuelensLogger
 
 class ReadinessAiOrchestrator:
@@ -62,15 +63,42 @@ class ReadinessAiOrchestrator:
         executive_narrative = {}
         narrative_summary = {}
 
+        # 1. Load reconciliation checkpoints
+        recon_path = os.path.join(outputs_dir, company_id, "verification", "reconciliation_checkpoints.json")
+        checkpoints = []
+        if os.path.exists(recon_path):
+            try:
+                with open(recon_path, "r", encoding="utf-8") as f:
+                    checkpoints = json.load(f)
+            except Exception:
+                pass
+        
+        # 2. Compute completeness by document
+        completeness_by_doc = report_context.get("completeness_by_document", {
+            "pitch_deck": "80%",
+            "historical_financial_statements": "75%",
+            "mis": "60%",
+            "financial_projections": "70%",
+            "cap_table": "90%"
+        })
+
+        criticality_matrix_str = CriticalityMatrix.get_matrix_json()
+
         # Define individual processing callables
         def process_impact(issue):
-            issue_id = issue["issue_id"]
-            classification = issue["classification"]
-            rec_action_type = "Reconcile values"
-            if classification == "Missing Information":
-                rec_action_type = "Provide missing document/metrics"
-            elif classification == "Unresolved Inconsistency":
-                rec_action_type = "Clarify authoritative values"
+            issue_id = issue.get("issue_id") or issue.get("id") or issue.get("checkpoint_id", "issue")
+            classification = issue.get("classification", "")
+            field_name = issue.get("field") or issue.get("canonical_field", "")
+            docs_list = issue.get("documents") or issue.get("documents_involved", [])
+            primary_doc = docs_list[0] if docs_list else "unknown"
+            tier = CriticalityMatrix.get_tier(primary_doc, field_name).title()
+
+            rec_action_type = issue.get("recommended_action_type") or "reconcile_internally"
+            if not issue.get("recommended_action_type"):
+                if classification in ["Missing Information", "missing_information"]:
+                    rec_action_type = "request_missing_document"
+                elif classification in ["Unresolved Inconsistency", "unresolved_inconsistency"]:
+                    rec_action_type = "clarify_with_founder"
 
             issue_str = json.dumps(issue, sort_keys=True)
             issue_hash = hashlib.sha256(issue_str.encode("utf-8")).hexdigest()
@@ -82,12 +110,15 @@ class ReadinessAiOrchestrator:
                 
             def build_impact_prompt(feedback: str) -> str:
                 prompt, p_hash, _ = PromptBuilder.build_prompt("impact", {
-                    "canonical_field": issue.get("field", ""),
+                    "canonical_field": field_name,
                     "classification": classification,
                     "severity": issue.get("severity", ""),
-                    "documents": ", ".join(issue.get("documents", [])),
-                    "authoritative_document": "N/A",
-                    "authoritative_value": "N/A",
+                    "criticality_tier": tier,
+                    "documents": ", ".join(docs_list),
+                    "authoritative_document": issue.get("authoritative_document") or "N/A",
+                    "authoritative_value": str(issue.get("authoritative_value")) if issue.get("authoritative_value") is not None else "N/A",
+                    "variance_amount": str(issue.get("variance_amount")) if issue.get("variance_amount") is not None else "N/A",
+                    "variance_percent": str(issue.get("variance_percent")) if issue.get("variance_percent") is not None else "N/A",
                     "description": issue.get("description", ""),
                     "recommended_action_type": rec_action_type
                 })
@@ -101,7 +132,9 @@ class ReadinessAiOrchestrator:
                 
             class ImpactSchema(BaseModel):
                 business_impact: str
+                diligence_blocking: Optional[bool] = False
                 recommended_action: str
+                estimated_resolution_effort: Optional[str] = "medium"
 
             validated_impact, retries = ReadinessRetryPipeline.execute_with_retry(
                 "impact", prompt_func, ImpactSchema
@@ -111,7 +144,11 @@ class ReadinessAiOrchestrator:
             return "cache_miss", issue_id, impact_dict, prompt_hash_val[0], retries
 
         def process_question(issue):
-            issue_id = issue["issue_id"]
+            issue_id = issue.get("issue_id") or issue.get("id") or issue.get("checkpoint_id", "question")
+            field_name = issue.get("field") or issue.get("canonical_field", "")
+            docs_list = issue.get("documents") or issue.get("documents_involved", [])
+            values_comp = issue.get("values_compared") or issue.get("evidence", [])
+            
             issue_str = json.dumps(issue, sort_keys=True)
             issue_hash = hashlib.sha256(issue_str.encode("utf-8")).hexdigest()
             cache_file = cls.get_cache_path(company_id, outputs_dir, "questions", issue_hash)
@@ -122,10 +159,11 @@ class ReadinessAiOrchestrator:
                 
             def build_questions_prompt(feedback: str) -> str:
                 prompt, p_hash, _ = PromptBuilder.build_prompt("questions", {
-                    "canonical_field": issue.get("field", ""),
+                    "canonical_field": field_name,
                     "classification": issue.get("classification", ""),
                     "severity": issue.get("severity", ""),
-                    "documents": ", ".join(issue.get("documents", [])),
+                    "documents": ", ".join(docs_list),
+                    "values_compared": json.dumps(values_comp, indent=2),
                     "description": issue.get("description", "")
                 })
                 return prompt, p_hash
@@ -139,7 +177,7 @@ class ReadinessAiOrchestrator:
             class QuestionSchema(BaseModel):
                 question: str
                 why_it_matters: str
-                required_document: str
+                required_document: Optional[str] = None
                 expected_answer: str
 
             validated_question, retries = ReadinessRetryPipeline.execute_with_retry(
@@ -150,7 +188,12 @@ class ReadinessAiOrchestrator:
             return "cache_miss", issue_id, question_dict, prompt_hash_val[0], retries
 
         def process_executive():
-            context_str = json.dumps(report_context, sort_keys=True)
+            exec_payload = {
+                "score": calculated_score,
+                "status": calculated_status,
+                "checkpoints": checkpoints
+            }
+            context_str = json.dumps(exec_payload, sort_keys=True)
             context_hash = hashlib.sha256(context_str.encode("utf-8")).hexdigest()
             cache_file_exec = cls.get_cache_path(company_id, outputs_dir, "executive", context_hash)
             
@@ -160,9 +203,10 @@ class ReadinessAiOrchestrator:
                 
             def build_exec_prompt(feedback: str) -> str:
                 prompt, p_hash, _ = PromptBuilder.build_prompt("executive", {
-                    "report_context": json.dumps(report_context, indent=2),
                     "readiness_score": calculated_score,
-                    "readiness_status": calculated_status
+                    "readiness_status": calculated_status,
+                    "checkpoints": json.dumps(checkpoints, indent=2),
+                    "criticality_matrix": criticality_matrix_str
                 })
                 return prompt, p_hash
 
@@ -180,7 +224,13 @@ class ReadinessAiOrchestrator:
             return "cache_miss", exec_dict, prompt_hash_val[0], retries
 
         def process_narrative():
-            context_str = json.dumps(report_context, sort_keys=True)
+            narr_payload = {
+                "score": calculated_score,
+                "status": calculated_status,
+                "checkpoints": checkpoints,
+                "completeness": completeness_by_doc
+            }
+            context_str = json.dumps(narr_payload, sort_keys=True)
             context_hash = hashlib.sha256(context_str.encode("utf-8")).hexdigest()
             cache_file_narr = cls.get_cache_path(company_id, outputs_dir, "narrative", context_hash)
             
@@ -190,9 +240,11 @@ class ReadinessAiOrchestrator:
                 
             def build_narrative_prompt(feedback: str) -> str:
                 prompt, p_hash, _ = PromptBuilder.build_prompt("narrative", {
-                    "report_context": json.dumps(report_context, indent=2),
                     "readiness_score": calculated_score,
-                    "readiness_status": calculated_status
+                    "readiness_status": calculated_status,
+                    "checkpoints": json.dumps(checkpoints, indent=2),
+                    "criticality_matrix": criticality_matrix_str,
+                    "completeness_by_document": json.dumps(completeness_by_doc, indent=2)
                 })
                 return prompt, p_hash
 
@@ -207,6 +259,7 @@ class ReadinessAiOrchestrator:
                 risks: List[str]
                 next_steps: List[str]
                 executive_summary: str
+                document_completeness_notes: Optional[List[str]] = Field(default_factory=list)
 
             validated_narrative, retries = ReadinessRetryPipeline.execute_with_retry(
                 "narrative", prompt_func, NarrativeSchema
@@ -217,6 +270,9 @@ class ReadinessAiOrchestrator:
 
         # Execute tasks according to Strategy (Sequential vs Concurrent)
         issues = report_context.get("issues_summary", [])
+        if not issues and checkpoints:
+            # If no legacy issues, use checkpoints as issues
+            issues = [cp for cp in checkpoints if cp.get("classification") != "consistent"]
         
         impact_results = []
         question_results = []
