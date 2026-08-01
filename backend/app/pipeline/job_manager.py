@@ -31,6 +31,13 @@ class JobManager:
                 "created_at": now,
                 "updated_at": now
             }
+        
+        try:
+            from app.core.db import upsert_pipeline_run
+            upsert_pipeline_run(job_id, company_id, "ACCEPTED")
+        except Exception:
+            pass
+
         return job_id
 
     @classmethod
@@ -47,10 +54,22 @@ class JobManager:
         Updates the job status and records the updated timestamp.
         """
         now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        company_id = None
+        completed_at = None
         with cls._lock:
             if job_id in cls._jobs:
                 cls._jobs[job_id]["status"] = status
                 cls._jobs[job_id]["updated_at"] = now
+                company_id = cls._jobs[job_id]["company_id"]
+                if status in (JobStatus.COMPLETED, JobStatus.FAILED, JobStatus.CANCELLED):
+                    completed_at = datetime.datetime.now(datetime.timezone.utc)
+
+        if company_id:
+            try:
+                from app.core.db import upsert_pipeline_run
+                upsert_pipeline_run(job_id, company_id, status.value, completed_at=completed_at)
+            except Exception:
+                pass
 
     @classmethod
     def get_jobs_by_company(cls, company_id: str) -> Dict[str, Any]:

@@ -51,3 +51,4 @@ urllib3==2.7.0
 uvicorn==0.52.0
 websockets==16.1.1
 xlsxwriter==3.2.9
+psycopg2-binary==2.9.12

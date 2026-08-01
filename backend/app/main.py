@@ -49,12 +49,14 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
 app.add_middleware(RequestIdMiddleware)
 
 from app.core import setup_logging, validate_startup_state
+from app.core.db import init_db
 setup_logging()
 
 # Application Startup Lifecycle Phase
 @app.on_event("startup")
 async def startup_event():
     validate_startup_state()
+    init_db()
 
 # Include Routers
 app.include_router(upload_router, prefix="/api/v1/upload", tags=["Upload"])

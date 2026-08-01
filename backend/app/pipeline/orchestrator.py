@@ -110,11 +110,14 @@ class DuelensPipeline:
         from app.pipeline.status_manager import PipelineStatusManager
 
         clean_company_id = company_id.strip()
+        if not job_id:
+            job_id = JobManager.create_job(clean_company_id)
+            PipelineStatusManager.init_status(job_id, clean_company_id)
+
         DuelensLogger.log("Pipeline", "START", f"Starting Duelens pipeline stage={stage} for company={clean_company_id} job_id={job_id}")
         
-        if job_id:
-            JobManager.update_job_status(job_id, JobStatus.RUNNING)
-            PipelineStatusManager.update_stage(job_id, "parse", "idle", overall_status="RUNNING")
+        JobManager.update_job_status(job_id, JobStatus.RUNNING)
+        PipelineStatusManager.update_stage(job_id, "parse", "idle", overall_status="RUNNING")
 
         stages_to_run: List[PipelineStage] = []
         if stage == PipelineStage.PARSE:
@@ -164,6 +167,11 @@ class DuelensPipeline:
                         if job_id:
                             PipelineStatusManager.update_stage(job_id, stage_name, "completed", duration_ms=stage_timer.elapsed_ms)
                             PipelineStatusManager.persist_status(job_id, clean_company_id)
+                            try:
+                                from app.core.db import sync_company_artifacts_to_db
+                                sync_company_artifacts_to_db(clean_company_id, job_id)
+                            except Exception as ex:
+                                DuelensLogger.log("Pipeline", "WARNING", f"Failed to sync stage {s} artifacts to DB: {ex}")
 
                     except Exception as e:
                         err_msg = f"Pipeline failed at stage {s}: {str(e)}"
@@ -189,6 +197,14 @@ class DuelensPipeline:
                 JobManager.update_job_status(job_id, JobStatus.COMPLETED)
                 PipelineStatusManager.update_stage(job_id, "readiness", "completed", overall_status="COMPLETED")
                 PipelineStatusManager.persist_status(job_id, clean_company_id)
+
+        # Sync all artifacts to DB at the end (including manifests, logs, final reports)
+        if job_id:
+            try:
+                from app.core.db import sync_company_artifacts_to_db
+                sync_company_artifacts_to_db(clean_company_id, job_id)
+            except Exception as ex:
+                DuelensLogger.log("Pipeline", "WARNING", f"Final DB sync failed: {ex}")
 
         DuelensLogger.log("Pipeline", "END", f"Completed Duelens pipeline in {pipeline_timer.elapsed_ms}ms")
         
