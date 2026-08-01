@@ -1,0 +1,138 @@
+{
+  "CashBalance.FY24": {
+    "authoritative": null,
+    "comparison_id": "CMP-000001",
+    "documents": [
+      {
+        "document": "pitch_deck",
+        "value": null,
+        "normalized": null
+      }
+    ]
+  },
+  "CompanyLegalName": {
+    "authoritative": "pitch_deck",
+    "comparison_id": "CMP-000002",
+    "documents": [
+      {
+        "document": "pitch_deck",
+        "value": "Duelens Inc",
+        "normalized": "Duelens Inc"
+      }
+    ]
+  },
+  "EBITDA.FY24": {
+    "authoritative": null,
+    "comparison_id": "CMP-000003",
+    "documents": [
+      {
+        "document": "pitch_deck",
+        "value": null,
+        "normalized": null
+      }
+    ]
+  },
+  "EBITDA.FY25": {
+    "authoritative": null,
+    "comparison_id": "CMP-000004",
+    "documents": [
+      {
+        "document": "historical_financial_statements",
+        "value": null,
+        "normalized": null
+      },
+      {
+        "document": "pitch_deck",
+        "value": null,
+        "normalized": null
+      }
+    ]
+  },
+  "FundingAskAmount": {
+    "authoritative": "pitch_deck",
+    "comparison_id": "CMP-000005",
+    "documents": [
+      {
+        "document": "financial_projections",
+        "value": 20000000,
+        "normalized": 20000000.0
+      },
+      {
+        "document": "pitch_deck",
+        "value": 20000000,
+        "normalized": 20000000.0
+      }
+    ]
+  },
+  "NetProfitLoss.FY24": {
+    "authoritative": null,
+    "comparison_id": "CMP-000006",
+    "documents": [
+      {
+        "document": "pitch_deck",
+        "value": null,
+        "normalized": null
+      }
+    ]
+  },
+  "Ownership.Jane_Smith": {
+    "authoritative": "cap_table",
+    "comparison_id": "CMP-000007",
+    "documents": [
+      {
+        "document": "cap_table",
+        "value": 40.0,
+        "normalized": 40.0
+      }
+    ]
+  },
+  "Ownership.John_Doe": {
+    "authoritative": "cap_table",
+    "comparison_id": "CMP-000008",
+    "documents": [
+      {
+        "document": "cap_table",
+        "value": 60.0,
+        "normalized": 60.0
+      }
+    ]
+  },
+  "Revenue.FY24": {
+    "authoritative": null,
+    "comparison_id": "CMP-000009",
+    "documents": [
+      {
+        "document": "pitch_deck",
+        "value": null,
+        "normalized": null
+      }
+    ]
+  },
+  "Revenue.FY25": {
+    "authoritative": "historical_financial_statements",
+    "comparison_id": "CMP-000010",
+    "documents": [
+      {
+        "document": "historical_financial_statements",
+        "value": 9000000,
+        "normalized": 9000000.0
+      },
+      {
+        "document": "pitch_deck",
+        "value": null,
+        "normalized": null
+      }
+    ]
+  },
+  "Revenue.FY26": {
+    "authoritative": null,
+    "comparison_id": "CMP-000011",
+    "documents": [
+      {
+        "document": "pitch_deck",
+        "value": null,
+        "normalized": null
+      }
+    ]
+  }
+}

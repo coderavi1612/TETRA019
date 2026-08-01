@@ -1,0 +1,27 @@
+{
+  "CMP-000002": [
+    {
+      "document": "pitch_deck",
+      "value": "Duelens Inc",
+      "canonical_path": "CompanyLegalName",
+      "source_block_id": "investor_deck.pptx",
+      "page": null,
+      "slide": 1,
+      "sheet": null,
+      "snippet": null
+    }
+  ],
+  "CMP-000009": [],
+  "CMP-000010": [
+    {
+      "document": "historical_financial_statements",
+      "value": 9000000,
+      "canonical_path": "Revenue.FY25",
+      "source_block_id": "test_financials.xlsx",
+      "page": 1,
+      "slide": null,
+      "sheet": null,
+      "snippet": null
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "company_id": "sample_company",
+  "overall_status": "NEEDS_MAJOR_REVIEW",
+  "readiness_score": 69,
+  "documents_reviewed": [],
+  "verified_matches": 3,
+  "verified_mismatches": 0,
+  "missing_information": 8,
+  "unresolved_inconsistencies": 0,
+  "strengths": [
+    "Clean company name verification matching across all structures",
+    "Complete cap table information"
+  ],
+  "risks": [
+    "Required fields in Revenue.FY24 are missing entirely"
+  ],
+  "next_steps": [
+    "Upload MIS historical reports for FY24",
+    "Reconcile the funding round ask amount"
+  ],
+  "executive_summary": "The evaluations yield a readiness score of 84 with minor changes recommended before investor review."
+}

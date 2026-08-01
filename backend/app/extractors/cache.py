@@ -34,7 +34,8 @@ class FactCache:
             registry_version + 
             cls.PROMPT_VERSION
         )
-        return hashlib.sha256(combined.encode("utf-8")).hexdigest()
+        from app.core import sha256_string
+        return sha256_string(combined)
 
     @classmethod
     def load_chunk(cls, company_id: str, cache_key: str) -> Optional[Dict[str, Any]]:
@@ -78,7 +79,8 @@ class FactCache:
             registry_version + 
             cls.PROMPT_VERSION
         )
-        return hashlib.sha256(combined.encode("utf-8")).hexdigest()
+        from app.core import sha256_string
+        return sha256_string(combined)
 
     @classmethod
     def load_document(cls, company_id: str, cache_key: str) -> Optional[Dict[str, Any]]:

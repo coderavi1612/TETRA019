@@ -12,3 +12,6 @@ class ParseResponse(BaseModel):
     company_id: str
     documents_parsed: int
     files: List[ParseResultFile]
+    failed_documents: List[str] = []
+    warnings: List[str] = []
+    errors: List[str] = []

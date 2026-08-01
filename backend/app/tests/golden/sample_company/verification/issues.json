@@ -1,0 +1,55 @@
+[
+  {
+    "id": "CMP-000002",
+    "classification": "Missing Information",
+    "severity": "CRITICAL",
+    "field": "CompanyLegalName",
+    "description": "Field 'CompanyLegalName' is present in ['pitch_deck'] but missing in other documents.",
+    "documents": [
+      "pitch_deck"
+    ],
+    "evidence": [
+      {
+        "document": "pitch_deck",
+        "value": "Duelens Inc",
+        "canonical_path": "CompanyLegalName",
+        "source_block_id": "investor_deck.pptx",
+        "page": null,
+        "slide": 1,
+        "sheet": null,
+        "snippet": null
+      }
+    ]
+  },
+  {
+    "id": "CMP-000009",
+    "classification": "Missing Information",
+    "severity": "HIGH",
+    "field": "Revenue.FY24",
+    "description": "Required field 'Revenue.FY24' is missing entirely.",
+    "documents": [],
+    "evidence": []
+  },
+  {
+    "id": "CMP-000010",
+    "classification": "Missing Information",
+    "severity": "HIGH",
+    "field": "Revenue.FY25",
+    "description": "Field 'Revenue.FY25' is present in ['historical_financial_statements'] but missing in other documents.",
+    "documents": [
+      "historical_financial_statements"
+    ],
+    "evidence": [
+      {
+        "document": "historical_financial_statements",
+        "value": 9000000,
+        "canonical_path": "Revenue.FY25",
+        "source_block_id": "test_financials.xlsx",
+        "page": 1,
+        "slide": null,
+        "sheet": null,
+        "snippet": null
+      }
+    ]
+  }
+]

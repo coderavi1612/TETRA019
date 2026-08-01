@@ -1,0 +1,20 @@
+{
+  "company_overview": "The startup is an emerging enterprise raising its primary fundraising round.",
+  "overall_readiness": "Overall package is in a good initial state with minor metric inconsistencies.",
+  "top_risks": [
+    "Mismatch in revenue totals for FY24 across documents",
+    "Missing historical MIS filings"
+  ],
+  "top_strengths": [
+    "Consistent legal entity name matching across all documents",
+    "Completed cap table allocations"
+  ],
+  "critical_issues": [
+    "Mismatch in Funding Ask Amount between Pitch Deck and projections"
+  ],
+  "immediate_actions": [
+    "Align Funding Ask Amount values to be consistent",
+    "Confirm the authoritative cap table share count"
+  ],
+  "investor_readiness": "The documentation is ready with minor changes. All immediate actions should be resolved."
+}

@@ -1,0 +1,120 @@
+{
+  "company_id": "sample_company",
+  "statistics": {
+    "documents_compared": 5,
+    "canonical_fields": 11,
+    "matched": 3,
+    "close_matches": 0,
+    "verified_mismatches": 0,
+    "missing_information": 8,
+    "unresolved_inconsistencies": 0
+  },
+  "issues_summary": [
+    {
+      "issue_id": "CMP-000002",
+      "field": "CompanyLegalName",
+      "classification": "Missing Information",
+      "severity": "CRITICAL",
+      "description": "Field 'CompanyLegalName' is present in ['pitch_deck'] but missing in other documents.",
+      "documents": [
+        "pitch_deck"
+      ]
+    },
+    {
+      "issue_id": "CMP-000009",
+      "field": "Revenue.FY24",
+      "classification": "Missing Information",
+      "severity": "HIGH",
+      "description": "Required field 'Revenue.FY24' is missing entirely.",
+      "documents": []
+    },
+    {
+      "issue_id": "CMP-000010",
+      "field": "Revenue.FY25",
+      "classification": "Missing Information",
+      "severity": "HIGH",
+      "description": "Field 'Revenue.FY25' is present in ['historical_financial_statements'] but missing in other documents.",
+      "documents": [
+        "historical_financial_statements"
+      ]
+    }
+  ],
+  "matched_fields": [
+    {
+      "field": "Ownership.John_Doe",
+      "documents": [
+        "cap_table"
+      ],
+      "values": {
+        "cap_table": 60.0
+      }
+    },
+    {
+      "field": "Ownership.Jane_Smith",
+      "documents": [
+        "cap_table"
+      ],
+      "values": {
+        "cap_table": 40.0
+      }
+    },
+    {
+      "field": "FundingAskAmount",
+      "documents": [
+        "financial_projections",
+        "pitch_deck"
+      ],
+      "values": {
+        "financial_projections": 20000000,
+        "pitch_deck": 20000000
+      }
+    },
+    {
+      "field": "EBITDA.FY25",
+      "documents": [
+        "historical_financial_statements",
+        "pitch_deck"
+      ],
+      "values": {
+        "historical_financial_statements": null,
+        "pitch_deck": null
+      }
+    },
+    {
+      "field": "Revenue.FY26",
+      "documents": [
+        "pitch_deck"
+      ],
+      "values": {
+        "pitch_deck": null
+      }
+    },
+    {
+      "field": "EBITDA.FY24",
+      "documents": [
+        "pitch_deck"
+      ],
+      "values": {
+        "pitch_deck": null
+      }
+    },
+    {
+      "field": "NetProfitLoss.FY24",
+      "documents": [
+        "pitch_deck"
+      ],
+      "values": {
+        "pitch_deck": null
+      }
+    },
+    {
+      "field": "CashBalance.FY24",
+      "documents": [
+        "pitch_deck"
+      ],
+      "values": {
+        "pitch_deck": null
+      }
+    }
+  ]
+}

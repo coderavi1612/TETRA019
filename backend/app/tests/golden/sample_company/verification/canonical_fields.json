@@ -1,0 +1,38 @@
+{
+  "Ownership.John_Doe": {
+    "cap_table": "shareholders[].ownership_percentage"
+  },
+  "Ownership.Jane_Smith": {
+    "cap_table": "shareholders[].ownership_percentage"
+  },
+  "FundingAskAmount": {
+    "financial_projections": "funding_ask.funding_ask_amount",
+    "pitch_deck": "fundraising_ask.amount_raising"
+  },
+  "Revenue.FY25": {
+    "historical_financial_statements": "financial_periods[].income_statement.revenue_total",
+    "pitch_deck": "financial_highlights.revenue"
+  },
+  "EBITDA.FY25": {
+    "historical_financial_statements": "financial_periods[].income_statement.ebitda",
+    "pitch_deck": "financial_highlights.ebitda"
+  },
+  "CompanyLegalName": {
+    "pitch_deck": "company_identity.company_name"
+  },
+  "Revenue.FY24": {
+    "pitch_deck": "financial_highlights.revenue"
+  },
+  "Revenue.FY26": {
+    "pitch_deck": "financial_highlights.revenue"
+  },
+  "EBITDA.FY24": {
+    "pitch_deck": "financial_highlights.ebitda"
+  },
+  "NetProfitLoss.FY24": {
+    "pitch_deck": "financial_highlights.net_profit_or_loss"
+  },
+  "CashBalance.FY24": {
+    "pitch_deck": "financial_highlights.cash_balance"
+  }
+}

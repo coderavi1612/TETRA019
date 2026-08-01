@@ -1,0 +1,14 @@
+{
+  "pipeline_version": "1.0",
+  "generated_at": "2026-08-01T09:07:32Z",
+  "registry_version": "733f77f7b359cb9d",
+  "comparison_rules_hash": "733f77f7b359cb9d8b4fa6e85b8edeca25f5f64d75000dadd3bcbe184d30d0c7",
+  "fields_compared": 11,
+  "matches": 3,
+  "close_matches": 0,
+  "verified_mismatches": 0,
+  "missing_information": 8,
+  "unresolved_inconsistencies": 0,
+  "processing_time_ms": 4,
+  "failures": []
+}

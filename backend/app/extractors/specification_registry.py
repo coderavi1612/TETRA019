@@ -42,7 +42,7 @@ class SpecificationRegistry:
         }
 
         cls._registry = {}
-        hasher = hashlib.sha256()
+        content_accumulator = ""
 
         logger.info(f"Loading specifications from: {md_files_dir}")
 
@@ -56,7 +56,7 @@ class SpecificationRegistry:
             try:
                 with open(file_path, "r", encoding="utf-8") as f:
                     content = f.read()
-                    hasher.update(content.encode("utf-8"))
+                    content_accumulator += content
             except Exception as e:
                 logger.error(f"Error reading spec file {filename}: {str(e)}")
                 continue
@@ -73,7 +73,7 @@ class SpecificationRegistry:
                 lines = match.group(1).strip().split("\n")
                 for line in lines:
                     cleaned = line.strip().lstrip("-* ").strip()
-                    if cleaned and not cleaned.startswith("#") and len(cleaned) > 2:
+                    if cleaned:
                         data_points.append(cleaned)
             
             # Setup default fallback data points if regex fails
@@ -110,7 +110,8 @@ class SpecificationRegistry:
             if doc_type == "mis_report":
                 cls._registry["monthly_mis_report"] = cls._registry[doc_type]
 
-        cls._version = hasher.hexdigest()[:16]
+        from app.core import sha256_string
+        cls._version = sha256_string(content_accumulator)[:16]
         cls._loaded = True
         logger.info(f"Loaded SpecificationRegistry version: {cls._version}")
 

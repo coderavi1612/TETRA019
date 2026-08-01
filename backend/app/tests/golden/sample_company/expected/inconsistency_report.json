@@ -1,0 +1,67 @@
+[
+  {
+    "issue_id": "CMP-000002",
+    "classification": "Missing Information",
+    "severity": "CRITICAL",
+    "canonical_field": "CompanyLegalName",
+    "documents": [
+      "pitch_deck"
+    ],
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "description": "Field 'CompanyLegalName' is present in ['pitch_deck'] but missing in other documents.",
+    "business_impact": "Discrepancy in metrics indicates potential accounting variances or revision errors, impacting VC validation.",
+    "recommended_action": "Reconcile the financial statements values with MIS inputs.",
+    "evidence": [
+      {
+        "document": "pitch_deck",
+        "value": "Duelens Inc",
+        "canonical_path": "CompanyLegalName",
+        "source_block_id": "investor_deck.pptx",
+        "page": null,
+        "slide": 1,
+        "sheet": null,
+        "snippet": null
+      }
+    ]
+  },
+  {
+    "issue_id": "CMP-000009",
+    "classification": "Missing Information",
+    "severity": "HIGH",
+    "canonical_field": "Revenue.FY24",
+    "documents": [],
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "description": "Required field 'Revenue.FY24' is missing entirely.",
+    "business_impact": "Discrepancy in metrics indicates potential accounting variances or revision errors, impacting VC validation.",
+    "recommended_action": "Reconcile the financial statements values with MIS inputs.",
+    "evidence": []
+  },
+  {
+    "issue_id": "CMP-000010",
+    "classification": "Missing Information",
+    "severity": "HIGH",
+    "canonical_field": "Revenue.FY25",
+    "documents": [
+      "historical_financial_statements"
+    ],
+    "authoritative_document": null,
+    "authoritative_value": null,
+    "description": "Field 'Revenue.FY25' is present in ['historical_financial_statements'] but missing in other documents.",
+    "business_impact": "Discrepancy in metrics indicates potential accounting variances or revision errors, impacting VC validation.",
+    "recommended_action": "Reconcile the financial statements values with MIS inputs.",
+    "evidence": [
+      {
+        "document": "historical_financial_statements",
+        "value": 9000000,
+        "canonical_path": "Revenue.FY25",
+        "source_block_id": "test_financials.xlsx",
+        "page": 1,
+        "slide": null,
+        "sheet": null,
+        "snippet": null
+      }
+    ]
+  }
+]

@@ -168,3 +168,8 @@ backend/app/outputs/*
 *.yaml
 *.md
 /outputs
+/tests
+*.pdf
+*.csv
+*.xlsx
+*.pptx

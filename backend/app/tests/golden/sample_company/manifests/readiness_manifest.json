@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "pipeline_version": "1.0",
+  "comparison_version": "1.0",
+  "registry_version": "b9983152a950dd63",
+  "prompt_version": "v1",
+  "prompt_hashes": {},
+  "model": "gemini-1.5-flash",
+  "temperature": 0.1,
+  "cache_hits": 8,
+  "cache_misses": 0,
+  "processing_times": {
+    "total_time_ms": 0
+  },
+  "report_hashes": {
+    "inconsistency_report.json": "3ba4fb190a72b7df5863c3a950373e7f4d82c0ccb2d6b952ff1feb3f2fe1dbe1",
+    "follow_up_questions.json": "96faaebf6949bbf99da7ce5de1e42d08d730e45ac6d8b72de967f529355ed65d",
+    "executive_summary.json": "1add473f68b8acb314b9e62a86c2ac4a1e5f6c82dc5fce95d63dfa46cd174d64",
+    "readiness_summary.json": "8deafbeb82b958b67ce65608fe87f62f52fc25d93bb42352f989cedcb91ef192"
+  },
+  "generated_files": [
+    "readiness_summary.json",
+    "readiness_summary.md",
+    "readiness_summary.pdf",
+    "executive_summary.json",
+    "executive_summary.md",
+    "executive_summary.pdf",
+    "follow_up_questions.json",
+    "follow_up_questions.md",
+    "follow_up_questions.pdf",
+    "inconsistency_report.json",
+    "inconsistency_report.md"
+  ],
+  "retry_counts": {
+    "impact": 0,
+    "questions": 0,
+    "executive": 0,
+    "narrative": 0
+  },
+  "validation_status": "PASS",
+  "pdf_generation_status": "PASS",
+  "markdown_generation_status": "PASS"
+}

@@ -14,6 +14,8 @@ class ExtractionResponse(BaseModel):
     processing_time_ms: int
     verification_status: str
     failed_documents: List[str]
+    warnings: List[str] = []
+    errors: List[str] = []
 
 @router.post("/{company_id}", response_model=ExtractionResponse)
 async def extract_facts(company_id: str):

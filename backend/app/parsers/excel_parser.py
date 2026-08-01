@@ -10,7 +10,8 @@ class ExcelParser(BaseParser):
     def parse(self, file_path: str, company_id: str, document_type: str) -> ParsedDocument:
         doc_name = os.path.basename(file_path)
         file_size = os.path.getsize(file_path)
-        created_at = datetime.datetime.utcnow().isoformat() + "Z"
+        from app.core import get_utc_now_iso
+        created_at = get_utc_now_iso()
         
         wb = load_workbook(file_path, data_only=True)
         sheet_names = wb.sheetnames

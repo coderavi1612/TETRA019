@@ -50,7 +50,9 @@ class FactExtractor:
         template_version = SpecificationRegistry.get_version() # Map to spec version for template loading
         
         company_output_dir = os.path.join(settings.OUTPUT_DIR, company_id)
-        manifest_path = os.path.join(company_output_dir, "manifest.json")
+        manifest_path = os.path.join(company_output_dir, "manifests", "manifest.json")
+        if not os.path.exists(manifest_path):
+            manifest_path = os.path.join(company_output_dir, "manifest.json")
         
         if not os.path.exists(manifest_path):
             raise FileNotFoundError(f"Manifest not found for company '{company_id}'. Please run parser first.")
@@ -385,8 +387,10 @@ class FactExtractor:
             
             # Only write final file if verification passed
             if verification_status == "PASS":
+                extracted_dir = os.path.join(company_output_dir, "extracted")
+                os.makedirs(extracted_dir, exist_ok=True)
                 output_filename = output_filename_map.get(canonical_doc_type, f"{canonical_doc_type}.json")
-                output_file_path = os.path.join(company_output_dir, output_filename)
+                output_file_path = os.path.join(extracted_dir, output_filename)
                 with open(output_file_path, "w", encoding="utf-8") as out_f:
                     json.dump(final_document_json, out_f, indent=2)
                 documents_generated += 1
@@ -398,8 +402,12 @@ class FactExtractor:
             cache_misses_count += chunk_misses
                 
         # 11. Write Report files
+        # Setup verification subfolder
+        verification_dir = os.path.join(company_output_dir, "verification")
+        os.makedirs(verification_dir, exist_ok=True)
+
         # Traceability Report
-        trace_report_path = os.path.join(company_output_dir, "traceability_report.json")
+        trace_report_path = os.path.join(verification_dir, "traceability_report.json")
         with open(trace_report_path, "w", encoding="utf-8") as tr_f:
             json.dump(all_traceability_reports, tr_f, indent=2)
             
@@ -415,7 +423,7 @@ class FactExtractor:
             "documents": all_verification_summaries
         }
         
-        verification_summary_path = os.path.join(company_output_dir, "verification_summary.json")
+        verification_summary_path = os.path.join(verification_dir, "verification_summary.json")
         with open(verification_summary_path, "w", encoding="utf-8") as vs_f:
             json.dump(summary_payload, vs_f, indent=2)
             
@@ -439,7 +447,9 @@ class FactExtractor:
         extraction_manifest = manifest_builder.build(timings, gemini_config)
         
         # Write manifest file
-        manifest_output_path = os.path.join(company_output_dir, "extraction_manifest.json")
+        manifests_dir = os.path.join(company_output_dir, "manifests")
+        os.makedirs(manifests_dir, exist_ok=True)
+        manifest_output_path = os.path.join(manifests_dir, "extraction_manifest.json")
         with open(manifest_output_path, "w", encoding="utf-8") as em_f:
             json.dump(extraction_manifest, em_f, indent=2)
             
@@ -451,7 +461,9 @@ class FactExtractor:
             "cache_misses": cache_misses_count,
             "processing_time_ms": timings["total_time_ms"],
             "verification_status": overall_status,
-            "failed_documents": failed_documents
+            "failed_documents": failed_documents,
+            "warnings": extraction_manifest.get("warnings", []),
+            "errors": extraction_manifest.get("errors", [])
         }
         
         return extraction_manifest, stats

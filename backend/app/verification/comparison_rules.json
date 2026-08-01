@@ -1,0 +1,175 @@
+{
+  "rules": [
+    {
+      "canonical_name": "CompanyLegalName",
+      "strategy": "string",
+      "tolerance": "Exact",
+      "severity": "CRITICAL",
+      "required": true,
+      "authoritative_order": [
+        "historical_financial_statements",
+        "mis_report",
+        "pitch_deck",
+        "financial_projections"
+      ],
+      "mappings": {
+        "pitch_deck": "company_identity.company_name",
+        "historical_financial_statements": "document_metadata.company_legal_name",
+        "mis_report": "document_metadata.company_legal_name",
+        "financial_projections": "document_metadata.company_legal_name"
+      }
+    },
+    {
+      "canonical_name": "Revenue.FY24",
+      "strategy": "numeric",
+      "tolerance": "2%",
+      "severity": "HIGH",
+      "required": true,
+      "authoritative_order": [
+        "historical_financial_statements",
+        "mis_report",
+        "pitch_deck",
+        "financial_projections"
+      ],
+      "mappings": {
+        "pitch_deck": "financial_highlights.revenue",
+        "historical_financial_statements": "financial_periods[].income_statement.revenue_total",
+        "mis_report": "profit_and_loss_summary.revenue_total",
+        "financial_projections": "projection_periods[].revenue_build.revenue_forecast_total"
+      }
+    },
+    {
+      "canonical_name": "Revenue.FY25",
+      "strategy": "numeric",
+      "tolerance": "2%",
+      "severity": "HIGH",
+      "required": true,
+      "authoritative_order": [
+        "historical_financial_statements",
+        "mis_report",
+        "pitch_deck",
+        "financial_projections"
+      ],
+      "mappings": {
+        "pitch_deck": "financial_highlights.revenue",
+        "historical_financial_statements": "financial_periods[].income_statement.revenue_total",
+        "financial_projections": "projection_periods[].revenue_build.revenue_forecast_total"
+      }
+    },
+    {
+      "canonical_name": "Revenue.FY26",
+      "strategy": "numeric",
+      "tolerance": "2%",
+      "severity": "HIGH",
+      "required": false,
+      "authoritative_order": [
+        "historical_financial_statements",
+        "pitch_deck",
+        "financial_projections"
+      ],
+      "mappings": {
+        "pitch_deck": "financial_highlights.revenue",
+        "financial_projections": "projection_periods[].revenue_build.revenue_forecast_total"
+      }
+    },
+    {
+      "canonical_name": "EBITDA.FY24",
+      "strategy": "numeric",
+      "tolerance": "2%",
+      "severity": "HIGH",
+      "required": false,
+      "authoritative_order": [
+        "historical_financial_statements",
+        "mis_report",
+        "pitch_deck",
+        "financial_projections"
+      ],
+      "mappings": {
+        "pitch_deck": "financial_highlights.ebitda",
+        "historical_financial_statements": "financial_periods[].income_statement.ebitda",
+        "mis_report": "profit_and_loss_summary.ebitda"
+      }
+    },
+    {
+      "canonical_name": "EBITDA.FY25",
+      "strategy": "numeric",
+      "tolerance": "2%",
+      "severity": "HIGH",
+      "required": false,
+      "authoritative_order": [
+        "historical_financial_statements",
+        "mis_report",
+        "pitch_deck",
+        "financial_projections"
+      ],
+      "mappings": {
+        "pitch_deck": "financial_highlights.ebitda",
+        "historical_financial_statements": "financial_periods[].income_statement.ebitda",
+        "financial_projections": "projection_periods[].cost_and_margin_build.ebitda"
+      }
+    },
+    {
+      "canonical_name": "NetProfitLoss.FY24",
+      "strategy": "numeric",
+      "tolerance": "2%",
+      "severity": "HIGH",
+      "required": false,
+      "authoritative_order": [
+        "historical_financial_statements",
+        "mis_report",
+        "pitch_deck",
+        "financial_projections"
+      ],
+      "mappings": {
+        "pitch_deck": "financial_highlights.net_profit_or_loss",
+        "historical_financial_statements": "financial_periods[].income_statement.operating_profit_or_loss",
+        "mis_report": "profit_and_loss_summary.net_profit_or_loss"
+      }
+    },
+    {
+      "canonical_name": "CashBalance.FY24",
+      "strategy": "numeric",
+      "tolerance": "1%",
+      "severity": "HIGH",
+      "required": false,
+      "authoritative_order": [
+        "historical_financial_statements",
+        "mis_report",
+        "pitch_deck",
+        "financial_projections"
+      ],
+      "mappings": {
+        "pitch_deck": "financial_highlights.cash_balance",
+        "mis_report": "cash_and_liquidity.closing_cash_balance"
+      }
+    },
+    {
+      "canonical_name": "FundingAskAmount",
+      "strategy": "numeric",
+      "tolerance": "1%",
+      "severity": "HIGH",
+      "required": true,
+      "authoritative_order": [
+        "pitch_deck",
+        "financial_projections"
+      ],
+      "mappings": {
+        "pitch_deck": "fundraising_ask.amount_raising",
+        "financial_projections": "funding_ask.funding_ask_amount"
+      }
+    },
+    {
+      "canonical_name": "Ownership.<holder_name>",
+      "strategy": "ownership",
+      "tolerance": "Exact",
+      "severity": "CRITICAL",
+      "required": true,
+      "authoritative_order": [
+        "cap_table"
+      ],
+      "mappings": {
+        "cap_table": "shareholders[].ownership_percentage"
+      }
+    }
+  ]
+}

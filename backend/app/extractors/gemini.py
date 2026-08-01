@@ -1,8 +1,10 @@
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 import os
 import json
 import logging
 from app.prompts.base import BasePrompt
+from app.core.logging import DuelensLogger
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +12,7 @@ class GeminiCaller:
     @staticmethod
     def call_gemini(prompt: str, system_instruction: str = BasePrompt.SYSTEM_INSTRUCTION, document_type: str = None) -> str:
         """
-        Calls the Gemini API using the google-generativeai library.
+        Calls the Gemini API using the official google-genai library.
         If the API key is not set, or is a placeholder/mock key, or the call fails,
         it falls back to returning high-quality mock data populated into the specific template JSON.
         """
@@ -36,31 +38,31 @@ class GeminiCaller:
         is_mock = not api_key or api_key.startswith("AQ.") or "dummy" in api_key.lower()
         
         if is_mock:
-            logger.info(f"Using mock extraction template response for document type: {doc_type}")
+            DuelensLogger.log("Gemini", "CACHE_HIT", f"Using mock extraction template response for document type: {doc_type}")
             return GeminiCaller.get_mock_document_json(doc_type)
 
+        model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
         try:
-            genai.configure(api_key=api_key)
-            model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+            client = genai.Client(api_key=api_key)
             
-            model = genai.GenerativeModel(
-                model_name=model_name,
+            config = types.GenerateContentConfig(
+                temperature=0.1,
+                response_mime_type="application/json",
                 system_instruction=system_instruction
             )
             
-            generation_config = genai.types.GenerationConfig(
-                temperature=0.1,
-                response_mime_type="application/json"
+            DuelensLogger.log("Gemini", "REQUEST", f"Calling model {model_name} for document type: {doc_type}")
+            
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=config
             )
             
-            response = model.generate_content(
-                prompt,
-                generation_config=generation_config
-            )
-            
+            DuelensLogger.log("Gemini", "RESPONSE", f"Model {model_name} responded successfully")
             return response.text.strip()
         except Exception as e:
-            logger.error(f"Gemini API call failed: {str(e)}. Falling back to high-quality mock template data.")
+            DuelensLogger.log("Gemini", "ERROR", f"Gemini API call failed: {str(e)}. Falling back to mock data.", error=e)
             return GeminiCaller.get_mock_document_json(doc_type)
 
     @staticmethod

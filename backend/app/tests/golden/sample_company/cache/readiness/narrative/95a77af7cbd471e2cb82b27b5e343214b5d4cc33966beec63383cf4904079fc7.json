@@ -1,0 +1,14 @@
+{
+  "strengths": [
+    "Clean company name verification matching across all structures",
+    "Complete cap table information"
+  ],
+  "risks": [
+    "Required fields in Revenue.FY24 are missing entirely"
+  ],
+  "next_steps": [
+    "Upload MIS historical reports for FY24",
+    "Reconcile the funding round ask amount"
+  ],
+  "executive_summary": "The evaluations yield a readiness score of 84 with minor changes recommended before investor review."
+}

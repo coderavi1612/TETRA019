@@ -1,0 +1,250 @@
+{
+  "matrix": {
+    "Ownership.John_Doe": {
+      "cap_table": {
+        "document_type": "cap_table",
+        "original_path": "shareholders[].ownership_percentage",
+        "canonical_path": "Ownership.John_Doe",
+        "value": 60.0,
+        "unit": "%",
+        "currency": null,
+        "source_block_id": "cap_table.xlsx",
+        "page": null,
+        "slide": null,
+        "sheet": "Cap Table",
+        "extracted_text_snippet": null,
+        "normalized_value": 60.0,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "Ownership.Jane_Smith": {
+      "cap_table": {
+        "document_type": "cap_table",
+        "original_path": "shareholders[].ownership_percentage",
+        "canonical_path": "Ownership.Jane_Smith",
+        "value": 40.0,
+        "unit": "%",
+        "currency": null,
+        "source_block_id": "cap_table.xlsx",
+        "page": null,
+        "slide": null,
+        "sheet": "Cap Table",
+        "extracted_text_snippet": null,
+        "normalized_value": 40.0,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "FundingAskAmount": {
+      "financial_projections": {
+        "document_type": "financial_projections",
+        "original_path": "funding_ask.funding_ask_amount",
+        "canonical_path": "FundingAskAmount",
+        "value": 20000000,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": "financial_projections.xlsx",
+        "page": null,
+        "slide": null,
+        "sheet": "FY2026 Projection",
+        "extracted_text_snippet": null,
+        "normalized_value": 20000000.0,
+        "normalized_unit": null,
+        "normalized_currency": null
+      },
+      "pitch_deck": {
+        "document_type": "pitch_deck",
+        "original_path": "fundraising_ask.amount_raising",
+        "canonical_path": "FundingAskAmount",
+        "value": 20000000,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": "investor_deck.pptx",
+        "page": null,
+        "slide": 1,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": 20000000.0,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "Revenue.FY25": {
+      "historical_financial_statements": {
+        "document_type": "historical_financial_statements",
+        "original_path": "financial_periods[].income_statement.revenue_total",
+        "canonical_path": "Revenue.FY25",
+        "value": 9000000,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": "test_financials.xlsx",
+        "page": 1,
+        "slide": null,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": 9000000.0,
+        "normalized_unit": null,
+        "normalized_currency": null
+      },
+      "pitch_deck": {
+        "document_type": "pitch_deck",
+        "original_path": "financial_highlights.revenue",
+        "canonical_path": "Revenue.FY25",
+        "value": null,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": null,
+        "page": null,
+        "slide": null,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": null,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "EBITDA.FY25": {
+      "historical_financial_statements": {
+        "document_type": "historical_financial_statements",
+        "original_path": "financial_periods[].income_statement.ebitda",
+        "canonical_path": "EBITDA.FY25",
+        "value": null,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": null,
+        "page": null,
+        "slide": null,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": null,
+        "normalized_unit": null,
+        "normalized_currency": null
+      },
+      "pitch_deck": {
+        "document_type": "pitch_deck",
+        "original_path": "financial_highlights.ebitda",
+        "canonical_path": "EBITDA.FY25",
+        "value": null,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": null,
+        "page": null,
+        "slide": null,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": null,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "CompanyLegalName": {
+      "pitch_deck": {
+        "document_type": "pitch_deck",
+        "original_path": "company_identity.company_name",
+        "canonical_path": "CompanyLegalName",
+        "value": "Duelens Inc",
+        "unit": null,
+        "currency": null,
+        "source_block_id": "investor_deck.pptx",
+        "page": null,
+        "slide": 1,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": "Duelens Inc",
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "Revenue.FY24": {
+      "pitch_deck": {
+        "document_type": "pitch_deck",
+        "original_path": "financial_highlights.revenue",
+        "canonical_path": "Revenue.FY24",
+        "value": null,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": null,
+        "page": null,
+        "slide": null,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": null,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "Revenue.FY26": {
+      "pitch_deck": {
+        "document_type": "pitch_deck",
+        "original_path": "financial_highlights.revenue",
+        "canonical_path": "Revenue.FY26",
+        "value": null,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": null,
+        "page": null,
+        "slide": null,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": null,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "EBITDA.FY24": {
+      "pitch_deck": {
+        "document_type": "pitch_deck",
+        "original_path": "financial_highlights.ebitda",
+        "canonical_path": "EBITDA.FY24",
+        "value": null,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": null,
+        "page": null,
+        "slide": null,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": null,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "NetProfitLoss.FY24": {
+      "pitch_deck": {
+        "document_type": "pitch_deck",
+        "original_path": "financial_highlights.net_profit_or_loss",
+        "canonical_path": "NetProfitLoss.FY24",
+        "value": null,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": null,
+        "page": null,
+        "slide": null,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": null,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    },
+    "CashBalance.FY24": {
+      "pitch_deck": {
+        "document_type": "pitch_deck",
+        "original_path": "financial_highlights.cash_balance",
+        "canonical_path": "CashBalance.FY24",
+        "value": null,
+        "unit": "INR",
+        "currency": null,
+        "source_block_id": null,
+        "page": null,
+        "slide": null,
+        "sheet": null,
+        "extracted_text_snippet": null,
+        "normalized_value": null,
+        "normalized_unit": null,
+        "normalized_currency": null
+      }
+    }
+  }
+}

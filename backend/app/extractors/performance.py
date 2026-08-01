@@ -1,34 +1,31 @@
 import time
 from typing import Dict
+from app.core import PerformanceCollector
 
-class PerformanceTracker:
+class PerformanceTracker(PerformanceCollector):
     def __init__(self):
-        self.timings: Dict[str, float] = {
-            "startup_time_ms": 0.0,
-            "document_load_time_ms": 0.0,
-            "chunking_time_ms": 0.0,
-            "prompt_build_time_ms": 0.0,
-            "gemini_time_ms": 0.0,
-            "repair_time_ms": 0.0,
-            "validation_time_ms": 0.0,
-            "merge_time_ms": 0.0,
-            "verification_time_ms": 0.0,
-            "manifest_generation_time_ms": 0.0,
-            "total_time_ms": 0.0
-        }
-        self._start_times: Dict[str, float] = {}
-
-    def start(self, name: str) -> None:
-        self._start_times[name] = time.time()
-
-    def stop(self, name: str) -> None:
-        if name in self._start_times:
-            duration_ms = (time.time() - self._start_times[name]) * 1000.0
-            self.timings[name] = self.timings.get(name, 0.0) + duration_ms
-            del self._start_times[name]
+        super().__init__()
+        # Preset initial default values
+        for name in [
+            "startup_time_ms", "document_load_time_ms", "chunking_time_ms",
+            "prompt_build_time_ms", "gemini_time_ms", "repair_time_ms",
+            "validation_time_ms", "merge_time_ms", "verification_time_ms",
+            "manifest_generation_time_ms", "total_time_ms"
+        ]:
+            self._stages[name] = 0
 
     def record(self, name: str, value_ms: float) -> None:
-        self.timings[name] = value_ms
+        self._stages[name] = int(round(value_ms))
 
-    def get_timings(self) -> Dict[str, int]:
-        return {k: int(round(v)) for k, v in self.timings.items()}
+    def stop(self, name: str) -> int:
+        if name in self._stages:
+            val = self._stages[name]
+            # If val is still a start timestamp
+            if isinstance(val, float) and val > 1000000000.0:
+                duration = int((time.time() - val) * 1000)
+                accum_key = f"{name}_accum"
+                total_duration = self._stages.get(accum_key, 0) + duration
+                self._stages[accum_key] = total_duration
+                self._stages[name] = total_duration
+                return duration
+        return 0
