@@ -37,7 +37,6 @@ class GeminiReasoningClient(BaseReasoningClient):
 
         is_mock = (
             not self.api_key or 
-            self.api_key == "AIzaSyBTR-BXbSPun3rOHl1q59hSBVqSlKChBCE" or
             any(kw in self.api_key.lower() for kw in ["dummy", "mock", "test", "fake", "temp"])
         )
 

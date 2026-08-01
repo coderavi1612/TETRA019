@@ -104,9 +104,8 @@ class FactExtractor:
             logger.info(f"[{company_id}][{doc_type}] Starting extraction pipeline...")
             
             api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-            is_mock_mode = (
+            is_mock = (
                 not api_key or 
-                api_key == "AIzaSyBTR-BXbSPun3rOHl1q59hSBVqSlKChBCE" or
                 any(kw in api_key.lower() for kw in ["dummy", "mock", "test", "fake", "temp"])
             )
             
