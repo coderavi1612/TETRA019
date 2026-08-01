@@ -141,3 +141,29 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+# Project specific ignores
+node_modules/
+.DS_Store
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Application uploads and outputs
+backend/app/uploads/*
+!backend/app/uploads/.gitkeep
+!backend/app/uploads/comp_test_abc/
+backend/app/outputs/*
+!backend/app/outputs/.gitkeep
+
+
+*.yaml
+*.md
