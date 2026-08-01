@@ -29,6 +29,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import uuid
+from starlette.middleware.base import BaseHTTPMiddleware
+from app.core import request_id_var
+
+class RequestIdMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        req_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+        token = request_id_var.set(req_id)
+        try:
+            response = await call_next(request)
+            response.headers["X-Request-ID"] = req_id
+            return response
+        finally:
+            request_id_var.reset(token)
+
+app.add_middleware(RequestIdMiddleware)
+
 from app.core import setup_logging, validate_startup_state
 setup_logging()
 
@@ -43,6 +60,14 @@ app.include_router(parse_router, prefix="/api/v1/parse", tags=["Parse"])
 app.include_router(extract_router, prefix="/api/v1/extract", tags=["Extract"])
 app.include_router(verify_router, prefix="/api/v1/verify", tags=["Verify"])
 app.include_router(readiness_router, prefix="/api/v1/readiness", tags=["Readiness"])
+
+from app.api.pipeline import router as pipeline_router
+from app.api.companies import router as companies_router
+from app.api.artifacts import router as artifacts_router
+
+app.include_router(pipeline_router, prefix="/api/v1/pipeline", tags=["Pipeline"])
+app.include_router(companies_router, prefix="/api/v1/companies", tags=["Companies"])
+app.include_router(artifacts_router, prefix="/api/v1", tags=["Artifacts"])
 
 @app.get("/")
 async def root():
