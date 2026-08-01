@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { AppNavbar, type ViewTab } from "@/components/duelens/AppNavbar";
+import { AppSidebar, type ViewTab, type UploadHistoryEntry } from "@/components/duelens/AppSidebar";
 import { UploadCard } from "@/components/duelens/UploadCard";
 import { ClassificationTable } from "@/components/duelens/ClassificationTable";
 import { ClassificationModal } from "@/components/duelens/ClassificationModal";
@@ -16,9 +16,10 @@ import { DuelensDataProvider, useDuelensData } from "@/context/DuelensDataContex
 import { ExtractionReviewView } from "@/components/duelens/views/ExtractionReviewView";
 import { ComparisonMatrixView } from "@/components/duelens/views/ComparisonMatrixView";
 import { ExceptionsDashboardView } from "@/components/duelens/views/ExceptionsDashboardView";
-import { IssueDetailView } from "@/components/duelens/views/IssueDetailView";
 import { FollowUpQuestionsView } from "@/components/duelens/views/FollowUpQuestionsView";
 import { ReadinessSummaryView } from "@/components/duelens/views/ReadinessSummaryView";
+
+const HISTORY_STORAGE_KEY = "duelens_upload_history";
 
 type IntakeStage = "upload" | "classify" | "processing";
 
@@ -36,26 +37,81 @@ function AppPageContent() {
   const [files, setFiles] = useState<string[]>([]);
   const [rows, setRows] = useState<Classified[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedIssueId, setSelectedIssueId] = useState<string>("");
+  const [history, setHistory] = useState<UploadHistoryEntry[]>([]);
 
-  const { loadAllData, companyId } = useDuelensData();
+  const { loadAllData, companyId, setCompanyId, resetState } = useDuelensData();
+
+  // Load history from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
+      if (stored) setHistory(JSON.parse(stored));
+    } catch {
+      // ignore parse errors
+    }
+  }, []);
+
+  // Persist history to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
+    } catch {
+      // ignore storage errors
+    }
+  }, [history]);
 
   const onDoneProcessing = useCallback(async () => {
     // Re-fetch all backend generated files once pipeline processing finishes
     await loadAllData(companyId);
-    setCurrentTab("extraction");
-  }, [companyId, loadAllData]);
 
-  const handleSelectIssue = (issueId: string) => {
-    setSelectedIssueId(issueId);
-    setCurrentTab("issue");
-  };
+    // Add this session to history
+    const entry: UploadHistoryEntry = {
+      id: `${Date.now()}`,
+      companyId,
+      label: companyId,
+      uploadedAt: new Date().toISOString(),
+      fileCount: files.length,
+      status: "completed",
+    };
+    setHistory((prev) => {
+      // Avoid duplicate entries for the same companyId
+      const filtered = prev.filter((h) => h.companyId !== companyId);
+      return [entry, ...filtered].slice(0, 20); // cap at 20 entries
+    });
+
+    setCurrentTab("extraction");
+  }, [companyId, files.length, loadAllData]);
+
+  const handleLoadHistory = useCallback(
+    async (entry: UploadHistoryEntry) => {
+      resetState();
+      setCompanyId(entry.companyId);
+      await loadAllData(entry.companyId);
+      setCurrentTab("extraction");
+    },
+    [loadAllData, resetState, setCompanyId]
+  );
+
+  const handleDeleteHistory = useCallback((id: string) => {
+    setHistory((prev) => prev.filter((h) => h.id !== id));
+  }, []);
 
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col">
-      <AppNavbar currentTab={currentTab} onTabChange={setCurrentTab} />
+    <div className="flex min-h-screen bg-background text-foreground">
+      {/* ── Sidebar ───────────────────────────────────────── */}
+      <AppSidebar
+        currentTab={currentTab}
+        onTabChange={setCurrentTab}
+        history={history}
+        onLoadHistory={handleLoadHistory}
+        onDeleteHistory={handleDeleteHistory}
+        currentCompanyId={companyId}
+      />
 
-      <div className="mx-auto w-full max-w-7xl flex-1 px-5 py-8">
+      {/* ── Main content (offset by sidebar width = 256px) ── */}
+      <main className="flex flex-1 flex-col pl-64">
+
+      <div className="flex-1 px-6 py-8">
         <AnimatePresence mode="wait">
           {/* Tab 1: Upload & Intake */}
           {currentTab === "intake" && (
@@ -66,28 +122,82 @@ function AppPageContent() {
               exit={{ opacity: 0, y: -12 }}
               className="space-y-8"
             >
-              {/* Step Bar for Intake */}
-              <div className="flex items-center gap-2 overflow-x-auto rounded-2xl border border-border bg-muted/40 p-2">
-                {[
-                  { id: "upload", label: "1. Document Intake" },
-                  { id: "classify", label: "2. Document Classification" },
-                  { id: "processing", label: "3. Deep Integrity Audit" },
-                ].map((s) => {
-                  const active = intakeStage === s.id;
-                  return (
-                    <button
-                      key={s.id}
-                      onClick={() => setIntakeStage(s.id as IntakeStage)}
-                      className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${
-                        active
-                          ? "bg-primary text-primary-foreground shadow-xs"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {s.label}
-                    </button>
-                  );
-                })}
+              {/* Pipeline Stepper */}
+              <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5">
+                <div className="flex items-center justify-between">
+                  {[
+                    { id: "upload", num: 1, label: "Document Intake", desc: "Upload fundraising files" },
+                    { id: "classify", num: 2, label: "Classification", desc: "Verify document types" },
+                    { id: "processing", num: 3, label: "Deep Integrity Audit", desc: "AI-powered analysis" },
+                  ].map((s, idx) => {
+                    const stages = ["upload", "classify", "processing"];
+                    const currentIdx = stages.indexOf(intakeStage);
+                    const stepIdx = stages.indexOf(s.id);
+                    const isActive = intakeStage === s.id;
+                    const isCompleted = stepIdx < currentIdx;
+
+                    return (
+                      <div key={s.id} className="flex items-center flex-1 last:flex-initial">
+                        {/* Step circle + label */}
+                        <button
+                          onClick={() => setIntakeStage(s.id as IntakeStage)}
+                          className="flex items-center gap-3 group"
+                        >
+                          <span
+                            className={`flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ${
+                              isActive
+                                ? "bg-primary text-primary-foreground shadow-[var(--shadow-glow)] scale-110"
+                                : isCompleted
+                                  ? "bg-primary/15 text-primary ring-2 ring-primary/30"
+                                  : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              s.num
+                            )}
+                          </span>
+                          <div className="text-left hidden sm:block">
+                            <p
+                              className={`text-xs font-bold transition-colors ${
+                                isActive
+                                  ? "text-foreground"
+                                  : isCompleted
+                                    ? "text-primary"
+                                    : "text-muted-foreground"
+                              }`}
+                            >
+                              {s.label}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                              {isCompleted ? "Completed" : s.desc}
+                            </p>
+                          </div>
+                        </button>
+
+                        {/* Connector line */}
+                        {idx < 2 && (
+                          <div className="flex-1 mx-4 hidden sm:block">
+                            <div className="h-[2px] rounded-full bg-border relative overflow-hidden">
+                              <div
+                                className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ease-out ${
+                                  isCompleted
+                                    ? "w-full bg-primary/50"
+                                    : isActive
+                                      ? "w-1/2 bg-primary/30"
+                                      : "w-0"
+                                }`}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
 
               {intakeStage === "upload" && (
@@ -136,7 +246,7 @@ function AppPageContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
             >
-              <ComparisonMatrixView onSelectIssue={handleSelectIssue} />
+              <ComparisonMatrixView />
             </motion.div>
           )}
 
@@ -148,24 +258,11 @@ function AppPageContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
             >
-              <ExceptionsDashboardView onSelectIssue={handleSelectIssue} />
+              <ExceptionsDashboardView />
             </motion.div>
           )}
 
-          {/* Tab 5: Issue Detail */}
-          {currentTab === "issue" && (
-            <motion.div
-              key="tab-issue"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-            >
-              <IssueDetailView
-                issueId={selectedIssueId}
-                onBack={() => setCurrentTab("exceptions")}
-              />
-            </motion.div>
-          )}
+
 
           {/* Tab 6: Follow-up Questions */}
           {currentTab === "questions" && (
@@ -193,15 +290,16 @@ function AppPageContent() {
         </AnimatePresence>
       </div>
 
-      <ClassificationModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        rows={rows}
-        onSave={setRows}
-      />
+        <ClassificationModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          rows={rows}
+          onSave={setRows}
+        />
 
-      <Footer />
-      <Toaster />
-    </main>
+        <Footer />
+        <Toaster />
+      </main>
+    </div>
   );
 }
