@@ -98,17 +98,30 @@ export interface Question {
 }
 
 export interface ReadinessSummary {
-  overall_readiness_score: number;
-  scoring_breakdown: {
+  company_id?: string;
+  company_name?: string | null;
+  overall_status?: string;
+  readiness_score?: number;
+  overall_readiness_score?: number;
+  scoring_breakdown?: {
     completeness: number;
     consistency: number;
     recency: number;
     factuality: number;
   };
-  overall_evaluation_narrative: string;
-  key_positives: string[];
-  critical_gaps: string[];
-  recommendations: string[];
+  overall_evaluation_narrative?: string;
+  key_positives?: string[];
+  critical_gaps?: string[];
+  recommendations?: string[];
+  documents_reviewed?: string[];
+  verified_matches?: number;
+  verified_mismatches?: number;
+  missing_information?: number;
+  unresolved_inconsistencies?: number;
+  strengths?: string[];
+  risks?: string[];
+  next_steps?: string[];
+  executive_summary?: string;
 }
 
 export interface ExecutiveSummary {
@@ -143,3 +156,12 @@ export interface ExtractionDocument {
   historical_financial_statements?: Record<string, unknown>;
   [key: string]: unknown;
 }
+
+export interface CompanyRunSummary {
+  company_id: string;
+  job_id: string;
+  status: string;
+  updated_at: string | null;
+  file_count: number;
+}
+

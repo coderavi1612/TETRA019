@@ -2,10 +2,10 @@
   "schema_version": "1.0",
   "pipeline_version": "1.0",
   "comparison_version": "1.0",
-  "registry_version": "b9983152a950dd63",
+  "registry_version": "1.0",
   "prompt_version": "v1",
   "prompt_hashes": {},
-  "model": "gemini-3.5-flash-lite",
+  "model": "gemini-3.1-flash-lite",
   "temperature": 0.1,
   "cache_hits": 8,
   "cache_misses": 0,
@@ -15,8 +15,8 @@
   "report_hashes": {
     "inconsistency_report.json": "3ba4fb190a72b7df5863c3a950373e7f4d82c0ccb2d6b952ff1feb3f2fe1dbe1",
     "follow_up_questions.json": "96faaebf6949bbf99da7ce5de1e42d08d730e45ac6d8b72de967f529355ed65d",
-    "executive_summary.json": "00de1a5c2ba8950e30c54247baa30c90640607e9b739780140e5b3aed51b1e3b",
-    "readiness_summary.json": "b2a8a8061d1fb145458a20956e733c8732284f50dec103da4be23f6bb7551555"
+    "executive_summary.json": "f1c2df44948289348a0e0cd2b4da59f4a04111180ba10aafd3b39349e051995e",
+    "readiness_summary.json": "ce01e8e0a482c29a21651e0afe158fc0d6d208f9ff043c42d79a9edb46587c0f"
   },
   "generated_files": [
     "readiness_summary.json",

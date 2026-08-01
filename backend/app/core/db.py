@@ -109,16 +109,20 @@ def save_pipeline_output(
     size_bytes: int,
     text_content: str = None,
     binary_content: bytes = None,
-    generated_at = None
+    generated_at = None,
+    conn = None
 ):
     """
-    Saves or updates a pipeline stage output file in the database.
+    Saves or updates a pipeline stage output file in the database. Reuses connection if provided.
     """
-    conn = None
+    local_conn = conn
+    should_close = False
     try:
-        conn = get_db_connection()
-        cur = conn.cursor()
+        if not local_conn:
+            local_conn = get_db_connection()
+            should_close = True
         
+        cur = local_conn.cursor()
         cur.execute("""
             INSERT INTO pipeline_outputs (
                 job_id, company_id, stage, category, file_name, mime_type, 
@@ -137,15 +141,17 @@ def save_pipeline_output(
             size_bytes, text_content, binary_content, generated_at
         ))
         
-        conn.commit()
         cur.close()
+        if should_close:
+            local_conn.commit()
     except Exception as e:
         logger.error(f"Error saving pipeline output {file_name} for job {job_id}: {e}", exc_info=True)
-        if conn:
-            conn.rollback()
+        if local_conn and should_close:
+            local_conn.rollback()
+        raise e
     finally:
-        if conn:
-            conn.close()
+        if local_conn and should_close:
+            local_conn.close()
 
 def sync_company_artifacts_to_db(company_id: str, job_id: str):
     """
@@ -181,47 +187,104 @@ def sync_company_artifacts_to_db(company_id: str, job_id: str):
 
     logger.info(f"Syncing artifacts to DB for company={company_id}, job_id={job_id}...")
 
-    for cat in categories:
-        cat_dir = os.path.join(company_dir, cat)
-        if os.path.exists(cat_dir) and os.path.isdir(cat_dir):
-            for filename in os.listdir(cat_dir):
-                file_path = os.path.join(cat_dir, filename)
-                if os.path.isfile(file_path):
-                    try:
-                        stat_info = os.stat(file_path)
-                        ext = os.path.splitext(filename)[1].lower()
-                        mime = extension_to_mime.get(ext, mimetypes.guess_type(file_path)[0] or "application/octet-stream")
-                        
-                        mtime = stat_info.st_mtime
-                        generated_at = datetime.datetime.fromtimestamp(mtime, datetime.timezone.utc)
-                        size_bytes = stat_info.st_size
-                        stage = category_to_stage.get(cat, "system")
+    conn = None
+    try:
+        conn = get_db_connection()
+        for cat in categories:
+            cat_dir = os.path.join(company_dir, cat)
+            if os.path.exists(cat_dir) and os.path.isdir(cat_dir):
+                for filename in os.listdir(cat_dir):
+                    file_path = os.path.join(cat_dir, filename)
+                    if os.path.isfile(file_path):
+                        try:
+                            stat_info = os.stat(file_path)
+                            ext = os.path.splitext(filename)[1].lower()
+                            mime = extension_to_mime.get(ext, mimetypes.guess_type(file_path)[0] or "application/octet-stream")
+                            
+                            mtime = stat_info.st_mtime
+                            generated_at = datetime.datetime.fromtimestamp(mtime, datetime.timezone.utc)
+                            size_bytes = stat_info.st_size
+                            stage = category_to_stage.get(cat, "system")
 
-                        text_content = None
-                        binary_content = None
+                            text_content = None
+                            binary_content = None
 
-                        if ext == ".pdf":
-                            # Read as binary
-                            with open(file_path, "rb") as f:
-                                binary_content = f.read()
-                        else:
-                            # Read as text
-                            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                                text_content = f.read()
+                            if ext == ".pdf":
+                                # Read as binary
+                                with open(file_path, "rb") as f:
+                                    binary_content = f.read()
+                            else:
+                                # Read as text
+                                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                                    text_content = f.read()
 
-                        save_pipeline_output(
-                            job_id=job_id,
-                            company_id=company_id,
-                            stage=stage,
-                            category=cat,
-                            file_name=filename,
-                            mime_type=mime,
-                            size_bytes=size_bytes,
-                            text_content=text_content,
-                            binary_content=binary_content,
-                            generated_at=generated_at
-                        )
-                    except Exception as ex:
-                        logger.error(f"Failed to sync file {filename} in category {cat} to DB: {ex}", exc_info=True)
+                            save_pipeline_output(
+                                job_id=job_id,
+                                company_id=company_id,
+                                stage=stage,
+                                category=cat,
+                                file_name=filename,
+                                mime_type=mime,
+                                size_bytes=size_bytes,
+                                text_content=text_content,
+                                binary_content=binary_content,
+                                generated_at=generated_at,
+                                conn=conn
+                            )
+                        except Exception as ex:
+                            logger.error(f"Failed to sync file {filename} in category {cat} to DB: {ex}", exc_info=True)
+        conn.commit()
+        logger.info(f"Syncing artifacts to DB completed for company={company_id}, job_id={job_id}.")
+    except Exception as e:
+        logger.error(f"Error syncing company artifacts to DB: {e}", exc_info=True)
+        if conn:
+            conn.rollback()
+    finally:
+        if conn:
+            conn.close()
 
-    logger.info(f"Syncing artifacts to DB completed for company={company_id}, job_id={job_id}.")
+
+def get_all_companies_summary():
+    """
+    Retrieves a list of all companies from pipeline_runs, with their latest job status,
+    updated timestamp, and count of parsed documents.
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT r.company_id, r.job_id, r.status, r.updated_at, 
+                   COALESCE(c.file_count, 0) as file_count
+            FROM (
+                SELECT DISTINCT ON (company_id) company_id, job_id, status, updated_at
+                FROM pipeline_runs
+                ORDER BY company_id, updated_at DESC
+            ) r
+            LEFT JOIN (
+                SELECT job_id, COUNT(*) as file_count 
+                FROM pipeline_outputs 
+                WHERE category = 'parsed'
+                GROUP BY job_id
+            ) c ON r.job_id = c.job_id
+            ORDER BY r.updated_at DESC;
+        """)
+        rows = cur.fetchall()
+        cur.close()
+        return [
+            {
+                "company_id": row[0],
+                "job_id": row[1],
+                "status": row[2],
+                "updated_at": row[3].isoformat() if row[3] else None,
+                "file_count": row[4]
+            }
+            for row in rows
+        ]
+    except Exception as e:
+        logger.error(f"Error getting companies summary: {e}", exc_info=True)
+        return []
+    finally:
+        if conn:
+            conn.close()
+

@@ -135,7 +135,7 @@ export const DuelensDataProvider: React.FC<{ children: ReactNode }> = ({ childre
         const mappedIssues: Issue[] = (issuesList || []).map((issue: any) => {
           const sourceValues: Record<string, unknown> = {};
           if (issue.evidence) {
-            issue.evidence.forEach((ev) => {
+            issue.evidence.forEach((ev: { document: string; value: unknown }) => {
               sourceValues[ev.document] = ev.value;
             });
           }

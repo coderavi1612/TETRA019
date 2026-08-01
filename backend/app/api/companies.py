@@ -7,6 +7,36 @@ from app.pipeline import JobManager, PipelineStatusManager
 
 router = APIRouter()
 
+@router.get("")
+async def list_all_companies():
+    from app.core.db import get_all_companies_summary
+    from app.core import get_utc_now_iso
+    
+    summary = get_all_companies_summary()
+    
+    # Fallback to filesystem if DB has no runs but outputs exist
+    if not summary and os.path.exists(settings.OUTPUT_DIR):
+        summary = []
+        for item in os.listdir(settings.OUTPUT_DIR):
+            item_path = os.path.join(settings.OUTPUT_DIR, item)
+            if os.path.isdir(item_path):
+                # Count files in parsed directory
+                parsed_dir = os.path.join(item_path, "parsed")
+                docs_count = 0
+                if os.path.exists(parsed_dir) and os.path.isdir(parsed_dir):
+                    docs_count = len([f for f in os.listdir(parsed_dir) if f.endswith(".json")])
+                
+                summary.append({
+                    "company_id": item,
+                    "job_id": "none",
+                    "status": "COMPLETED",
+                    "updated_at": get_utc_now_iso(),
+                    "file_count": docs_count
+                })
+    
+    return success_response(summary)
+
+
 @router.get("/{company_id}")
 async def get_company_metadata(company_id: str):
     clean_company_id = company_id.strip()

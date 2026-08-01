@@ -11,6 +11,7 @@ import { Footer } from "@/components/duelens/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { Classified } from "@/data/mock";
 import { DuelensDataProvider, useDuelensData } from "@/context/DuelensDataContext";
+import { listAllCompanies } from "@/lib/api";
 
 // Views
 import { ExtractionReviewView } from "@/components/duelens/views/ExtractionReviewView";
@@ -18,8 +19,6 @@ import { ComparisonMatrixView } from "@/components/duelens/views/ComparisonMatri
 import { ExceptionsDashboardView } from "@/components/duelens/views/ExceptionsDashboardView";
 import { FollowUpQuestionsView } from "@/components/duelens/views/FollowUpQuestionsView";
 import { ReadinessSummaryView } from "@/components/duelens/views/ReadinessSummaryView";
-
-const HISTORY_STORAGE_KEY = "duelens_upload_history";
 
 type IntakeStage = "upload" | "classify" | "processing";
 
@@ -41,46 +40,38 @@ function AppPageContent() {
 
   const { loadAllData, companyId, setCompanyId, resetState } = useDuelensData();
 
-  // Load history from localStorage on mount
-  useEffect(() => {
+  // Load history from database
+  const loadGlobalHistory = useCallback(async () => {
     try {
-      const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
-      if (stored) setHistory(JSON.parse(stored));
-    } catch {
-      // ignore parse errors
+      const dbCompanies = await listAllCompanies();
+      const mapped: UploadHistoryEntry[] = dbCompanies.map((c) => ({
+        id: c.job_id !== "none" ? c.job_id : c.company_id,
+        companyId: c.company_id,
+        label: c.company_id,
+        uploadedAt: c.updated_at || new Date().toISOString(),
+        fileCount: c.file_count,
+        status: (c.status.toLowerCase() === "running" || c.status.toLowerCase() === "accepted" ? "processing" : c.status.toLowerCase() === "failed" ? "failed" : "completed") as "completed" | "processing" | "failed",
+      }));
+      setHistory(mapped);
+    } catch (err) {
+      console.error("Failed to load global history:", err);
     }
   }, []);
 
-  // Persist history to localStorage whenever it changes
+  // Load history on mount
   useEffect(() => {
-    try {
-      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history));
-    } catch {
-      // ignore storage errors
-    }
-  }, [history]);
+    loadGlobalHistory();
+  }, [loadGlobalHistory]);
 
   const onDoneProcessing = useCallback(async () => {
     // Re-fetch all backend generated files once pipeline processing finishes
     await loadAllData(companyId);
 
-    // Add this session to history
-    const entry: UploadHistoryEntry = {
-      id: `${Date.now()}`,
-      companyId,
-      label: companyId,
-      uploadedAt: new Date().toISOString(),
-      fileCount: files.length,
-      status: "completed",
-    };
-    setHistory((prev) => {
-      // Avoid duplicate entries for the same companyId
-      const filtered = prev.filter((h) => h.companyId !== companyId);
-      return [entry, ...filtered].slice(0, 20); // cap at 20 entries
-    });
+    // Refresh history list from DB
+    await loadGlobalHistory();
 
     setCurrentTab("extraction");
-  }, [companyId, files.length, loadAllData]);
+  }, [companyId, loadAllData, loadGlobalHistory]);
 
   const handleLoadHistory = useCallback(
     async (entry: UploadHistoryEntry) => {
