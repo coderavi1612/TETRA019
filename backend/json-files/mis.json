@@ -1,0 +1,194 @@
+{
+  "document_metadata": {
+    "document_type": "monthly_mis_report",
+    "file_name": null,
+    "company_legal_name": null,
+    "mis_period": null,
+    "currency": null,
+    "date_of_preparation": null,
+    "version_or_revision_number": null,
+    "prepared_by": null,
+    "approved_by": null,
+    "source_file_reference": null
+  },
+
+  "profit_and_loss_summary": {
+    "revenue_total": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "revenue_recurring": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "revenue_non_recurring": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "cogs": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "gross_margin_amount": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "gross_margin_percent": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "opex_people": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "opex_marketing": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "opex_tech_infra": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "opex_g_and_a": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "ebitda": { "value": null, "unit": "INR", "period": null, "actual_vs_budget": null, "source_reference": null, "extracted_text_snippet": null },
+    "net_profit_or_loss": { "value": null, "unit": "INR", "period": null, "actual_vs_budget": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "cash_and_liquidity": {
+    "opening_cash_balance": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "cash_inflows": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "cash_outflows": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "closing_cash_balance": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "net_monthly_burn": { "value": null, "unit": "INR/month", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "runway_months": { "value": null, "unit": "months", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "bank_balances_by_account": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "restricted_or_escrow_cash": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "revenue_and_growth_metrics": {
+    "mrr_or_arr": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "monthly_gmv_or_sales_value": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "mom_growth_percent": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "yoy_growth_percent": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "revenue_mix_by_product_line": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "revenue_mix_by_customer_segment": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "revenue_mix_by_geography": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "active_customer_count": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "new_customers_added": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "customers_churned": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "unit_economics": {
+    "cac": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "ltv": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "monthly_churn_rate": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "logo_churn_rate": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "net_revenue_retention": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "balance_sheet_snapshot": {
+    "accounts_receivable": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "accounts_receivable_ageing": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "accounts_payable": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "accounts_payable_ageing": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "total_debt_outstanding": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "debt_covenant_status": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "headcount": {
+    "total_headcount_month_end": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "hires_during_month": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "exits_during_month": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "headcount_by_department": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "budget_vs_actual_variance": {
+    "revenue_variance": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "ebitda_variance": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "opex_variance": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "variance_commentary": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "optional_value_add": {
+    "expense_detail_by_department": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "marketing_funnel_impressions": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "marketing_funnel_leads": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "marketing_funnel_conversion_rate": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "cac_by_channel": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "dau_mau": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "feature_adoption": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "engagement_score": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "top_10_customer_concentration": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "single_customer_revenue_dependency": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "debt_repayment_schedule": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "upcoming_debt_maturities": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "hiring_plan_vs_actual": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "management_commentary": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "fundraising_status_tracker": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "esop_pool_utilisation": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "cross_document_checkpoints": {
+    "monthly_revenue": {
+      "compare_against": ["financial_statements.pnl", "financial_projections.actual_to_date_column"],
+      "expected_match_logic": "MIS actual revenue should tie to the P&L for the same month and align with projection's actual-vs-plan tracking",
+      "typical_flag": "Revenue in MIS differs from audited/management P&L for same month",
+      "status": null,
+      "notes": null
+    },
+    "revenue_growth_trend": {
+      "compare_against": ["pitch_deck.traction_slide"],
+      "expected_match_logic": "Growth % and absolute revenue trend in deck should be consistent with last 3-6 months of MIS data",
+      "typical_flag": "Deck shows higher growth or revenue than MIS supports",
+      "status": null,
+      "notes": null
+    },
+    "customer_user_count": {
+      "compare_against": ["pitch_deck.traction_slide", "pitch_deck.logos"],
+      "expected_match_logic": "Active customer count and named marquee customers in deck should reconcile to MIS customer base and revenue-by-customer",
+      "typical_flag": "Deck lists customers not reflected in MIS revenue",
+      "status": null,
+      "notes": null
+    },
+    "cash_balance_month_end": {
+      "compare_against": ["financial_statements.balance_sheet"],
+      "expected_match_logic": "Closing cash in MIS should equal cash & bank balance on balance sheet for the same date",
+      "typical_flag": "Cash figures diverge between MIS and balance sheet",
+      "status": null,
+      "notes": null
+    },
+    "burn_rate_runway": {
+      "compare_against": ["financial_projections.assumed_burn_and_runway"],
+      "expected_match_logic": "Actual burn in MIS should be checked against burn rate assumed in financial projections used for the raise",
+      "typical_flag": "Projected runway assumes a lower burn than actuals show",
+      "status": null,
+      "notes": null
+    },
+    "gross_margin_ebitda_margin": {
+      "compare_against": ["financial_statements", "financial_projections"],
+      "expected_match_logic": "Margins in MIS should match the P&L and stay within a reasonable band of projected margins for same period",
+      "typical_flag": "MIS margin materially below projected margin with no explanation",
+      "status": null,
+      "notes": null
+    },
+    "headcount": {
+      "compare_against": ["cap_table.option_pool_or_employee_count", "pitch_deck.team_slide"],
+      "expected_match_logic": "Headcount in MIS should be consistent with ESOP pool sizing assumptions in cap table and team size claimed in deck",
+      "typical_flag": "Team slide/cap table assumes headcount not reflected in MIS",
+      "status": null,
+      "notes": null
+    },
+    "accounts_receivable_payable": {
+      "compare_against": ["financial_statements.balance_sheet"],
+      "expected_match_logic": "AR/AP ageing in MIS should tie to balance sheet figures for the same period",
+      "typical_flag": "AR/AP totals don't reconcile with balance sheet",
+      "status": null,
+      "notes": null
+    },
+    "debt_outstanding": {
+      "compare_against": ["financial_statements", "cap_table.convertible_debt"],
+      "expected_match_logic": "Debt balance in MIS should match balance sheet debt and any convertible instruments listed on cap table",
+      "typical_flag": "Debt in MIS excludes convertible notes shown on cap table",
+      "status": null,
+      "notes": null
+    },
+    "mom_yoy_growth_rate": {
+      "compare_against": ["financial_projections.growth_assumptions"],
+      "expected_match_logic": "Actual growth trend in MIS should be compared to growth curve assumed in projections used to justify valuation ask",
+      "typical_flag": "Projection growth rate not supported by trailing MIS actuals",
+      "status": null,
+      "notes": null
+    },
+    "budget_vs_actual_variance": {
+      "compare_against": ["financial_projections.monthly_plan"],
+      "expected_match_logic": "Variance commentary in MIS should align with deviation explanations referenced elsewhere (deck, projections notes)",
+      "typical_flag": "Repeated unexplained negative variance vs plan",
+      "status": null,
+      "notes": null
+    }
+  },
+
+  "extraction_notes": {
+    "missing_fields": [],
+    "ambiguous_or_unclear_fields": [],
+    "classification_legend": {
+      "missing_information": "The figure needed for comparison is not present in one or more documents",
+      "unresolved_inconsistency": "Figures differ but could be explained by timing, definitions, or rounding - not yet confirmed as an error",
+      "verified_mismatch": "Figures differ with no plausible explanation and both sources are equally authoritative for that data point"
+    }
+  }
+}
+

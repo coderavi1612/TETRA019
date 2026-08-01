@@ -1,0 +1,130 @@
+{
+  "document_metadata": {
+    "document_type": "pitch_deck",
+    "file_name": null,
+    "company_name": null,
+    "legal_entity_name": null,
+    "presenter_name": null,
+    "presenter_designation": null,
+    "document_date": null,
+    "fundraising_round_name": null,
+    "total_slides": null,
+    "source_file_reference": null
+  },
+
+  "company_identity": {
+    "company_name": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "legal_entity_name": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "tagline": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "website": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "problem_and_solution": {
+    "problem_statement": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "target_customer": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "solution_overview": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "key_features": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "market_opportunity": {
+    "market_size_tam": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "market_size_sam": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "market_size_som": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "industry_growth_rate": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+    "segment_or_geography_focus": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "business_model": {
+    "revenue_streams": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "pricing_model": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "customer_segments": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "sales_channels": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "traction": {
+    "revenue": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "monthly_revenue": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "monthly_growth_rate": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "customer_count": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "paying_customer_count": { "value": null, "unit": "count", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "retention_rate": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "churn_rate": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "sales_pipeline_or_order_volume": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "partnerships_or_notable_wins": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "financial_highlights": {
+    "revenue": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "gross_margin": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "ebitda": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "net_profit_or_loss": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "cash_balance": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "burn_rate": { "value": null, "unit": "INR/month", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "runway": { "value": null, "unit": "months", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "major_financial_trend": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "historical_performance": {
+    "period_summaries": [
+      {
+        "period": null,
+        "revenue": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "key_operating_metrics": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+        "milestones_achieved": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+      }
+    ]
+  },
+
+  "go_to_market": {
+    "customer_acquisition_strategy": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "marketing_channels": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "sales_approach": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "distribution_model": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "expansion_plan": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "competition": {
+    "main_competitors": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "competitive_advantages": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "differentiation_points": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "market_positioning": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "team": {
+    "founders": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "key_leadership": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "advisors": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "fundraising_ask": {
+    "amount_raising": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "instrument_type": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "valuation": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "use_of_funds": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "expected_runway_after_raise": { "value": null, "unit": "months", "source_reference": null, "extracted_text_snippet": null },
+    "current_round_stage": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "existing_investors": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "ownership_or_investor_references": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "financial_projection_summary": {
+    "forecast_revenue": { "value": null, "unit": "INR", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "forecast_growth_rate": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "expected_margin_improvement": { "value": null, "unit": "%", "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "major_assumptions": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null },
+    "expansion_milestones": { "value": null, "unit": null, "period": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "closing_contact": {
+    "founder_email": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "founder_phone": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "social_links": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "extraction_notes": {
+    "missing_fields": [],
+    "ambiguous_or_unclear_fields": [],
+    "vague_unsupported_claims": []
+  }
+}
+

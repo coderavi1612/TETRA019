@@ -167,3 +167,4 @@ backend/app/outputs/*
 
 *.yaml
 *.md
+/outputs

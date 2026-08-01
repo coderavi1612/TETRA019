@@ -1,0 +1,180 @@
+{
+  "document_metadata": {
+    "document_type": "financial_projections",
+    "file_name": null,
+    "company_legal_name": null,
+    "projection_period_covered": null,
+    "currency": null,
+    "base_or_start_month": null,
+    "version_or_revision_number": null,
+    "source_file_reference": null
+  },
+
+  "assumptions_register": [
+    {
+      "assumption_name": null,
+      "assumption_category": null,
+      "value": null,
+      "unit": null,
+      "applies_to_metric": null,
+      "source_reference": null,
+      "extracted_text_snippet": null
+    }
+  ],
+
+  "scenario": {
+    "scenario_name": null,
+    "scenario_type": null
+  },
+
+  "projection_periods": [
+    {
+      "period_label": null,
+      "period_type": null,
+      "period_start_date": null,
+      "period_end_date": null,
+      "scenario": null,
+
+      "revenue_build": {
+        "revenue_forecast_total": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "revenue_by_product_line_segment": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+        "new_customers_per_month": { "value": null, "unit": "count", "source_reference": null, "extracted_text_snippet": null },
+        "arpu": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "expansion_revenue": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "churn_assumption": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+        "customer_count_projected": { "value": null, "unit": "count", "source_reference": null, "extracted_text_snippet": null }
+      },
+
+      "cost_and_margin_build": {
+        "cogs": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "gross_margin_percent": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+        "opex_people": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_marketing": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_tech_infra": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_g_and_a": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_total": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "ebitda": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "net_profit_or_loss": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "is_breakeven_period": null
+      },
+
+      "cash_flow_and_funding": {
+        "projected_burn": { "value": null, "unit": "INR/month", "source_reference": null, "extracted_text_snippet": null },
+        "projected_cash_balance": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "projected_runway": { "value": null, "unit": "months", "source_reference": null, "extracted_text_snippet": null }
+      },
+
+      "headcount_plan": {
+        "total_headcount": { "value": null, "unit": "count", "source_reference": null, "extracted_text_snippet": null },
+        "headcount_by_department": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+      }
+    }
+  ],
+
+  "funding_ask": {
+    "funding_ask_amount": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "use_of_funds_linkage": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "runway_milestones_assumed": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "breakeven": {
+    "breakeven_period": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "breakeven_basis": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "scenario_framing": {
+    "base_case_summary": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "best_case_summary": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "worst_case_summary": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "optional_value_add": {
+    "cohort_retention_revenue_curves": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "sensitivity_analysis": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "prior_period_projected_vs_actual": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "burn_multiple": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "magic_number": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "cac_payback_period": { "value": null, "unit": "months", "source_reference": null, "extracted_text_snippet": null },
+    "milestone_map": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "tax_and_statutory_assumptions": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "esop_pool_expansion_assumptions": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "cross_document_checkpoints": {
+    "near_term_revenue_forecast": {
+      "compare_against": "mis_report.revenue_and_growth_metrics (trailing actuals)",
+      "expected_match_logic": "The starting point of the revenue projection should be consistent with, or clearly reconcile to, the most recent actual revenue in the MIS",
+      "typical_flag": "Projection starts from a revenue base higher than MIS actuals support",
+      "status": null,
+      "notes": null
+    },
+    "growth_rate_assumption": {
+      "compare_against": ["pitch_deck.traction", "mis_report.revenue_and_growth_metrics"],
+      "expected_match_logic": "The growth rate driving the model should be in the same range as the growth story in the deck and the actual trend in recent MIS periods",
+      "typical_flag": "Deck/MIS trailing growth is materially lower than the assumed forward growth rate",
+      "status": null,
+      "notes": null
+    },
+    "customer_user_count_trajectory": {
+      "compare_against": ["pitch_deck.traction.customer_count", "mis_report.revenue_and_growth_metrics.active_customer_count"],
+      "expected_match_logic": "Projected customer additions should build forward from the current customer count stated in the deck and MIS, not a different starting number",
+      "typical_flag": "Projection's starting customer count doesn't match deck or MIS",
+      "status": null,
+      "notes": null
+    },
+    "gross_margin_ebitda_margin": {
+      "compare_against": ["historical_financial_statements", "mis_report"],
+      "expected_match_logic": "Margins assumed going forward should be broadly consistent with, or explain a credible improvement path from, current actual margins",
+      "typical_flag": "Projected margin jumps sharply with no operational explanation",
+      "status": null,
+      "notes": null
+    },
+    "burn_rate_and_runway": {
+      "compare_against": "mis_report.cash_and_liquidity (actual burn, cash balance)",
+      "expected_match_logic": "The burn rate assumed in the model, and resulting runway, should be checked against current actual burn from the MIS",
+      "typical_flag": "Actual burn in MIS already exceeds the burn assumed in the projection",
+      "status": null,
+      "notes": null
+    },
+    "funding_ask_amount": {
+      "compare_against": ["pitch_deck.fundraising_ask.amount_raising", "cap_table.funding_history (post-money, dilution)"],
+      "expected_match_logic": "The ask amount and resulting runway in the projections should match the ask stated in the deck and the dilution implied on the cap table",
+      "typical_flag": "Ask amount in projections differs from the deck's ask slide",
+      "status": null,
+      "notes": null
+    },
+    "headcount_plan": {
+      "compare_against": ["cap_table.esop (pool sizing)", "pitch_deck.team"],
+      "expected_match_logic": "Headcount growth assumed in the OpEx build should be consistent with ESOP pool assumptions on the cap table and any hiring plan claims in the deck",
+      "typical_flag": "Planned headcount growth outpaces ESOP pool sized on the cap table",
+      "status": null,
+      "notes": null
+    },
+    "breakeven_timeline": {
+      "compare_against": ["pitch_deck (narrative)", "mis_report (current trajectory)"],
+      "expected_match_logic": "The month/quarter projected to reach breakeven should be plausible given the current margin and burn trend shown in the MIS",
+      "typical_flag": "Breakeven claimed in deck earlier than the underlying model in projections supports",
+      "status": null,
+      "notes": null
+    },
+    "prior_period_projected_vs_actual": {
+      "compare_against": "mis_report (historical actuals)",
+      "expected_match_logic": "Where prior projections exist, compare what was forecast for a now-elapsed period against what MIS shows actually happened",
+      "typical_flag": "Company has a history of over-projecting revenue relative to actuals",
+      "status": null,
+      "notes": null
+    }
+  },
+
+  "extraction_notes": {
+    "missing_fields": [],
+    "ambiguous_or_unclear_fields": [],
+    "classification_legend": {
+      "missing_information": "The figure needed for comparison is not present in one or more documents",
+      "unresolved_inconsistency": "Figures differ but could be explained by timing, definitions, or rounding - not yet confirmed as an error",
+      "verified_mismatch": "Figures differ with no plausible explanation and both sources are equally authoritative for that data point"
+    }
+  }
+}
+
+

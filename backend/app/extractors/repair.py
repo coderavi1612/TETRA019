@@ -1,12 +1,15 @@
 import json
 import re
-from typing import List, Dict, Any
+from typing import Dict, Any, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 class JSONRepairer:
     @staticmethod
     def clean_json_string(raw_response: str) -> str:
         """
-        Removes markdown code fences and cleans up common JSON syntax issues.
+        Removes markdown fences and fixes common syntax problems to make JSON loads reliable.
         """
         cleaned = raw_response.strip()
         
@@ -15,10 +18,13 @@ class JSONRepairer:
             cleaned = re.sub(r"^```(?:json)?\n", "", cleaned)
             cleaned = re.sub(r"\n```$", "", cleaned).strip()
             
-        # Basic syntax cleaning: remove trailing commas before closing braces/brackets
+        # Balance quotes and clean up smart/invalid quotes
+        cleaned = cleaned.replace("“", '"').replace("”", '"').replace("‘", "'").replace("’", "'")
+        
+        # Handle trailing commas before closing brackets/braces
         cleaned = re.sub(r",\s*([\]}])", r"\1", cleaned)
         
-        # Try to balance unclosed array brackets or object braces
+        # Balance unclosed brackets and braces
         open_brackets = cleaned.count("[")
         close_brackets = cleaned.count("]")
         if open_brackets > close_brackets:
@@ -32,151 +38,101 @@ class JSONRepairer:
         return cleaned
 
     @classmethod
-    def repair_facts_list(cls, raw_response: str, document_type: str) -> List[Dict[str, Any]]:
+    def repair_json_data(cls, raw_response: str, template_dict: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Loads the JSON and repairs syntax, missing optional fields, numerical formatting,
-        and enforces strict enums for confidence reasons and extraction methods.
+        Parses the JSON response, then recursively walks the structure alongside
+        the template to coerce types and fill in missing fields without fabricating data.
         """
         cleaned_str = cls.clean_json_string(raw_response)
         
         try:
             data = json.loads(cleaned_str)
-        except Exception:
-            data = []
-            matches = re.findall(r"\{[\s\S]*?\}", cleaned_str)
-            for match in matches:
-                try:
-                    obj = json.loads(match)
-                    data.append(obj)
-                except Exception:
-                    pass
+        except Exception as e:
+            logger.warning(f"JSON loads failed during repair: {str(e)}. Falling back to template structure.")
+            import copy
+            return copy.deepcopy(template_dict)
+            
+        if not isinstance(data, dict):
+            import copy
+            return copy.deepcopy(template_dict)
+            
+        import copy
+        repaired = copy.deepcopy(template_dict)
+        cls._recursive_repair(repaired, data)
+        return repaired
+
+    @classmethod
+    def _recursive_repair(cls, target: Any, source: Any) -> None:
+        if isinstance(target, dict) and isinstance(source, dict):
+            for k in list(target.keys()):
+                s_val = source.get(k)
+                if s_val is None:
+                    # Keep default template value (usually null or empty list)
+                    continue
                     
-        if not isinstance(data, list):
-            if isinstance(data, dict):
-                data = [data]
-            else:
-                data = []
-
-        repaired_list = []
-        for idx, item in enumerate(data):
-            if not isinstance(item, dict):
-                continue
-            
-            repaired = {}
-            
-            # Document trace details
-            repaired["document_type"] = str(item.get("document_type") or document_type)
-            repaired["source_document"] = str(item.get("source_document") or "")
-            repaired["source_block_id"] = str(item.get("source_block_id") or "")
-            
-            # Unique stable ID
-            repaired["fact_id"] = str(item.get("fact_id") or f"fact_{repaired['document_type']}_{idx}")
-            
-            # Category and Metric details
-            repaired["category"] = str(item.get("category") or "financial")
-            repaired["metric_name"] = str(item.get("metric_name") or "unknown")
-            
-            # Display value
-            repaired["display_value"] = str(item.get("display_value") or "")
-            
-            # Try to convert numerical strings to float or int for proper validation
-            raw_val = item.get("value")
-            if raw_val is not None:
-                if isinstance(raw_val, str):
-                    clean_str_val = raw_val.strip().replace(",", "")
-                    if clean_str_val.lower() in ["null", "none", "n/a", ""]:
-                        repaired["value"] = None
-                    elif re.match(r"^-?\d+$", clean_str_val):
-                        repaired["value"] = int(clean_str_val)
-                    elif re.match(r"^-?\d+\.\d+$", clean_str_val):
-                        repaired["value"] = float(clean_str_val)
+                # If target field is a metric value structure (contains 'value')
+                if isinstance(target[k], dict) and "value" in target[k]:
+                    if isinstance(s_val, dict):
+                        target[k]["value"] = cls.clean_value(s_val.get("value"))
+                        target[k]["unit"] = s_val.get("unit") or target[k].get("unit")
+                        target[k]["period"] = s_val.get("period") or target[k].get("period")
+                        target[k]["actual_vs_budget"] = s_val.get("actual_vs_budget") or target[k].get("actual_vs_budget")
+                        target[k]["source_reference"] = s_val.get("source_reference")
+                        target[k]["source_block_id"] = s_val.get("source_block_id")
+                        target[k]["page"] = cls.to_int_or_none(s_val.get("page"))
+                        target[k]["slide"] = cls.to_int_or_none(s_val.get("slide"))
+                        target[k]["sheet"] = s_val.get("sheet")
+                        target[k]["extracted_text_snippet"] = s_val.get("extracted_text_snippet")
                     else:
-                        repaired["value"] = raw_val
+                        target[k]["value"] = cls.clean_value(s_val)
+                elif isinstance(target[k], dict) and isinstance(s_val, dict):
+                    cls._recursive_repair(target[k], s_val)
+                elif isinstance(target[k], list) and isinstance(s_val, list):
+                    if target[k]:
+                        template_item = target[k][0]
+                        repaired_list = []
+                        for s_item in s_val:
+                            import copy
+                            t_item_copy = copy.deepcopy(template_item)
+                            if isinstance(t_item_copy, dict) and isinstance(s_item, dict):
+                                cls._recursive_repair(t_item_copy, s_item)
+                                repaired_list.append(t_item_copy)
+                            else:
+                                cleaned_item = cls.clean_value(s_item)
+                                repaired_list.append(cleaned_item)
+                        target[k] = repaired_list
+                    else:
+                        target[k] = s_val
                 else:
-                    repaired["value"] = raw_val
-            else:
-                repaired["value"] = None
-                
-            # If display value is empty, fallback to value string
-            if not repaired["display_value"] and repaired["value"] is not None:
-                repaired["display_value"] = str(repaired["value"])
+                    # Simple fields
+                    target[k] = cls.clean_value(s_val)
 
-            repaired["unit"] = str(item.get("unit") or "")
-            repaired["currency"] = str(item.get("currency") or "")
-            repaired["period"] = str(item.get("period") or "")
-            
-            f_year = item.get("fiscal_year")
-            repaired["fiscal_year"] = str(f_year) if f_year is not None else ""
-            
-            # Page number
-            page_val = item.get("page")
-            if page_val is not None:
-                try:
-                    repaired["page"] = int(page_val)
-                except Exception:
-                    repaired["page"] = None
-            else:
-                repaired["page"] = None
+    @classmethod
+    def clean_value(cls, val: Any) -> Any:
+        if val is None:
+            return None
+        if isinstance(val, str):
+            clean_str = val.strip().replace(",", "")
+            if clean_str.lower() in ["null", "none", "n/a", ""]:
+                return None
+            if clean_str.lower() == "true":
+                return True
+            if clean_str.lower() == "false":
+                return False
+            # Check integer
+            if re.match(r"^-?\d+$", clean_str):
+                return int(clean_str)
+            # Check float
+            if re.match(r"^-?\d+\.\d+$", clean_str):
+                return float(clean_str)
+            return val
+        return val
 
-            # Confidence float parsing
-            conf_val = item.get("confidence")
-            if conf_val is not None:
-                try:
-                    if isinstance(conf_val, str):
-                        conf_val = conf_val.replace("%", "").strip()
-                    repaired["confidence"] = float(conf_val)
-                except Exception:
-                    repaired["confidence"] = 90.0
-            else:
-                repaired["confidence"] = 90.0
-                
-            # Map confidence reasons strictly to allowed enum strings
-            raw_reason = str(item.get("confidence_reason") or "").lower()
-            if "table" in raw_reason or "sheet" in raw_reason or "grid" in raw_reason:
-                repaired["confidence_reason"] = "Structured Table"
-            elif "sentence" in raw_reason or "explicit" in raw_reason or "text" in raw_reason or "stated" in raw_reason:
-                repaired["confidence_reason"] = "Explicit Sentence"
-            elif "heading" in raw_reason or "title" in raw_reason or "header" in raw_reason:
-                repaired["confidence_reason"] = "Heading"
-            elif "list" in raw_reason or "bullet" in raw_reason or "item" in raw_reason:
-                repaired["confidence_reason"] = "Bullet List"
-            elif "repeat" in raw_reason or "cross" in raw_reason:
-                repaired["confidence_reason"] = "Repeated Across Blocks"
-            else:
-                repaired["confidence_reason"] = "Explicit Sentence"
-
-            # Map extraction methods strictly to allowed enum strings
-            raw_method = str(item.get("extraction_method") or "").lower()
-            if "table" in raw_method:
-                repaired["extraction_method"] = "table"
-            elif "heading" in raw_method or "title" in raw_method:
-                repaired["extraction_method"] = "heading"
-            elif "list" in raw_method or "bullet" in raw_method:
-                repaired["extraction_method"] = "list"
-            else:
-                if repaired["confidence_reason"] == "Structured Table":
-                    repaired["extraction_method"] = "table"
-                elif repaired["confidence_reason"] == "Heading":
-                    repaired["extraction_method"] = "heading"
-                elif repaired["confidence_reason"] == "Bullet List":
-                    repaired["extraction_method"] = "list"
-                else:
-                    repaired["extraction_method"] = "text"
-
-            repaired["status"] = "extracted"
-            
-            # Map context structure
-            context_data = item.get("context") or {}
-            if isinstance(context_data, str):
-                repaired["context"] = {"section": "", "sentence": context_data}
-            elif isinstance(context_data, dict):
-                repaired["context"] = {
-                    "section": str(context_data.get("section") or ""),
-                    "sentence": str(context_data.get("sentence") or "")
-                }
-            else:
-                repaired["context"] = {"section": "", "sentence": ""}
-                
-            repaired_list.append(repaired)
-            
-        return repaired_list
+    @classmethod
+    def to_int_or_none(cls, val: Any) -> Optional[int]:
+        if val is None:
+            return None
+        try:
+            return int(float(str(val).strip()))
+        except Exception:
+            return None

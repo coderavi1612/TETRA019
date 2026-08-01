@@ -1,0 +1,314 @@
+{
+  "document_metadata": {
+    "document_type": "cap_table",
+    "file_name": null,
+    "company_legal_name": null,
+    "jurisdiction_of_incorporation": null,
+    "reporting_date": null,
+    "currency": null,
+    "share_class_structure": null,
+    "version_or_date": null,
+    "prepared_by": null,
+    "reviewed_by": null,
+    "table_basis": null,
+    "source_file_reference": null
+  },
+
+  "company_structure": {
+    "authorized_share_capital": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "issued_share_capital": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "outstanding_share_capital": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "share_classes": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "voting_rights_structure": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+    "preference_structure": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "cap_table_summary": {
+    "total_authorized_shares": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "total_issued_shares": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "total_outstanding_shares": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "total_fully_diluted_shares": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "total_shares_in_esop_pool": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "shareholders": [
+    {
+      "holder_name": null,
+      "holder_type": null,
+      "number_of_shares_or_equivalent": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "share_class": null,
+      "issue_date": null,
+      "ownership_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+      "voting_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+      "diluted_ownership_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+      "investment_amount": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+      "instrument_type": null
+    }
+  ],
+
+  "founders": [
+    {
+      "founder_name": null,
+      "shares_held": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "equity_split_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+      "vesting_terms": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "reverse_vesting_or_cliff_terms": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "dilution_after_each_round": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "transfers_between_founders": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "pledged_or_restricted_shares": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+    }
+  ],
+
+  "investors": [
+    {
+      "investor_name": null,
+      "investor_type": null,
+      "round_invested_in": null,
+      "amount_invested": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+      "instrument_type": null,
+      "share_conversion_terms": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "number_of_shares_issued": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "ownership_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+      "post_money_diluted_ownership_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+      "voting_rights": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "liquidation_preference": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+    }
+  ],
+
+  "esop": {
+    "total_pool_size": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "pool_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+    "options_granted": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "options_vested": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "options_unvested": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "options_exercised": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "options_available": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "reserved_options": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "expiry_date": null
+  },
+
+  "convertible_instruments": {
+    "safes": [
+      {
+        "safe_holder_name": null,
+        "issue_date": null,
+        "amount_invested": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "valuation_cap": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "discount_rate": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+        "conversion_trigger": null,
+        "conversion_status": null,
+        "converted_share_count": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null }
+      }
+    ],
+    "convertible_notes": [
+      {
+        "note_holder_name": null,
+        "principal_amount": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "interest_rate": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+        "maturity_date": null,
+        "discount_rate": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+        "valuation_cap": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "accrued_interest": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "conversion_status": null,
+        "converted_share_count": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null }
+      }
+    ],
+    "warrants": [
+      {
+        "warrant_holder_name": null,
+        "exercise_price": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "expiry_date": null,
+        "number_of_warrants": { "value": null, "unit": "count", "source_reference": null, "extracted_text_snippet": null },
+        "conversion_or_exercise_status": null
+      }
+    ]
+  },
+
+  "funding_history": [
+    {
+      "round_name": null,
+      "date_of_closing": null,
+      "amount_raised": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+      "pre_money_valuation": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+      "post_money_valuation": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+      "share_price": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+      "shares_issued": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "lead_investor": null,
+      "co_investors": null,
+      "security_type": null,
+      "dilution_caused_by_round": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null }
+    }
+  ],
+
+  "share_classes_and_instruments": [
+    {
+      "class_name": null,
+      "number_issued": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "number_authorized": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "issue_price": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+      "liquidation_preference": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "voting_rights": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "conversion_rights": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "redemption_rights": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+      "anti_dilution_rights": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+    }
+  ],
+
+  "ownership_calculations": {
+    "basic_ownership": {
+      "shares_held": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "total_shares_outstanding": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "ownership_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null }
+    },
+    "fully_diluted_ownership": {
+      "shares_plus_options": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "shares_plus_safes": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "shares_plus_convertible_notes": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "shares_after_assumed_future_conversions": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null }
+    },
+    "voting_ownership": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "founder_dilution": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+    "investor_concentration": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "dilution_and_change_history": [
+    {
+      "date_of_change": null,
+      "event_type": null,
+      "number_of_shares_issued_or_transferred": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+      "parties_involved": null,
+      "resulting_ownership_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+      "resulting_diluted_ownership_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null }
+    }
+  ],
+
+  "cap_table_notes": {
+    "vesting_details": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "conversion_assumptions": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "pool_refresh_assumptions": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "transfer_restrictions": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "exceptions_or_corrections": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "cross_document_key_data_points": {
+    "company_legal_name": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "reporting_date": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "founder_names": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "investor_names": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "total_shares_outstanding": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "authorized_shares": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "issued_shares": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "share_class": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "ownership_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+    "fully_diluted_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+    "voting_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+    "amount_invested": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "round_name": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "valuation": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "esop_pool_size": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "esop_granted": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "esop_available": { "value": null, "unit": "shares", "source_reference": null, "extracted_text_snippet": null },
+    "safe_amount": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "convertible_note_amount": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "conversion_terms": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "dilution_percentage": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "reconciliation_checkpoints": {
+    "balance_sheet_reconciliation": {
+      "share_capital_matches_cap_table": { "status": null, "notes": null },
+      "additional_paid_in_capital_aligns_with_financing_history": { "status": null, "notes": null },
+      "equity_inflows_match_cash_flow_from_financing": { "status": null, "notes": null },
+      "retained_earnings_align_with_historical_pnl": { "status": null, "notes": null }
+    },
+    "pitch_deck_reconciliation": {
+      "founder_ownership_claims": { "status": null, "notes": null },
+      "total_amount_raised": { "status": null, "notes": null },
+      "investor_names": { "status": null, "notes": null },
+      "current_round_status": { "status": null, "notes": null },
+      "use_of_proceeds": { "status": null, "notes": null },
+      "esop_size": { "status": null, "notes": null }
+    },
+    "financial_statement_reconciliation": {
+      "equity_entries_match_funding_rounds": { "status": null, "notes": null },
+      "converted_securities_appear_properly": { "status": null, "notes": null },
+      "safe_and_note_receipts_align_with_financing_cash_flow": { "status": null, "notes": null },
+      "share_count_changes_consistent_with_balance_sheet": { "status": null, "notes": null }
+    }
+  },
+
+  "cross_document_consistency_checkpoints": {
+    "founder_ownership_vs_pitch_deck": {
+      "compare_against": "pitch_deck.fundraising_ask.ownership_or_investor_references",
+      "typical_flag": "Founder ownership percentage in pitch deck does not match cap table",
+      "status": null,
+      "notes": null
+    },
+    "amount_raised_vs_pitch_deck": {
+      "compare_against": "pitch_deck.fundraising_ask.amount_raising",
+      "typical_flag": "Amount raised in pitch deck differs from financing records",
+      "status": null,
+      "notes": null
+    },
+    "esop_size_vs_pitch_deck": {
+      "compare_against": "pitch_deck / mis_report.headcount",
+      "typical_flag": "ESOP size mentioned in the deck is different from the cap table",
+      "status": null,
+      "notes": null
+    },
+    "convertible_note_vs_financial_statements": {
+      "compare_against": "historical_financial_statements.balance_sheet.non_current_liabilities.convertible_notes",
+      "typical_flag": "Convertible note exists in the cap table but is missing from the financial statements",
+      "status": null,
+      "notes": null
+    },
+    "safe_vs_projections_or_funding_notes": {
+      "compare_against": "financial_projections",
+      "typical_flag": "SAFE is listed in the cap table but not reflected in projections or funding notes",
+      "status": null,
+      "notes": null
+    },
+    "share_count_vs_equity_balance": {
+      "compare_against": "historical_financial_statements.balance_sheet.equity",
+      "typical_flag": "Share count does not reconcile with equity balance",
+      "status": null,
+      "notes": null
+    },
+    "post_money_ownership_vs_dilution_math": {
+      "compare_against": "internal (funding_history + dilution_and_change_history)",
+      "typical_flag": "Post-money ownership claims do not match dilution math",
+      "status": null,
+      "notes": null
+    },
+    "investor_names_consistency": {
+      "compare_against": "pitch_deck / financial_statements",
+      "typical_flag": "Investor names differ across documents",
+      "status": null,
+      "notes": null
+    },
+    "round_dates_consistency": {
+      "compare_against": "pitch_deck",
+      "typical_flag": "Round dates differ between cap table and pitch deck",
+      "status": null,
+      "notes": null
+    },
+    "fully_diluted_ownership_disclosure": {
+      "compare_against": "internal",
+      "typical_flag": "Fully diluted ownership is not disclosed or is incorrectly stated",
+      "status": null,
+      "notes": null
+    }
+  },
+
+  "extraction_notes": {
+    "missing_fields": [],
+    "ambiguous_or_unclear_fields": [],
+    "classification_legend": {
+      "missing_information": "The figure needed for comparison is not present in one or more documents",
+      "unresolved_inconsistency": "Figures differ but could be explained by timing, definitions, or rounding - not yet confirmed as an error",
+      "verified_mismatch": "Figures differ with no plausible explanation and both sources are equally authoritative for that data point"
+    }
+  }
+}
+
+

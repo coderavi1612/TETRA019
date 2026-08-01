@@ -2,18 +2,14 @@ import hashlib
 import json
 import os
 from typing import List, Optional, Dict, Any, Tuple
-from app.schemas.fact import ExtractedFact
+import logging
+
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 class FactCache:
     PROMPT_VERSION = "v1"
-    REGISTRY_VERSION = "2026-08-01"
-
-    @classmethod
-    def generate_hash(cls, document_json_str: str) -> str:
-        # Compound key ensures prompt or registry changes invalidate cache
-        combined_string = document_json_str + cls.PROMPT_VERSION + cls.REGISTRY_VERSION
-        return hashlib.sha256(combined_string.encode("utf-8")).hexdigest()
 
     @classmethod
     def get_cache_dir(cls, company_id: str) -> str:
@@ -22,35 +18,90 @@ class FactCache:
         return cache_dir
 
     @classmethod
-    def load(cls, company_id: str, document_json_str: str) -> Tuple[Optional[List[Dict[str, Any]]], bool]:
+    def generate_chunk_hash(
+        cls, 
+        chunk_blocks_str: str, 
+        template_json_str: str, 
+        registry_version: str
+    ) -> str:
         """
-        Retrieves cached facts.
-        Returns a tuple of (list of raw dicts, is_cache_hit).
+        Generates a compound chunk hash to ensure cache is invalidated
+        if blocks, template, registry, or prompt versions change.
         """
-        cache_key = cls.generate_hash(document_json_str)
+        combined = (
+            chunk_blocks_str + 
+            template_json_str + 
+            registry_version + 
+            cls.PROMPT_VERSION
+        )
+        return hashlib.sha256(combined.encode("utf-8")).hexdigest()
+
+    @classmethod
+    def load_chunk(cls, company_id: str, cache_key: str) -> Optional[Dict[str, Any]]:
+        """
+        Loads the cached extraction result for a specific chunk.
+        """
         cache_file = os.path.join(cls.get_cache_dir(company_id), f"{cache_key}.json")
-        
         if os.path.exists(cache_file):
             try:
                 with open(cache_file, "r", encoding="utf-8") as f:
-                    data = json.load(f)
-                if isinstance(data, list):
-                    return data, True
-            except Exception:
-                pass
-        return None, False
+                    return json.load(f)
+            except Exception as e:
+                logger.warning(f"Error loading cached chunk {cache_key}: {str(e)}")
+        return None
 
     @classmethod
-    def save(cls, company_id: str, document_json_str: str, facts: List[ExtractedFact]) -> None:
+    def save_chunk(cls, company_id: str, cache_key: str, data: Dict[str, Any]) -> None:
         """
-        Persists a list of ExtractedFact objects as JSON.
+        Caches the extraction result for a specific chunk.
         """
-        cache_key = cls.generate_hash(document_json_str)
         cache_file = os.path.join(cls.get_cache_dir(company_id), f"{cache_key}.json")
-        
         try:
-            facts_dicts = [fact.model_dump() for fact in facts]
             with open(cache_file, "w", encoding="utf-8") as f:
-                json.dump(facts_dicts, f, indent=2)
-        except Exception:
-            pass
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            logger.error(f"Error saving chunk cache {cache_key}: {str(e)}")
+
+    @classmethod
+    def generate_doc_hash(
+        cls, 
+        document_json_str: str, 
+        template_json_str: str, 
+        registry_version: str
+    ) -> str:
+        """
+        Generates a compound document hash for full document caching.
+        """
+        combined = (
+            document_json_str + 
+            template_json_str + 
+            registry_version + 
+            cls.PROMPT_VERSION
+        )
+        return hashlib.sha256(combined.encode("utf-8")).hexdigest()
+
+    @classmethod
+    def load_document(cls, company_id: str, cache_key: str) -> Optional[Dict[str, Any]]:
+        """
+        Loads the full cached document JSON.
+        """
+        cache_file = os.path.join(cls.get_cache_dir(company_id), f"doc_{cache_key}.json")
+        if os.path.exists(cache_file):
+            try:
+                with open(cache_file, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception as e:
+                logger.warning(f"Error loading cached document {cache_key}: {str(e)}")
+        return None
+
+    @classmethod
+    def save_document(cls, company_id: str, cache_key: str, data: Dict[str, Any]) -> None:
+        """
+        Caches the fully extracted and validated document JSON.
+        """
+        cache_file = os.path.join(cls.get_cache_dir(company_id), f"doc_{cache_key}.json")
+        try:
+            with open(cache_file, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            logger.error(f"Error saving document cache {cache_key}: {str(e)}")

@@ -1,0 +1,273 @@
+{
+  "document_metadata": {
+    "document_type": "historical_financial_statements",
+    "file_name": null,
+    "company_legal_name": null,
+    "consolidated_or_standalone": null,
+    "currency": null,
+    "accounting_standards_followed": null,
+    "auditor_name": null,
+    "is_audited": null,
+    "number_of_years_covered": null,
+    "source_file_reference": null
+  },
+
+  "financial_periods": [
+    {
+      "period_label": null,
+      "period_type": null,
+      "period_start_date": null,
+      "period_end_date": null,
+
+      "income_statement": {
+        "revenue_total": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "revenue_by_product_line": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+        "revenue_by_geography": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+        "revenue_by_customer_segment": { "value": null, "unit": null, "source_reference": null, "extracted_text_snippet": null },
+        "other_operating_income": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "non_operating_income": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+
+        "cogs_total": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "cogs_raw_material": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "cogs_manufacturing_production": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "cogs_direct_labor": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "cogs_packaging": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "cogs_shipping_logistics": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "cogs_hosting_infra": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "cogs_fulfillment": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "cogs_merchant_fees": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+
+        "gross_profit": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "gross_margin_percent": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+
+        "opex_salaries_wages": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_marketing_advertising": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_sales_business_development": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_rent_utilities": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_software_subscriptions": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_travel_entertainment": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_legal_professional_fees": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_insurance": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_research_development": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_administrative": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_miscellaneous": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "opex_total": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+
+        "ebitda": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "ebit": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "depreciation_and_amortization": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "operating_profit_or_loss": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+
+        "interest_income": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "interest_expense": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "forex_gain_loss": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "exceptional_items": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "other_income_expense": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+
+        "tax_expense": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "deferred_tax": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+
+        "net_profit_before_tax": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "net_profit_after_tax": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+        "net_margin_percent": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null }
+      },
+
+      "balance_sheet": {
+        "current_assets": {
+          "cash_and_bank_balance": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "accounts_receivable": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "inventory": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "prepaid_expenses": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "short_term_investments": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "other_current_assets": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "total_current_assets": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+        },
+        "non_current_assets": {
+          "property_plant_equipment": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "machinery_and_equipment": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "intangible_assets": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "capital_work_in_progress": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "long_term_investments": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "deferred_tax_assets": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "other_non_current_assets": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "total_non_current_assets": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+        },
+        "total_assets": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+
+        "current_liabilities": {
+          "accounts_payable": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "accrued_expenses": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "short_term_borrowings": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "current_portion_long_term_debt": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "tax_payable": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "customer_advances": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "other_current_liabilities": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "total_current_liabilities": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+        },
+        "non_current_liabilities": {
+          "long_term_loans": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "convertible_notes": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "lease_liabilities": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "deferred_tax_liabilities": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "other_long_term_liabilities": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "total_non_current_liabilities": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+        },
+        "total_liabilities": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+
+        "equity": {
+          "share_capital": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "additional_paid_in_capital": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "retained_earnings": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "reserves": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "treasury_shares": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "total_shareholders_equity": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+        },
+
+        "total_liabilities_and_equity": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+      },
+
+      "cash_flow_statement": {
+        "operating_activities": {
+          "net_profit_or_loss": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "depreciation_and_amortization": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "working_capital_changes": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "accounts_receivable_movement": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "inventory_movement": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "accounts_payable_movement": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "tax_paid": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "other_operating_adjustments": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "net_cash_from_operations": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+        },
+        "investing_activities": {
+          "purchase_of_fixed_assets": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "sale_of_fixed_assets": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "acquisition_of_businesses": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "purchase_or_sale_of_investments": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "capital_expenditures": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "net_cash_from_investing": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+        },
+        "financing_activities": {
+          "equity_funding_received": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "debt_raised": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "loan_repayment": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "interest_paid": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "dividend_paid": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "share_issue_or_buyback": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "safe_or_convertible_note_movement": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "net_cash_from_financing": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+        },
+        "cash_movement_summary": {
+          "opening_cash_balance": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "net_cash_from_operations": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "net_cash_from_investing": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "net_cash_from_financing": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+          "closing_cash_balance": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null }
+        }
+      },
+
+      "period_notes": {
+        "material_accounting_policies": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+        "significant_one_time_events": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+        "restatements_or_corrections": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+        "segment_notes": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+        "related_party_transactions": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+        "debt_and_funding_details": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+        "equity_changes_during_period": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+        "auditor_remarks": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+      }
+    }
+  ],
+
+  "cross_document_key_data_points": {
+    "company_name": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "financial_period": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "revenue": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "gross_margin": { "value": null, "unit": "%", "source_reference": null, "extracted_text_snippet": null },
+    "ebitda": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "net_profit": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "cash_balance": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "burn_rate": { "value": null, "unit": "INR/month", "source_reference": null, "extracted_text_snippet": null },
+    "working_capital": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "customer_related_metrics": { "value": null, "source_reference": null, "extracted_text_snippet": null },
+    "funding_received": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "debt_outstanding": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "share_capital": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "retained_earnings": { "value": null, "unit": "INR", "source_reference": null, "extracted_text_snippet": null },
+    "ownership_related_financial_changes": { "value": null, "source_reference": null, "extracted_text_snippet": null }
+  },
+
+  "cross_document_consistency_checkpoints": {
+    "revenue_vs_pitch_deck": {
+      "compare_against": "pitch_deck.financial_highlights.revenue",
+      "typical_flag": "Revenue in financial statements does not match pitch deck claims",
+      "status": null,
+      "notes": null
+    },
+    "cash_balance_vs_mis_or_projections": {
+      "compare_against": ["mis_report.cash_and_liquidity.closing_cash_balance", "financial_projections"],
+      "typical_flag": "Cash balance differs from MIS or projections",
+      "status": null,
+      "notes": null
+    },
+    "gross_margin_consistency": {
+      "compare_against": "prior_period / mis_report",
+      "typical_flag": "Gross margin percentage changes without explanation",
+      "status": null,
+      "notes": null
+    },
+    "ebitda_consistency": {
+      "compare_against": "income_statement (internal)",
+      "typical_flag": "EBITDA shown in one document does not match the income statement",
+      "status": null,
+      "notes": null
+    },
+    "funding_vs_cap_table": {
+      "compare_against": "cap_table.funding_rounds",
+      "typical_flag": "Cap table funding amounts do not match equity inflows",
+      "status": null,
+      "notes": null
+    },
+    "debt_consistency_across_statements": {
+      "compare_against": "cap_table.convertible_debt",
+      "typical_flag": "Debt listed in one statement is missing in another",
+      "status": null,
+      "notes": null
+    },
+    "share_capital_retained_earnings_reconciliation": {
+      "compare_against": "balance_sheet (internal, period over period)",
+      "typical_flag": "Share capital or retained earnings do not reconcile",
+      "status": null,
+      "notes": null
+    },
+    "one_time_income_classification": {
+      "compare_against": "mis_report / pitch_deck",
+      "typical_flag": "One-time income is treated as recurring revenue elsewhere",
+      "status": null,
+      "notes": null
+    },
+    "period_alignment": {
+      "compare_against": "all_documents",
+      "typical_flag": "Period mismatch between statements and other documents",
+      "status": null,
+      "notes": null
+    },
+    "unsupported_pitch_deck_claims": {
+      "compare_against": "pitch_deck",
+      "typical_flag": "Unsupported financial claims in the pitch deck",
+      "status": null,
+      "notes": null
+    }
+  },
+
+  "extraction_notes": {
+    "missing_fields": [],
+    "ambiguous_or_unclear_fields": [],
+    "opening_closing_balance_reconciliation_check": null,
+    "classification_legend": {
+      "missing_information": "The figure needed for comparison is not present in one or more documents",
+      "unresolved_inconsistency": "Figures differ but could be explained by timing, definitions, or rounding - not yet confirmed as an error",
+      "verified_mismatch": "Figures differ with no plausible explanation and both sources are equally authoritative for that data point"
+    }
+  }
+}
+
