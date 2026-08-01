@@ -1,115 +1,183 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { AppNavbar } from "@/components/duelens/AppNavbar";
+import { AppNavbar, type ViewTab } from "@/components/duelens/AppNavbar";
 import { UploadCard } from "@/components/duelens/UploadCard";
 import { ClassificationTable } from "@/components/duelens/ClassificationTable";
 import { ClassificationModal } from "@/components/duelens/ClassificationModal";
 import { ProcessingCard } from "@/components/duelens/ProcessingCard";
-import { Dashboard } from "@/components/duelens/Dashboard";
 import { Footer } from "@/components/duelens/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { CLASSIFICATION, type Classified } from "@/data/mock";
 
-type Stage = "upload" | "classify" | "processing" | "dashboard";
+// Views
+import { ExtractionReviewView } from "@/components/duelens/views/ExtractionReviewView";
+import { ComparisonMatrixView } from "@/components/duelens/views/ComparisonMatrixView";
+import { ExceptionsDashboardView } from "@/components/duelens/views/ExceptionsDashboardView";
+import { IssueDetailView } from "@/components/duelens/views/IssueDetailView";
+import { FollowUpQuestionsView } from "@/components/duelens/views/FollowUpQuestionsView";
+import { ReadinessSummaryView } from "@/components/duelens/views/ReadinessSummaryView";
+
+type IntakeStage = "upload" | "classify" | "processing";
 
 export function AppPage() {
+  const [currentTab, setCurrentTab] = useState<ViewTab>("intake");
+  const [intakeStage, setIntakeStage] = useState<IntakeStage>("upload");
   const [files, setFiles] = useState<string[]>([]);
-  const [stage, setStage] = useState<Stage>("upload");
   const [rows, setRows] = useState<Classified[]>(CLASSIFICATION);
   const [modalOpen, setModalOpen] = useState(false);
-  const scrollTarget = useRef<Stage | null>(null);
+  const [selectedIssueId, setSelectedIssueId] = useState<string>("INV-204");
 
-  const scrollTo = (id: string) =>
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const onDoneProcessing = useCallback(() => {
+    setCurrentTab("extraction");
+  }, []);
 
-  useEffect(() => {
-    if (!scrollTarget.current) return;
-    const id = requestAnimationFrame(() => {
-      scrollTo(stage === "dashboard" ? "dashboard" : "classification");
-      scrollTarget.current = null;
-    });
-    return () => cancelAnimationFrame(id);
-  }, [stage]);
-
-  const advance = (next: Stage) => {
-    scrollTarget.current = next;
-    setStage(next);
+  const handleSelectIssue = (issueId: string) => {
+    setSelectedIssueId(issueId);
+    setCurrentTab("issue");
   };
 
-  const onDone = useCallback(() => advance("dashboard"), []);
-
   return (
-    <main>
-      <AppNavbar />
+    <main className="min-h-screen bg-background text-foreground flex flex-col">
+      <AppNavbar currentTab={currentTab} onTabChange={setCurrentTab} />
 
-      {/* Step indicator */}
-      <div className="border-b border-border bg-muted/40">
-        <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-5 py-3">
-          {(["upload", "classify", "processing", "dashboard"] as Stage[]).map((s, i) => {
-            const labels: Record<Stage, string> = {
-              upload: "Upload",
-              classify: "Classify",
-              processing: "Analyzing",
-              dashboard: "Results",
-            };
-            const idx = ["upload", "classify", "processing", "dashboard"].indexOf(stage);
-            const done = i < idx;
-            const active = s === stage;
-            return (
-              <div key={s} className="flex items-center gap-2">
-                {i > 0 && <div className="h-px w-8 shrink-0 bg-border" />}
-                <span
-                  className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
-                    active
-                      ? "bg-primary text-primary-foreground"
-                      : done
-                        ? "bg-verified-soft text-verified"
-                        : "text-muted-foreground"
-                  }`}
-                >
-                  <span className="tabular-nums">{i + 1}</span>
-                  {labels[s]}
-                </span>
+      <div className="mx-auto w-full max-w-7xl flex-1 px-5 py-8">
+        <AnimatePresence mode="wait">
+          {/* Tab 1: Upload & Intake */}
+          {currentTab === "intake" && (
+            <motion.div
+              key="tab-intake"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              className="space-y-8"
+            >
+              {/* Step Bar for Intake */}
+              <div className="flex items-center gap-2 overflow-x-auto rounded-2xl border border-border bg-muted/40 p-2">
+                {[
+                  { id: "upload", label: "1. Document Intake" },
+                  { id: "classify", label: "2. Document Classification" },
+                  { id: "processing", label: "3. Deep Integrity Audit" },
+                ].map((s) => {
+                  const active = intakeStage === s.id;
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => setIntakeStage(s.id as IntakeStage)}
+                      className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+                        active
+                          ? "bg-primary text-primary-foreground shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {s.label}
+                    </button>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-      </div>
 
-      <div id="workflow" className="pt-4">
-        <UploadCard
-          files={files}
-          setFiles={(f) => {
-            setFiles(f);
-            if (f.length === 0) setStage("upload");
-          }}
-          onContinue={() => advance("classify")}
-        />
-      </div>
+              {intakeStage === "upload" && (
+                <UploadCard
+                  files={files}
+                  setFiles={(f) => {
+                    setFiles(f);
+                    if (f.length === 0) setIntakeStage("upload");
+                  }}
+                  onContinue={() => setIntakeStage("classify")}
+                />
+              )}
 
-      <AnimatePresence mode="wait">
-        {stage === "classify" && (
-          <motion.div key="classify" exit={{ opacity: 0, y: -16 }}>
-            <ClassificationTable
-              rows={rows}
-              onContinue={() => advance("processing")}
-              onEdit={() => setModalOpen(true)}
-            />
-          </motion.div>
-        )}
-        {stage === "processing" && (
-          <motion.div key="processing" exit={{ opacity: 0, y: -16 }}>
-            <ProcessingCard onDone={onDone} />
-          </motion.div>
-        )}
-        {stage === "dashboard" && (
-          <motion.div key="dashboard">
-            <Dashboard />
-          </motion.div>
-        )}
-      </AnimatePresence>
+              {intakeStage === "classify" && (
+                <ClassificationTable
+                  rows={rows}
+                  onContinue={() => setIntakeStage("processing")}
+                  onEdit={() => setModalOpen(true)}
+                />
+              )}
+
+              {intakeStage === "processing" && (
+                <ProcessingCard onDone={onDoneProcessing} />
+              )}
+            </motion.div>
+          )}
+
+          {/* Tab 2: Extraction Review */}
+          {currentTab === "extraction" && (
+            <motion.div
+              key="tab-extraction"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+            >
+              <ExtractionReviewView />
+            </motion.div>
+          )}
+
+          {/* Tab 3: Comparison Matrix */}
+          {currentTab === "matrix" && (
+            <motion.div
+              key="tab-matrix"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+            >
+              <ComparisonMatrixView onSelectIssue={handleSelectIssue} />
+            </motion.div>
+          )}
+
+          {/* Tab 4: Exceptions Dashboard */}
+          {currentTab === "exceptions" && (
+            <motion.div
+              key="tab-exceptions"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+            >
+              <ExceptionsDashboardView onSelectIssue={handleSelectIssue} />
+            </motion.div>
+          )}
+
+          {/* Tab 5: Issue Detail */}
+          {currentTab === "issue" && (
+            <motion.div
+              key="tab-issue"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+            >
+              <IssueDetailView
+                issueId={selectedIssueId}
+                onBack={() => setCurrentTab("exceptions")}
+              />
+            </motion.div>
+          )}
+
+          {/* Tab 6: Follow-up Questions */}
+          {currentTab === "questions" && (
+            <motion.div
+              key="tab-questions"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+            >
+              <FollowUpQuestionsView />
+            </motion.div>
+          )}
+
+          {/* Tab 7: Readiness Summary */}
+          {currentTab === "readiness" && (
+            <motion.div
+              key="tab-readiness"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+            >
+              <ReadinessSummaryView />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       <ClassificationModal
         open={modalOpen}
@@ -117,6 +185,7 @@ export function AppPage() {
         rows={rows}
         onSave={setRows}
       />
+
       <Footer />
       <Toaster />
     </main>

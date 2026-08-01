@@ -117,7 +117,7 @@ export function ClassificationTable({
               <div className="mt-8 rounded-2xl bg-muted/60 p-6">
                 <h3 className="text-base font-semibold">Review AI Classification</h3>
                 <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground">
-                  We've automatically identified each uploaded document using filename and document
+                  We&apos;ve automatically identified each uploaded document using filename and document
                   patterns. Please review before continuing.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-3">

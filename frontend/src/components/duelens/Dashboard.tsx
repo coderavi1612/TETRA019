@@ -69,7 +69,7 @@ export function Dashboard() {
         <h3 className="text-lg font-semibold">AI follow-up questions</h3>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {QUESTIONS.map((q, i) => (
-            <QuestionCard key={q} question={q} index={i} />
+            <QuestionCard key={q.id} question={q.question} index={i} />
           ))}
         </div>
       </div>

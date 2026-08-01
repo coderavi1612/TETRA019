@@ -231,7 +231,7 @@ export async function downloadPDF() {
     doc.text(`Q${i + 1}`, marginL + 3, y);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(30, 40, 80);
-    doc.text(q, marginL + 12, y);
+    doc.text(typeof q === "string" ? q : q.question, marginL + 12, y);
     y += 13;
   });
 
