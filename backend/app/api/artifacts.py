@@ -23,19 +23,28 @@ async def get_artifact_file(company_id: str, category: str, filename: str):
     if clean_category not in SUPPORTED_CATEGORIES:
         return error_response(["Invalid artifact category requested."], status_code=400)
 
-    # Resolve safe path
-    company_dir = os.path.abspath(os.path.join(settings.OUTPUT_DIR, clean_company_id))
-    target_path = os.path.abspath(os.path.join(company_dir, clean_category, clean_filename))
+    # Resolve safe path on disk (check both UPLOAD_DIR and OUTPUT_DIR for category='uploads')
+    target_path = None
+    if clean_category == "uploads":
+        upload_path = os.path.abspath(os.path.join(settings.UPLOAD_DIR, clean_company_id, clean_filename))
+        if os.path.exists(upload_path) and os.path.isfile(upload_path):
+            target_path = upload_path
     
-    # Path traversal protection
-    output_dir_abs = os.path.abspath(settings.OUTPUT_DIR)
-    if os.path.exists(target_path) and os.path.isfile(target_path) and target_path.startswith(output_dir_abs):
+    if not target_path:
+        output_path = os.path.abspath(os.path.join(settings.OUTPUT_DIR, clean_company_id, clean_category, clean_filename))
+        if os.path.exists(output_path) and os.path.isfile(output_path):
+            target_path = output_path
+
+    if target_path:
         extension_to_mime = {
             ".json": "application/json",
             ".pdf": "application/pdf",
             ".md": "text/markdown",
             ".txt": "text/plain",
-            ".log": "text/plain"
+            ".log": "text/plain",
+            ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".csv": "text/csv"
         }
         ext = os.path.splitext(clean_filename)[1].lower()
         mime = extension_to_mime.get(ext, "application/octet-stream")
@@ -62,21 +71,13 @@ async def list_company_artifacts(company_id: str):
 
     db_outputs = get_pipeline_outputs_from_db(clean_company_id)
     company_dir = os.path.join(settings.OUTPUT_DIR, clean_company_id)
+    upload_dir = os.path.join(settings.UPLOAD_DIR, clean_company_id)
     
-    if not os.path.exists(company_dir) and not db_outputs:
+    if not os.path.exists(company_dir) and not os.path.exists(upload_dir) and not db_outputs:
         return error_response([f"Company '{clean_company_id}' not found."], status_code=404)
 
     manifest_path = os.path.join(company_dir, "manifests", "artifacts_manifest.json")
     
-    # Attempt to read manifest first
-    if os.path.exists(manifest_path):
-        try:
-            with open(manifest_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                return success_response(data)
-        except Exception:
-            pass
-
     # Fallback scanning from disk + DB
     artifacts = []
     seen_keys = set()
@@ -96,36 +97,42 @@ async def list_company_artifacts(company_id: str):
         ".pdf": "application/pdf",
         ".md": "text/markdown",
         ".txt": "text/plain",
-        ".log": "text/plain"
+        ".log": "text/plain",
+        ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ".csv": "text/csv"
     }
 
     # 1. Scan filesystem
-    if os.path.exists(company_dir):
-        for cat in SUPPORTED_CATEGORIES:
-            cat_dir = os.path.join(company_dir, cat)
-            if os.path.exists(cat_dir) and os.path.isdir(cat_dir):
-                for filename in os.listdir(cat_dir):
-                    file_path = os.path.join(cat_dir, filename)
-                    if os.path.isfile(file_path):
-                        if filename == "artifacts_manifest.json":
-                            continue
-                            
-                        seen_keys.add((cat.lower(), filename.lower()))
-                        stat_info = os.stat(file_path)
-                        ext = os.path.splitext(filename)[1].lower()
-                        mime = extension_to_mime.get(ext, "application/octet-stream")
-                        mtime = stat_info.st_mtime
-                        generated_at_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(mtime))
+    for cat in SUPPORTED_CATEGORIES:
+        if cat == "uploads":
+            cat_dir = os.path.join(settings.UPLOAD_DIR, clean_company_id)
+        else:
+            cat_dir = os.path.join(settings.OUTPUT_DIR, clean_company_id, cat)
+
+        if os.path.exists(cat_dir) and os.path.isdir(cat_dir):
+            for filename in os.listdir(cat_dir):
+                file_path = os.path.join(cat_dir, filename)
+                if os.path.isfile(file_path):
+                    if filename == "artifacts_manifest.json":
+                        continue
                         
-                        artifacts.append({
-                            "name": filename,
-                            "category": cat,
-                            "mime_type": mime,
-                            "size": stat_info.st_size,
-                            "download_url": f"/api/v1/files/{clean_company_id}/{cat}/{filename}",
-                            "generated_at": generated_at_iso,
-                            "stage": category_to_stage.get(cat, "system")
-                        })
+                    seen_keys.add((cat.lower(), filename.lower()))
+                    stat_info = os.stat(file_path)
+                    ext = os.path.splitext(filename)[1].lower()
+                    mime = extension_to_mime.get(ext, "application/octet-stream")
+                    mtime = stat_info.st_mtime
+                    generated_at_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(mtime))
+                    
+                    artifacts.append({
+                        "name": filename,
+                        "category": cat,
+                        "mime_type": mime,
+                        "size": stat_info.st_size,
+                        "download_url": f"/api/v1/files/{clean_company_id}/{cat}/{filename}",
+                        "generated_at": generated_at_iso,
+                        "stage": category_to_stage.get(cat, "system")
+                    })
 
     # 2. Merge DB entries
     for (cat, filename), item in db_outputs.items():

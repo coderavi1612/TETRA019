@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   History,
@@ -20,10 +20,14 @@ import {
   TrendingUp,
   BarChart3,
   Loader2,
+  Download,
+  FolderOpen,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDuelensData } from "@/context/DuelensDataContext";
+import { getCompanyArtifacts, getArtifactFileUrl } from "@/lib/api";
+import type { Artifact } from "@/types/api";
 import type { UploadHistoryEntry, ViewTab } from "@/components/duelens/AppSidebar";
 
 interface HistoryViewProps {
@@ -85,6 +89,32 @@ export function HistoryView({
     history.length > 0 ? history[0].id : null
   );
   const [loadingSession, setLoadingSession] = useState(false);
+  const [sessionArtifacts, setSessionArtifacts] = useState<Artifact[]>([]);
+  const [loadingArtifacts, setLoadingArtifacts] = useState(false);
+
+  // Currently selected session details object
+  const selectedSession = history.find((h) => h.id === selectedSessionId) || history[0] || null;
+  const isSelectedActive = selectedSession?.companyId === currentCompanyId;
+
+  useEffect(() => {
+    if (!selectedSession?.companyId) return;
+    let isMounted = true;
+    setLoadingArtifacts(true);
+    getCompanyArtifacts(selectedSession.companyId)
+      .then((res) => {
+        if (isMounted) setSessionArtifacts(res.artifacts || []);
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch session artifacts:", err);
+        if (isMounted) setSessionArtifacts([]);
+      })
+      .finally(() => {
+        if (isMounted) setLoadingArtifacts(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedSession?.companyId]);
 
   // Filter history list based on search term
   const filteredHistory = history.filter(
@@ -92,10 +122,6 @@ export function HistoryView({
       h.companyId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       h.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Currently selected session details object
-  const selectedSession = history.find((h) => h.id === selectedSessionId) || history[0] || null;
-  const isSelectedActive = selectedSession?.companyId === currentCompanyId;
 
   const handleOpenSession = async (entry: UploadHistoryEntry) => {
     setLoadingSession(true);
@@ -368,15 +394,114 @@ export function HistoryView({
                   </div>
                 </div>
 
-                {/* Document History Cards */}
+                {/* Original Uploaded Source Documents Section */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
-                      <FileCode className="size-4 text-primary" />
-                      Session Document Manifest & Status
+                      <FolderOpen className="size-4 text-primary" />
+                      Original Uploaded Documents
                     </h4>
-                    <span className="text-xs text-muted-foreground">
-                      5 Core Data-Room Slots
+                    <span className="text-xs text-muted-foreground font-semibold">
+                      {sessionArtifacts.filter(a => a.category === 'uploads' || ['.pdf', '.xlsx', '.csv', '.pptx'].some(ext => a.name.toLowerCase().endsWith(ext) && !a.name.toLowerCase().includes('summary') && !a.name.toLowerCase().includes('questions'))).length} Source Files
+                    </span>
+                  </div>
+
+                  {loadingArtifacts ? (
+                    <div className="surface p-6 flex items-center justify-center text-xs text-muted-foreground">
+                      <Loader2 className="mr-2 size-4 animate-spin text-primary" />
+                      Fetching session documents...
+                    </div>
+                  ) : (
+                    (() => {
+                      const uploadedFiles = sessionArtifacts.filter(
+                        a => a.category === "uploads" || [".pdf", ".xlsx", ".csv", ".pptx", ".doc", ".docx"].some(ext => a.name.toLowerCase().endsWith(ext) && !a.name.toLowerCase().includes("summary") && !a.name.toLowerCase().includes("questions"))
+                      );
+
+                      if (uploadedFiles.length === 0) {
+                        return (
+                          <div className="surface p-5 text-center text-xs text-muted-foreground border-dashed">
+                            No raw uploaded documents stored for this session.
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {uploadedFiles.map((file, idx) => {
+                            const nameLower = file.name.toLowerCase();
+                            const FileIcon = nameLower.endsWith(".pdf")
+                              ? FileText
+                              : nameLower.endsWith(".xlsx") || nameLower.endsWith(".csv")
+                              ? FileSpreadsheet
+                              : nameLower.endsWith(".pptx")
+                              ? BarChart3
+                              : FileCode;
+
+                            const downloadUrl = file.download_url
+                              ? getArtifactFileUrl(selectedSession.companyId, file.category, file.name)
+                              : getArtifactFileUrl(selectedSession.companyId, "uploads", file.name);
+
+                            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+                            const sizeKb = (file.size / 1024).toFixed(0);
+                            const displaySize = file.size > 1024 * 1024 ? `${sizeMb} MB` : `${sizeKb} KB`;
+
+                            return (
+                              <div
+                                key={`${file.name}-${idx}`}
+                                className="surface p-4 flex flex-col justify-between border-border/80 hover:border-primary/40 transition-all group"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary group-hover:scale-105 transition-transform">
+                                    <FileIcon className="size-5" />
+                                  </span>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center justify-between gap-1">
+                                      <h5 className="truncate text-xs font-bold text-foreground" title={file.name}>
+                                        {file.name}
+                                      </h5>
+                                      <span className="shrink-0 text-[9px] font-bold text-verified bg-verified-soft px-1.5 py-0.5 rounded uppercase">
+                                        Source
+                                      </span>
+                                    </div>
+                                    <p className="mt-1 text-[11px] text-muted-foreground">
+                                      {displaySize} • {file.mime_type?.split("/")[1]?.toUpperCase() || "FILE"}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between">
+                                  <span className="text-[10px] font-semibold text-verified flex items-center gap-1">
+                                    <CheckCircle2 className="size-3 text-verified" />
+                                    Original Stored
+                                  </span>
+                                  <a
+                                    href={downloadUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
+                                  >
+                                    <Download className="size-3" />
+                                    Download Original
+                                  </a>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()
+                  )}
+                </div>
+
+                {/* Extracted Data-Room Manifest Cards */}
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+                      <FileCode className="size-4 text-primary" />
+                      Parsed & Reconciled Data-Room Slots
+                    </h4>
+                    <span className="text-xs text-muted-foreground font-semibold">
+                      5 Standard Schema Slots
                     </span>
                   </div>
 
@@ -397,14 +522,14 @@ export function HistoryView({
                                 {info.name}
                               </h5>
                               <span className="shrink-0 text-[10px] font-bold text-verified bg-verified-soft px-1.5 py-0.5 rounded">
-                                Ready
+                                Extracted
                               </span>
                             </div>
                             <p className="mt-1 text-[11px] text-muted-foreground font-mono truncate">
                               {key}.json
                             </p>
                             <div className="mt-2 flex items-center justify-between text-[10px] text-muted-foreground">
-                              <span>Auto-extracted & verified</span>
+                              <span>Reconciled & verified</span>
                               <CheckCircle2 className="size-3.5 text-verified" />
                             </div>
                           </div>
