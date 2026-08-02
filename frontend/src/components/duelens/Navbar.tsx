@@ -37,7 +37,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <Button asChild className="rounded-full px-5">
-            <Link href="/app">Get Started</Link>
+            <Link href="/dashboard">Get Started</Link>
           </Button>
           <button className="rounded-lg p-2 text-muted-foreground md:hidden" aria-label="Menu">
             <Menu className="size-5" />

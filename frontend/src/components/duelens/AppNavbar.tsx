@@ -20,7 +20,6 @@ export type ViewTab =
   | "extraction"
   | "matrix"
   | "exceptions"
-  | "issue"
   | "questions"
   | "readiness";
 
@@ -36,7 +35,6 @@ export function AppNavbar({
     { id: "extraction", label: "Extraction Review", icon: FileSearch },
     { id: "matrix", label: "Comparison Matrix", icon: Grid },
     { id: "exceptions", label: "Exceptions Dashboard", icon: ShieldAlert },
-    { id: "issue", label: "Issue Detail", icon: Search },
     { id: "questions", label: "Follow-up Questions", icon: HelpCircle },
     { id: "readiness", label: "Readiness Summary", icon: Award },
   ];

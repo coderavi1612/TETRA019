@@ -56,7 +56,7 @@ export function Hero() {
             asChild
             className="group h-12 rounded-full px-7 text-sm shadow-[var(--shadow-glow)]"
           >
-            <Link href="/app">
+            <Link href="/dashboard">
               Get Started
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>

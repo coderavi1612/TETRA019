@@ -19,6 +19,7 @@ import { ComparisonMatrixView } from "@/components/duelens/views/ComparisonMatri
 import { ExceptionsDashboardView } from "@/components/duelens/views/ExceptionsDashboardView";
 import { FollowUpQuestionsView } from "@/components/duelens/views/FollowUpQuestionsView";
 import { ReadinessSummaryView } from "@/components/duelens/views/ReadinessSummaryView";
+import { HistoryView } from "@/components/duelens/views/HistoryView";
 
 type IntakeStage = "upload" | "classify" | "processing";
 
@@ -102,7 +103,7 @@ function AppPageContent() {
       {/* ── Main content (offset by sidebar width = 256px) ── */}
       <main className="flex flex-1 flex-col pl-64">
 
-      <div className="flex-1 px-6 py-8">
+      <div className="flex-1 px-6 py-6">
         <AnimatePresence mode="wait">
           {/* Tab 1: Upload & Intake */}
           {currentTab === "intake" && (
@@ -111,7 +112,7 @@ function AppPageContent() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
-              className="space-y-8"
+              className="space-y-4"
             >
               {/* Pipeline Stepper */}
               <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-5">
@@ -276,6 +277,24 @@ function AppPageContent() {
               exit={{ opacity: 0, y: -12 }}
             >
               <ReadinessSummaryView />
+            </motion.div>
+          )}
+
+          {/* Tab 8: Audit History */}
+          {currentTab === "history" && (
+            <motion.div
+              key="tab-history"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+            >
+              <HistoryView
+                history={history}
+                onLoadHistory={handleLoadHistory}
+                onDeleteHistory={handleDeleteHistory}
+                onNavigateTab={setCurrentTab}
+                currentCompanyId={companyId}
+              />
             </motion.div>
           )}
         </AnimatePresence>

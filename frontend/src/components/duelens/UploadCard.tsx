@@ -197,7 +197,7 @@ export function UploadCard({
   const uploadedCount = Object.keys(uploadedMap).length;
 
   return (
-    <section id="upload" className="mx-auto max-w-5xl px-5 py-12 md:py-16">
+    <section id="upload" className="mx-auto max-w-5xl px-5 pt-2 pb-12">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 24 }}
