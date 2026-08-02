@@ -45,13 +45,14 @@ function AppPageContent() {
   const loadGlobalHistory = useCallback(async () => {
     try {
       const dbCompanies = await listAllCompanies();
-      const mapped: UploadHistoryEntry[] = dbCompanies.map((c) => ({
-        id: c.job_id !== "none" ? c.job_id : c.company_id,
+      const list = Array.isArray(dbCompanies) ? dbCompanies : [];
+      const mapped: UploadHistoryEntry[] = list.map((c) => ({
+        id: c.job_id && c.job_id !== "none" ? c.job_id : c.company_id,
         companyId: c.company_id,
         label: c.company_id,
         uploadedAt: c.updated_at || new Date().toISOString(),
-        fileCount: c.file_count,
-        status: (c.status.toLowerCase() === "running" || c.status.toLowerCase() === "accepted" ? "processing" : c.status.toLowerCase() === "failed" ? "failed" : "completed") as "completed" | "processing" | "failed",
+        fileCount: c.file_count || 0,
+        status: (c.status?.toLowerCase() === "running" || c.status?.toLowerCase() === "accepted" ? "processing" : c.status?.toLowerCase() === "failed" ? "failed" : "completed") as "completed" | "processing" | "failed",
       }));
       setHistory(mapped);
     } catch (err) {

@@ -45,6 +45,17 @@ async def upload_documents(
     company_upload_dir = os.path.join(settings.UPLOAD_DIR, clean_company_id)
     os.makedirs(company_upload_dir, exist_ok=True)
 
+    # Initialize DB run and job
+    from app.pipeline.job_manager import JobManager, JobStatus
+    from app.core.db import upsert_pipeline_run, save_pipeline_output
+    import mimetypes
+    
+    job_id = JobManager.create_job(clean_company_id)
+    try:
+        upsert_pipeline_run(job_id, clean_company_id, JobStatus.ACCEPTED.value)
+    except Exception:
+        pass
+
     uploaded_files_info = []
 
     for file in files:
@@ -65,6 +76,32 @@ async def upload_documents(
         # Gather details
         size_bytes = os.path.getsize(file_path)
         ext = os.path.splitext(filename)[1].lower()
+        mime = file.content_type or mimetypes.guess_type(file_path)[0] or "application/octet-stream"
+
+        # Save uploaded file directly to Supabase DB
+        try:
+            text_content = None
+            binary_content = None
+            if ext in [".pdf", ".pptx", ".xlsx"]:
+                with open(file_path, "rb") as f:
+                    binary_content = f.read()
+            else:
+                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                    text_content = f.read()
+
+            save_pipeline_output(
+                job_id=job_id,
+                company_id=clean_company_id,
+                stage="parse",
+                category="uploads",
+                file_name=filename,
+                mime_type=mime,
+                size_bytes=size_bytes,
+                text_content=text_content,
+                binary_content=binary_content
+            )
+        except Exception:
+            pass
         
         uploaded_files_info.append(
             UploadedFileResponse(

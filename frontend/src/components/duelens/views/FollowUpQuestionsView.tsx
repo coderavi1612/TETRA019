@@ -2,16 +2,30 @@
 
 import { useState } from "react";
 import { motion } from "motion/react";
-import { HelpCircle, Sparkles, Copy, Download, Check, MessageSquareText } from "lucide-react";
+import { HelpCircle, Copy, Download, Check, MessageSquareText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDuelensData } from "@/context/DuelensDataContext";
+import { getBaseApiUrl } from "@/lib/api/client";
 import { toast } from "sonner";
 
 export function FollowUpQuestionsView() {
   const { readinessResults } = useDuelensData();
   const [categoryFilter, setCategoryFilter] = useState("All");
-  const [draftAnswers, setDraftAnswers] = useState<Record<string, string>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const questionsPdfDownload = readinessResults?.downloads?.find(
+    (d: any) => d.name.toLowerCase().includes("questions") && d.type === "pdf"
+  ) || readinessResults?.downloads?.find((d: any) => d.type === "pdf");
+
+  const handleExportPDF = () => {
+    if (questionsPdfDownload) {
+      const fullUrl = `${getBaseApiUrl()}${questionsPdfDownload.url}`;
+      window.open(fullUrl, "_blank");
+      toast.success("Opening Follow-up Questions PDF...");
+    } else {
+      window.print();
+    }
+  };
 
   const rawQuestions = readinessResults?.questions || [];
   const questions = rawQuestions.map((q: any) => ({
@@ -70,11 +84,11 @@ export function FollowUpQuestionsView() {
         </div>
 
         <Button
-          onClick={() => toast.success("Exported Due Diligence Question Sheet.")}
+          onClick={handleExportPDF}
           className="rounded-xl shadow-[var(--shadow-glow)]"
         >
           <Download className="mr-2 size-4" />
-          Export Question Sheet
+          Export Question Sheet (PDF)
         </Button>
       </div>
 
@@ -156,34 +170,6 @@ export function FollowUpQuestionsView() {
                 <div className="rounded-xl border border-border bg-muted/40 p-3.5 text-xs text-muted-foreground leading-relaxed">
                   <span className="font-semibold text-foreground">Flagged Context / Rationale: </span>
                   {item.rationale}
-                </div>
-
-                {/* Draft Response Box */}
-                <div className="space-y-2 pt-2">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-foreground flex items-center gap-1.5">
-                      <Sparkles className="size-3.5 text-primary" />
-                      Management / Founder Answer Draft:
-                    </span>
-                    <button
-                      onClick={() => generateAIAnswer(item.id, item.target_metric, item.target_document)}
-                      className="font-bold text-primary hover:underline text-xs"
-                    >
-                      Generate Draft Answer
-                    </button>
-                  </div>
-
-                  <div className="relative">
-                    <textarea
-                      rows={2}
-                      value={draftAnswers[item.id] ?? ""}
-                      onChange={(e) =>
-                        setDraftAnswers({ ...draftAnswers, [item.id]: e.target.value })
-                      }
-                      placeholder="Click 'Generate Draft Answer' to auto-populate recommended response..."
-                      className="w-full rounded-xl border border-border bg-background p-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    />
-                  </div>
                 </div>
               </motion.div>
             );

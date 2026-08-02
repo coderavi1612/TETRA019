@@ -87,7 +87,7 @@ export function WorkflowSection() {
           className="mt-10 text-center"
         >
           <Button size="lg" asChild className="group h-12 rounded-full px-8 shadow-[var(--shadow-glow)]">
-            <Link href="/app">
+            <Link href="/dashboard">
               Try it now
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>

@@ -12,27 +12,33 @@ async def list_all_companies():
     from app.core.db import get_all_companies_summary
     from app.core import get_utc_now_iso
     
-    summary = get_all_companies_summary()
+    summary = get_all_companies_summary() or []
+    known_companies = {c["company_id"] for c in summary}
     
-    # Fallback to filesystem if DB has no runs but outputs exist
-    if not summary and os.path.exists(settings.OUTPUT_DIR):
-        summary = []
-        for item in os.listdir(settings.OUTPUT_DIR):
-            item_path = os.path.join(settings.OUTPUT_DIR, item)
-            if os.path.isdir(item_path):
-                # Count files in parsed directory
-                parsed_dir = os.path.join(item_path, "parsed")
-                docs_count = 0
-                if os.path.exists(parsed_dir) and os.path.isdir(parsed_dir):
-                    docs_count = len([f for f in os.listdir(parsed_dir) if f.endswith(".json")])
-                
-                summary.append({
-                    "company_id": item,
-                    "job_id": "none",
-                    "status": "COMPLETED",
-                    "updated_at": get_utc_now_iso(),
-                    "file_count": docs_count
-                })
+    # Merge filesystem companies from OUTPUT_DIR and UPLOAD_DIR
+    dirs_to_check = [settings.OUTPUT_DIR, settings.UPLOAD_DIR]
+    for target_dir in dirs_to_check:
+        if os.path.exists(target_dir) and os.path.isdir(target_dir):
+            for item in os.listdir(target_dir):
+                item_path = os.path.join(target_dir, item)
+                if os.path.isdir(item_path) and item not in known_companies and not item.startswith("."):
+                    known_companies.add(item)
+                    
+                    parsed_dir = os.path.join(settings.OUTPUT_DIR, item, "parsed")
+                    upload_dir = os.path.join(settings.UPLOAD_DIR, item)
+                    docs_count = 0
+                    if os.path.exists(parsed_dir) and os.path.isdir(parsed_dir):
+                        docs_count = len([f for f in os.listdir(parsed_dir) if f.endswith(".json")])
+                    elif os.path.exists(upload_dir) and os.path.isdir(upload_dir):
+                        docs_count = len([f for f in os.listdir(upload_dir) if not f.startswith(".")])
+                    
+                    summary.append({
+                        "company_id": item,
+                        "job_id": "none",
+                        "status": "COMPLETED",
+                        "updated_at": get_utc_now_iso(),
+                        "file_count": docs_count
+                    })
     
     return success_response(summary)
 

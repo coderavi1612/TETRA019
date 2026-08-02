@@ -6,9 +6,11 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 md:grid-cols-[1.5fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <ShieldCheck className="size-4" />
-            </span>
+            <img
+              src="/DueLens.png"
+              alt="DueLens Logo"
+              className="size-8 rounded-lg object-contain"
+            />
             <span className="font-display text-base font-bold">Duelens</span>
           </div>
           <p className="mt-3 max-w-sm text-sm text-muted-foreground">

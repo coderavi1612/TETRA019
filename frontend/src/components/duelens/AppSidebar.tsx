@@ -76,9 +76,11 @@ export function AppSidebar({
         {/* ── Brand ─────────────────────────────────────────── */}
         <div className="flex items-center gap-2.5 px-5 py-5 border-b border-border/40">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-glow)] transition-transform group-hover:scale-105">
-              <ShieldCheck className="size-5" />
-            </span>
+            <img
+              src="/DueLens.png"
+              alt="DueLens Logo"
+              className="size-9 rounded-xl object-contain shadow-[var(--shadow-glow)] transition-transform group-hover:scale-105"
+            />
             <div className="leading-none">
               <p className="font-display text-[15px] font-bold tracking-tight text-foreground">
                 Duelens

@@ -13,9 +13,11 @@ export function Navbar() {
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[var(--shadow-glow)]">
-            <ShieldCheck className="size-5" />
-          </span>
+          <img
+            src="/DueLens.png"
+            alt="DueLens Logo"
+            className="size-9 rounded-xl object-contain shadow-[var(--shadow-glow)]"
+          />
           <span className="font-display text-lg font-bold tracking-tight">Duelens</span>
         </Link>
 

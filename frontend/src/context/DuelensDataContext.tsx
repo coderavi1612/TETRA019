@@ -70,20 +70,36 @@ export const DuelensDataProvider: React.FC<{ children: ReactNode }> = ({ childre
     setError(null);
     try {
       // 1. Fetch Company metadata
-      const meta = await getCompanyMetadata(targetCompanyId);
-      setMetadata(meta);
+      try {
+        const meta = await getCompanyMetadata(targetCompanyId);
+        setMetadata(meta);
+      } catch (e) {
+        console.warn('Failed to load company metadata:', e);
+      }
 
       // 2. Fetch Company artifacts
-      const manifest = await getCompanyArtifacts(targetCompanyId);
-      setArtifacts(manifest.artifacts || []);
+      try {
+        const manifest = await getCompanyArtifacts(targetCompanyId);
+        setArtifacts(manifest.artifacts || []);
+      } catch (e) {
+        console.warn('Failed to load artifacts:', e);
+      }
 
       // 3. Fetch Extracted documents
-      const docsRes = await getExtractedDocuments(targetCompanyId);
-      setExtractedDocs(docsRes.documents);
+      try {
+        const docsRes = await getExtractedDocuments(targetCompanyId);
+        setExtractedDocs(docsRes.documents);
+      } catch (e) {
+        console.warn('Failed to load extracted documents:', e);
+      }
 
       // 4. Fetch Readiness results bundle
-      const readiness = await getReadinessBundle(targetCompanyId);
-      setReadinessResults(readiness);
+      try {
+        const readiness = await getReadinessBundle(targetCompanyId);
+        setReadinessResults(readiness);
+      } catch (e) {
+        console.warn('Failed to load readiness bundle:', e);
+      }
 
       // 5. Fetch Verification Matrix from files
       try {

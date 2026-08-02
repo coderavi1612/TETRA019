@@ -404,7 +404,7 @@ class FactExtractor:
             
             # Determine overall document verification status
             verification_status = "PASS"
-            if is_mock_mode or not parsed_doc.content:
+            if is_mock or not parsed_doc.content:
                 verification_status = "PASS"
             elif summary.get("status") == "FAIL" or not trace_valid or self_check_errors:
                 verification_status = "FAIL"

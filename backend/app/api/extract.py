@@ -46,18 +46,19 @@ async def get_all_extracted_documents(company_id: str):
     import json
     from app.config import settings
     from app.core import success_response, error_response
+    from app.core.db import get_pipeline_outputs_from_db
 
     clean_company_id = company_id.strip()
     if not clean_company_id:
         return error_response(["company_id cannot be empty."], status_code=400)
 
+    db_outputs = get_pipeline_outputs_from_db(clean_company_id)
     extracted_dir = os.path.join(settings.OUTPUT_DIR, clean_company_id, "extracted")
-    
-    # Fallback to legacy path if standard doesn't exist
     if not os.path.exists(extracted_dir):
         extracted_dir = os.path.join(settings.OUTPUT_DIR, clean_company_id, "reports")
 
-    if not os.path.exists(extracted_dir) or not os.path.isdir(extracted_dir):
+    has_db_extracted = any(cat == "extracted" for cat, _ in db_outputs.keys())
+    if not os.path.exists(extracted_dir) and not has_db_extracted:
         return error_response([f"Extracted documents not found for company '{clean_company_id}'."], status_code=404)
 
     documents = {}
@@ -71,14 +72,26 @@ async def get_all_extracted_documents(company_id: str):
         "cap_table.json": "cap_table"
     }
 
-    for filename in os.listdir(extracted_dir):
-        if filename in mapping:
-            key = mapping[filename]
-            path = os.path.join(extracted_dir, filename)
-            try:
-                with open(path, "r", encoding="utf-8") as f:
-                    documents[key] = json.load(f)
-            except Exception:
-                pass
+    # 1. Read from disk if directory exists
+    if os.path.exists(extracted_dir) and os.path.isdir(extracted_dir):
+        for filename in os.listdir(extracted_dir):
+            if filename in mapping:
+                key = mapping[filename]
+                path = os.path.join(extracted_dir, filename)
+                try:
+                    with open(path, "r", encoding="utf-8") as f:
+                        documents[key] = json.load(f)
+                except Exception:
+                    pass
+
+    # 2. Merge/fallback from DB
+    for filename, key in mapping.items():
+        if key not in documents:
+            db_item = db_outputs.get(("extracted", filename.lower()))
+            if db_item and db_item.get("text_content"):
+                try:
+                    documents[key] = json.loads(db_item["text_content"])
+                except Exception:
+                    pass
 
     return success_response({"documents": documents})

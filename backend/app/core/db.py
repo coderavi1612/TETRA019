@@ -155,20 +155,15 @@ def save_pipeline_output(
 
 def sync_company_artifacts_to_db(company_id: str, job_id: str):
     """
-    Scans the outputs directory for a company and syncs all stage outputs and report files to the database.
+    Scans the uploads and outputs directories for a company and syncs all raw files,
+    stage outputs, and report files to the database.
     """
     if not job_id:
         logger.warning(f"No job_id provided to sync artifacts to DB for company: {company_id}. Skipping.")
         return
 
-    company_dir = os.path.join(settings.OUTPUT_DIR, company_id)
-    if not os.path.exists(company_dir):
-        logger.warning(f"Outputs directory for company {company_id} does not exist. Skipping DB sync.")
-        return
-
-    categories = ["parsed", "extracted", "verification", "readiness", "manifests", "logs"]
-    
     category_to_stage = {
+        "uploads": "parse",
         "parsed": "parse",
         "extracted": "extract",
         "verification": "verify",
@@ -182,7 +177,10 @@ def sync_company_artifacts_to_db(company_id: str, job_id: str):
         ".pdf": "application/pdf",
         ".md": "text/markdown",
         ".txt": "text/plain",
-        ".log": "text/plain"
+        ".log": "text/plain",
+        ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        ".csv": "text/csv"
     }
 
     logger.info(f"Syncing artifacts to DB for company={company_id}, job_id={job_id}...")
@@ -190,49 +188,91 @@ def sync_company_artifacts_to_db(company_id: str, job_id: str):
     conn = None
     try:
         conn = get_db_connection()
-        for cat in categories:
-            cat_dir = os.path.join(company_dir, cat)
-            if os.path.exists(cat_dir) and os.path.isdir(cat_dir):
-                for filename in os.listdir(cat_dir):
-                    file_path = os.path.join(cat_dir, filename)
-                    if os.path.isfile(file_path):
-                        try:
-                            stat_info = os.stat(file_path)
-                            ext = os.path.splitext(filename)[1].lower()
-                            mime = extension_to_mime.get(ext, mimetypes.guess_type(file_path)[0] or "application/octet-stream")
-                            
-                            mtime = stat_info.st_mtime
-                            generated_at = datetime.datetime.fromtimestamp(mtime, datetime.timezone.utc)
-                            size_bytes = stat_info.st_size
-                            stage = category_to_stage.get(cat, "system")
+        
+        # 1. Sync Uploaded Raw Documents
+        upload_company_dir = os.path.join(settings.UPLOAD_DIR, company_id)
+        if os.path.exists(upload_company_dir) and os.path.isdir(upload_company_dir):
+            for filename in os.listdir(upload_company_dir):
+                file_path = os.path.join(upload_company_dir, filename)
+                if os.path.isfile(file_path):
+                    try:
+                        stat_info = os.stat(file_path)
+                        ext = os.path.splitext(filename)[1].lower()
+                        mime = extension_to_mime.get(ext, mimetypes.guess_type(file_path)[0] or "application/octet-stream")
+                        mtime = stat_info.st_mtime
+                        generated_at = datetime.datetime.fromtimestamp(mtime, datetime.timezone.utc)
+                        size_bytes = stat_info.st_size
 
-                            text_content = None
-                            binary_content = None
+                        text_content = None
+                        binary_content = None
 
-                            if ext == ".pdf":
-                                # Read as binary
-                                with open(file_path, "rb") as f:
-                                    binary_content = f.read()
-                            else:
-                                # Read as text
-                                with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-                                    text_content = f.read()
+                        if ext in [".pdf", ".pptx", ".xlsx"]:
+                            with open(file_path, "rb") as f:
+                                binary_content = f.read()
+                        else:
+                            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                                text_content = f.read()
 
-                            save_pipeline_output(
-                                job_id=job_id,
-                                company_id=company_id,
-                                stage=stage,
-                                category=cat,
-                                file_name=filename,
-                                mime_type=mime,
-                                size_bytes=size_bytes,
-                                text_content=text_content,
-                                binary_content=binary_content,
-                                generated_at=generated_at,
-                                conn=conn
-                            )
-                        except Exception as ex:
-                            logger.error(f"Failed to sync file {filename} in category {cat} to DB: {ex}", exc_info=True)
+                        save_pipeline_output(
+                            job_id=job_id,
+                            company_id=company_id,
+                            stage="parse",
+                            category="uploads",
+                            file_name=filename,
+                            mime_type=mime,
+                            size_bytes=size_bytes,
+                            text_content=text_content,
+                            binary_content=binary_content,
+                            generated_at=generated_at,
+                            conn=conn
+                        )
+                    except Exception as ex:
+                        logger.error(f"Failed to sync uploaded file {filename} to DB: {ex}", exc_info=True)
+
+        # 2. Sync Pipeline Output Directories
+        company_output_dir = os.path.join(settings.OUTPUT_DIR, company_id)
+        if os.path.exists(company_output_dir) and os.path.isdir(company_output_dir):
+            categories = ["parsed", "extracted", "verification", "readiness", "manifests", "logs"]
+            for cat in categories:
+                cat_dir = os.path.join(company_output_dir, cat)
+                if os.path.exists(cat_dir) and os.path.isdir(cat_dir):
+                    for filename in os.listdir(cat_dir):
+                        file_path = os.path.join(cat_dir, filename)
+                        if os.path.isfile(file_path):
+                            try:
+                                stat_info = os.stat(file_path)
+                                ext = os.path.splitext(filename)[1].lower()
+                                mime = extension_to_mime.get(ext, mimetypes.guess_type(file_path)[0] or "application/octet-stream")
+                                mtime = stat_info.st_mtime
+                                generated_at = datetime.datetime.fromtimestamp(mtime, datetime.timezone.utc)
+                                size_bytes = stat_info.st_size
+                                stage = category_to_stage.get(cat, "system")
+
+                                text_content = None
+                                binary_content = None
+
+                                if ext in [".pdf", ".pptx", ".xlsx"]:
+                                    with open(file_path, "rb") as f:
+                                        binary_content = f.read()
+                                else:
+                                    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                                        text_content = f.read()
+
+                                save_pipeline_output(
+                                    job_id=job_id,
+                                    company_id=company_id,
+                                    stage=stage,
+                                    category=cat,
+                                    file_name=filename,
+                                    mime_type=mime,
+                                    size_bytes=size_bytes,
+                                    text_content=text_content,
+                                    binary_content=binary_content,
+                                    generated_at=generated_at,
+                                    conn=conn
+                                )
+                            except Exception as ex:
+                                logger.error(f"Failed to sync output file {filename} in category {cat} to DB: {ex}", exc_info=True)
         conn.commit()
         logger.info(f"Syncing artifacts to DB completed for company={company_id}, job_id={job_id}.")
     except Exception as e:
@@ -264,7 +304,7 @@ def get_all_companies_summary():
             LEFT JOIN (
                 SELECT job_id, COUNT(*) as file_count 
                 FROM pipeline_outputs 
-                WHERE category = 'parsed'
+                WHERE category IN ('parsed', 'uploads')
                 GROUP BY job_id
             ) c ON r.job_id = c.job_id
             ORDER BY r.updated_at DESC;
@@ -287,4 +327,44 @@ def get_all_companies_summary():
     finally:
         if conn:
             conn.close()
+
+
+def get_pipeline_outputs_from_db(company_id: str):
+    """
+    Retrieves all pipeline outputs stored in Supabase DB for a specific company_id.
+    Returns a dict mapping (category.lower(), file_name.lower()) -> output_dict.
+    """
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT category, file_name, mime_type, size_bytes, text_content, binary_content, stage, generated_at
+            FROM pipeline_outputs
+            WHERE company_id = %s;
+        """, (company_id,))
+        rows = cur.fetchall()
+        cur.close()
+        outputs = {}
+        for row in rows:
+            cat, filename, mime, size, text_c, bin_c, stage, gen_at = row
+            key = (cat.lower(), filename.lower())
+            outputs[key] = {
+                "category": cat,
+                "file_name": filename,
+                "mime_type": mime,
+                "size_bytes": size,
+                "text_content": text_c,
+                "binary_content": bytes(bin_c) if bin_c else None,
+                "stage": stage,
+                "generated_at": gen_at.isoformat() if gen_at else None
+            }
+        return outputs
+    except Exception as e:
+        logger.error(f"Error fetching pipeline outputs from DB for company {company_id}: {e}")
+        return {}
+    finally:
+        if conn:
+            conn.close()
+
 
